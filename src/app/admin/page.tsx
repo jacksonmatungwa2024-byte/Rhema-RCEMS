@@ -86,13 +86,6 @@ export default function AdminPanel() {
         .eq("key", "login_enabled")
         .single();
 
-      if (data?.value === false || data?.value === "false") {
-        router.push("/locked"); // Redirect to spiritual message
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
 
   useEffect(() => {
     const loadSession = async () => {
