@@ -1,0 +1,87 @@
+.bucket-explorer {
+  padding: 24px;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(to bottom, #0d47a1, #2196f3);
+  color: #ffffff;
+  animation: flyIn 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes flyIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bucket-explorer h2 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.bucket-explorer p {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  color: #bbdefb;
+}
+
+.bucket-explorer button {
+  margin: 6px 6px 12px 0;
+  padding: 10px 16px;
+  background: #1565c0;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.bucket-explorer button:hover {
+  background: #0d47a1;
+  transform: scale(1.05);
+}
+
+.bucket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.bucket-card {
+  background: #ffffff;
+  color: #0d47a1;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  animation: flyIn 0.6s ease forwards;
+}
+
+.bucket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.file-list {
+  margin-top: 12px;
+  background: #e3f2fd;
+  padding: 12px;
+  border-radius: 8px;
+  color: #0d47a1;
+}
+
+.file-list ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.file-list li {
+  margin-bottom: 6px;
+}

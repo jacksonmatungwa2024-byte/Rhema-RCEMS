@@ -1,0 +1,58 @@
+.user-profile-container {
+  padding: 24px;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(to bottom, #0d47a1, #2196f3);
+  color: #ffffff;
+  animation: slideIn 0.6s ease forwards;
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.user-profile-container h2 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  margin-bottom: 16px;
+}
+
+.user-profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #ffffff;
+  color: #0d47a1;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  animation: fadeSlideUp 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes fadeSlideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-profile-card img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 16px;
+  background: #e3f2fd;
+  padding: 6px;
+}
+
+.user-profile-card p {
+  margin: 6px 0;
+  font-size: 1rem;
+}

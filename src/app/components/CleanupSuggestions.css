@@ -1,0 +1,61 @@
+.cleanup-suggestions-container {
+  padding: 24px;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(to bottom, #0d47a1, #2196f3);
+  color: #ffffff;
+  animation: flyIn 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes flyIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cleanup-suggestions-container h2 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.cleanup-suggestions-container p {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  color: #bbdefb;
+}
+
+.cleanup-suggestions-container ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.cleanup-suggestions-container li {
+  background: #ffffff;
+  color: #0d47a1;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cleanup-suggestions-container button {
+  padding: 8px 12px;
+  background: #1565c0;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.cleanup-suggestions-container button:hover {
+  background: #0d47a1;
+  transform: scale(1.05);
+}

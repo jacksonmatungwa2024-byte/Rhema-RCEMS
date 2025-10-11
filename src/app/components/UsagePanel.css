@@ -1,0 +1,141 @@
+/* 🌌 Root Theme */
+:root {
+  --blue: #0a174e;
+  --blue-light: #142b73;
+  --gold: #ffd447;
+  --white: #ffffff;
+  --gray: #e0e0e0;
+  --text-dark: #1c1c1c;
+  --text-light: #f0f0f0;
+  --radius: 10px;
+  --transition: all 0.3s ease-in-out;
+}
+
+/* 🌙 Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --blue: #071032;
+    --blue-light: #0d1a48;
+    --gold: #ffdf60;
+    --white: #fefefe;
+    --gray: #2c2c2c;
+    --text-dark: #fefefe;
+    --text-light: #cccccc;
+  }
+}
+
+/* 📱 Container */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  background: var(--blue);
+  color: var(--white);
+  font-family: 'Inter', 'Poppins', sans-serif;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transition: var(--transition);
+}
+
+/* 🧭 Heading */
+.heading {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: var(--gold);
+  text-align: center;
+}
+
+/* ⚠️ Alert */
+.alert {
+  background: #ff5252;
+  color: var(--white);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+  animation: pulseAlert 1.2s infinite;
+}
+
+@keyframes pulseAlert {
+  0% { box-shadow: 0 0 0px #ff5252; }
+  50% { box-shadow: 0 0 10px #ff5252; }
+  100% { box-shadow: 0 0 0px #ff5252; }
+}
+
+/* 📊 Usage Bar */
+.bar {
+  height: 12px;
+  background: var(--gray);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.fill {
+  height: 100%;
+  background: var(--gold);
+  width: 0%;
+  transition: width 0.6s ease;
+}
+
+/* 📄 Paragraphs */
+.paragraph {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: var(--text-light);
+  text-align: center;
+}
+
+/* 📁 Subheadings */
+.subheading {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 24px 0 12px;
+  color: var(--gold);
+  text-align: left;
+}
+
+/* 📄 Export Button */
+.exportBtn {
+  margin-top: 24px;
+  padding: 10px 16px;
+  background: var(--gold);
+  color: var(--blue);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  width: 100%;
+  text-align: center;
+}
+
+.exportBtn:hover {
+  background: #ffea85;
+  transform: scale(1.03);
+}
+
+/* 📱 Responsive */
+@media (max-width: 600px) {
+  .container {
+    padding: 16px 12px;
+  }
+
+  .heading {
+    font-size: 1.4rem;
+  }
+
+  .subheading {
+    font-size: 1.1rem;
+  }
+
+  .paragraph {
+    font-size: 0.95rem;
+  }
+
+  .exportBtn {
+    font-size: 0.95rem;
+  }
+}

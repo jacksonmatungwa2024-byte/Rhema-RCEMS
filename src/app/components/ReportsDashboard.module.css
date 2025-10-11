@@ -1,0 +1,521 @@
+:root {
+  --blue: #0a174e;
+  --white: #ffffff;
+  --red: #c62828;
+  --halotel: #009639;
+  --yellow: #ffeb3b; /* 🌟 Affirmation yellow */
+  --radius: 12px;
+  --transition: all 0.3s ease-in-out;
+  --text-dark: var(--yellow); /* 🔁 Replace black with yellow */
+  --text-light: #f5f5f5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --white: #111;
+    --red: #ef5350;
+    --halotel: #00cc66;
+    --text-light: #fff;
+  }
+
+  body {
+    background-color: var(--blue);
+    color: white;
+  }
+}
+
+/* Layout */
+.dashboard {
+  padding: 24px;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: var(--white);
+  color: var(--text-dark);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--halotel);
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.input {
+  padding: 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--halotel);
+  background: #f9f9f9;
+  color: var(--text-dark);
+}
+
+.input::placeholder {
+  color: #ffec99; /* softer yellow for placeholder */
+}
+
+.runBtn {
+  background: var(--halotel);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.runBtn:hover {
+  background: #007f4f;
+}
+
+.label {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.printArea {
+  margin-top: 24px;
+}
+
+/* Summary */
+.summaryCard {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.barChart {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Group Buttons */
+.groupButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.groupBtn {
+  background: var(--halotel);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.groupBtn:hover {
+  background: #007f4f;
+}
+
+/* Table */
+.tableWrapper {
+  margin-top: 24px;
+}
+
+.tableTitle {
+  font-size: 1.2rem;
+  color: var(--halotel);
+  margin-bottom: 8px;
+}
+
+.rowCount {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-dark);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+.table th {
+  background: var(--halotel);
+  color: white;
+  text-transform: uppercase;
+}
+
+.table td {
+  color: var(--text-dark);
+}
+
+/* Actions */
+.actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.actions button:hover {
+  background: #06103a;
+}
+
+.backBtn {
+  background: var(--red);
+  border: 2px solid var(--red);
+  color: white;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.backBtn:hover {
+  background: #a30000;
+}
+
+/* Message */
+.message {
+  margin-top: 12px;
+  font-weight: 600;
+  color: var(--red);
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .groupButtons {
+    justify-content: center;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+}
+
+:root {
+  --blue: #0a174e;
+  --white: #c62828; /* 🔁 Replaced white with red */
+  --red: #c62828;
+  --halotel: #009639;
+  --yellow: #ffeb3b;
+  --radius: 12px;
+  --transition: all 0.3s ease-in-out;
+  --text-dark: var(--yellow);
+  --text-light: #f5f5f5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --white: #ef5350; /* 🔁 Red tone for dark mode */
+    --red: #ef5350;
+    --halotel: #00cc66;
+    --text-light: #fff;
+  }
+
+  body {
+    background-color: var(--blue);
+    color: white;
+  }
+}
+
+/* Layout */
+.dashboard {
+  padding: 24px;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: var(--white); /* 🔴 Red background */
+  color: var(--text-dark);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--halotel);
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.input {
+  padding: 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--halotel);
+  background: var(--white); /* 🔴 Red input background */
+  color: var(--text-dark);
+}
+
+.input::placeholder {
+  color: #ffec99;
+}
+
+.runBtn {
+  background: var(--halotel);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.runBtn:hover {
+  background: #007f4f;
+}
+
+.label {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.printArea {
+  margin-top: 24px;
+}
+
+/* Summary */
+.summaryCard {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.barChart {
+  background: var(--white); /* 🔴 Red block */
+  padding: 12px;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Group Buttons */
+.groupButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.groupBtn {
+  background: var(--halotel);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.groupBtn:hover {
+  background: #007f4f;
+}
+
+/* Table */
+.tableWrapper {
+  margin-top: 24px;
+}
+
+.tableTitle {
+  font-size: 1.2rem;
+  color: var(--halotel);
+  margin-bottom: 8px;
+}
+
+.rowCount {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-dark);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+.table th {
+  background: var(--halotel);
+  color: white;
+  text-transform: uppercase;
+}
+
+.table td {
+  background: var(--white); /* 🔴 Red cell background */
+  color: var(--text-dark);
+}
+
+/* Actions */
+.actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.actions button:hover {
+  background: #06103a;
+}
+
+.backBtn {
+  background: var(--red);
+  border: 2px solid var(--red);
+  color: white;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.backBtn:hover {
+  background: #a30000;
+}
+
+/* Message */
+.message {
+  margin-top: 12px;
+  font-weight: 600;
+  color: var(--red);
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .groupButtons {
+    justify-content: center;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+}
+
+:root {
+  --blue: #0a174e;
+  --white: #b71c1c; /* 🔴 Darker red block */
+  --red: #b71c1c;
+  --halotel: #007f4f; /* 🌿 Deeper green */
+  --yellow: #f4e842; /* 🌟 Softer yellow */
+  --radius: 12px;
+  --transition: all 0.3s ease-in-out;
+  --text-dark: var(--yellow);
+  --text-light: #f5f5f5;
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .input,
+  .runBtn,
+  .groupBtn,
+  .backBtn {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+  .groupButtons {
+    justify-content: center;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

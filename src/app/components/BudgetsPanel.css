@@ -1,0 +1,306 @@
+:root {
+  --blue: #0a174e;
+  --purple: #4a148c;
+  --purple-light: #7b1fa2;
+  --yellow: #ffd447;
+  --white: #ffffff;
+  --error: #c62828;
+  --radius: 12px;
+  --transition: all 0.3s ease-in-out;
+}
+
+/* Container */
+.budgets-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(to bottom, var(--blue), var(--purple));
+  color: var(--white);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.5s ease;
+}
+
+.budgets-container h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--yellow);
+  text-align: center;
+  margin-bottom: 20px;
+  text-shadow: 0 0 6px var(--yellow);
+}
+
+.error-text {
+  color: var(--error);
+  font-weight: 600;
+  text-align: center;
+  margin-top: 12px;
+}
+
+/* Table */
+.budget-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--white);
+  color: var(--blue);
+  border-radius: var(--radius);
+  overflow: hidden;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.budget-table th,
+.budget-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+  vertical-align: top;
+}
+
+.budget-table th {
+  background-color: var(--yellow);
+  color: var(--blue);
+  font-weight: 700;
+  text-shadow: 0 0 4px var(--white);
+}
+
+.budget-table tbody tr:nth-child(even) {
+  background-color: #f3e5f5;
+}
+
+.budget-table tbody tr:hover {
+  background-color: #ffecf2;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.no-data {
+  text-align: center;
+  font-style: italic;
+  color: var(--purple-light);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 23, 78, 0.7);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.4s ease;
+}
+
+/* Modal Content */
+.modal-content {
+  background: linear-gradient(to bottom, var(--white), #f3e5f5);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 420px;
+  max-width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s ease;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  color: var(--blue);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-content h3 {
+  text-align: center;
+  color: var(--purple);
+  font-size: 1.4rem;
+  margin-bottom: 18px;
+  font-weight: 700;
+  text-shadow: 0 0 6px var(--yellow);
+}
+
+/* Form Fields */
+.modal-content label {
+  display: block;
+  font-weight: 600;
+  color: var(--purple);
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 14px;
+  border: 1px solid var(--purple-light);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background-color: var(--white);
+  color: var(--blue);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus {
+  border-color: var(--purple-light);
+  box-shadow: 0 0 6px rgba(123, 31, 162, 0.4);
+  outline: none;
+}
+
+.modal-content textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Buttons */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.modal-content button {
+  flex: 1;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  color: var(--white);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease, transform 0.15s ease;
+  box-shadow: 0 0 6px rgba(255, 212, 71, 0.3);
+}
+
+.modal-content button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px rgba(255, 212, 71, 0.5);
+}
+
+.modal-content button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Button Colors */
+.approve {
+  background-color: #2e7d32;
+}
+.approve:hover {
+  background-color: #388e3c;
+}
+
+.decline {
+  background-color: var(--error);
+}
+.decline:hover {
+  background-color: #d32f2f;
+}
+
+.cancel {
+  background-color: var(--purple);
+}
+.cancel:hover {
+  background-color: var(--purple-light);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .modal-content {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .modal-content h3 {
+    font-size: 1.2rem;
+  }
+
+  .modal-content input,
+  .modal-content select,
+  .modal-content textarea {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+
+  .modal-content label {
+    font-size: 0.85rem;
+  }
+
+  .modal-content button {
+    font-size: 0.85rem;
+    padding: 8px 10px;
+  }
+}
+
+/* Floating Action Button */
+.fab-approve {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--yellow);
+  color: var(--blue);
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  font-size: 1.6rem;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.fab-approve:hover {
+  background: #ffea85;
+  transform: scale(1.05);
+}
+
+/* PDF Confirmation */
+.pdf-confirmation {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  background: var(--yellow);
+  color: var(--blue);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: fadeSlide 0.3s ease;
+  z-index: 1000;
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Role-Based Theme (dynamic via CSS variable) */
+.modal-content {
+  border-top: 6px solid var(--approver-color, var(--purple));
+}
+
+.modal-content h3 {
+  color: var(--approver-color, var(--purple));
+  text-shadow: 0 0 6px var(--yellow);
+}
+
+.modal-content button.approve {
+  background-color: var(--approver-color, #2e7d32);
+}
+
+.modal-content button.approve:hover {
+  background-color: #1b5e20;
+}

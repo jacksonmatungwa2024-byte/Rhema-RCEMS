@@ -1,0 +1,186 @@
+:root {
+  --halotel: #009639;
+  --yellow: #f4e842;
+  --red: #b71c1c;
+  --blue: #0a174e;
+  --radius: 12px;
+  --transition: all 0.3s ease-in-out;
+}
+
+/* Container */
+.user-gallery-container {
+  padding: 24px;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background-color: var(--blue);
+  color: var(--yellow);
+}
+
+.user-gallery-container h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: var(--halotel);
+}
+
+.user-gallery-container h3 {
+  margin-top: 2rem;
+  font-size: 1.2rem;
+  color: var(--yellow);
+}
+
+/* Grid */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.gallery-item {
+  background: var(--red);
+  border-radius: var(--radius);
+  padding: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  color: var(--yellow);
+}
+
+.gallery-item:hover {
+  transform: scale(1.03);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  margin-bottom: 6px;
+}
+
+.gallery-item strong {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.gallery-item span {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* Fullscreen Viewer */
+.fullscreen-viewer {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 23, 78, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.viewer-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  text-align: center;
+  color: var(--yellow);
+}
+
+.viewer-content.zoomed img {
+  transform: scale(1.5);
+  cursor: zoom-out;
+}
+
+.viewer-img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: var(--radius);
+  transition: transform 0.3s ease;
+}
+
+.image-info {
+  margin-top: 12px;
+}
+
+.image-info h4 {
+  margin-bottom: 4px;
+  color: var(--yellow);
+}
+
+.image-info p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.image-info small {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+/* Buttons */
+.close-btn,
+.nav-btn {
+  position: absolute;
+  background: var(--halotel);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.close-btn {
+  top: 12px;
+  right: 12px;
+}
+
+.prev-btn {
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+}
+
+.next-btn {
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+}
+
+.nav-btn:hover,
+.close-btn:hover {
+  background: #007f4f;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .viewer-content.zoomed img {
+    transform: scale(1.2);
+  }
+
+  .close-btn,
+  .nav-btn {
+    font-size: 1rem;
+    padding: 6px 10px;
+  }
+}

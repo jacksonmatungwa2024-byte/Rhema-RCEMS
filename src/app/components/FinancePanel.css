@@ -1,0 +1,220 @@
+:root {
+  --blue: #0a174e;
+  --green: #2e7d32;
+  --white: #ffffff;
+  --purple: #4a148c;
+  --yellow: #ffd447;
+  --error: #c62828;
+  --radius: 12px;
+  --transition: all 0.3s ease-in-out;
+}
+
+/* Container */
+.container {
+  padding: 24px;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background: var(--blue);
+  color: var(--white);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Header with wave animation */
+.heading {
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 24px;
+  color: var(--yellow);
+  animation: waveSlide 3s infinite ease-in-out;
+}
+
+@keyframes waveSlide {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+/* Tabs */
+.tabBar {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--white);
+  overflow-x: auto;
+}
+
+.tab,
+.active {
+  flex: 1;
+  padding: 12px;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: var(--green);
+  border-radius: 2px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { width: 0; opacity: 0; }
+  to { width: 60%; opacity: 1; }
+}
+
+/* Panel */
+.panel {
+  margin-top: 12px;
+}
+
+/* Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form input,
+.form textarea {
+  padding: 10px;
+  border-radius: var(--radius);
+  border: none;
+  font-size: 0.95rem;
+  background: var(--white);
+  color: var(--blue);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+}
+
+.form textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.form button {
+  padding: 12px;
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 0 8px rgba(46, 125, 50, 0.4);
+}
+
+.form button:hover {
+  background: #1b5e20;
+  transform: translateY(-2px);
+}
+
+.message {
+  text-align: center;
+  font-weight: 600;
+  margin-top: 12px;
+  color: var(--yellow);
+  animation: fadeSlide 0.3s ease;
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* List */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: var(--white);
+  color: var(--blue);
+  padding: 16px;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: var(--transition);
+}
+
+.card h4 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  color: var(--green);
+}
+
+.card p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+}
+
+.approved {
+  border-left: 6px solid var(--green);
+}
+
+.declined {
+  border-left: 6px solid var(--error);
+}
+
+/* Floating Action Button */
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  font-size: 1.6rem;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: var(--transition);
+  z-index: 1000;
+}
+
+.fab:hover {
+  background: #1b5e20;
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .tabBar {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form input,
+  .form textarea {
+    font-size: 0.85rem;
+  }
+
+  .form button {
+    font-size: 0.9rem;
+  }
+
+  .card h4 {
+    font-size: 0.95rem;
+  }
+
+  .card p {
+    font-size: 0.85rem;
+  }
+}

@@ -1,0 +1,97 @@
+.storage-overview {
+  padding: 24px;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(to bottom, #0d47a1, #2196f3);
+  color: #ffffff;
+  animation: flyIn 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes flyIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.storage-overview h2 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.storage-overview p {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  color: #bbdefb;
+}
+
+.plan-selector button,
+.custom-plan-inputs button,
+.storage-overview button {
+  margin: 6px 6px 12px 0;
+  padding: 10px 16px;
+  background: #1565c0;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.plan-selector button:hover,
+.custom-plan-inputs button:hover,
+.storage-overview button:hover {
+  background: #0d47a1;
+  transform: scale(1.05);
+}
+
+.custom-plan-inputs {
+  margin-bottom: 20px;
+}
+
+.custom-plan-inputs label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.custom-plan-inputs input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  background: #ffffff;
+  color: #0d47a1;
+}
+
+.usage-card {
+  background: #ffffff;
+  color: #0d47a1;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-top: 20px;
+}
+
+.usage-card h3 {
+  margin-top: 16px;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.usage-card p {
+  margin: 6px 0;
+}
+
+.usage-card ul {
+  margin-top: 12px;
+  padding-left: 20px;
+}
+
+.usage-card li {
+  margin-bottom: 6px;
+}

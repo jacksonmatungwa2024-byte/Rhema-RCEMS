@@ -1,0 +1,113 @@
+.admin-panel-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(to bottom, #0d47a1, #2196f3);
+  color: #ffffff;
+  animation: fadeSlideIn 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+  box-sizing: border-box;
+}
+
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-panel-container nav {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.admin-panel-container nav h2 {
+  font-size: 2rem;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.admin-panel-container nav p {
+  font-size: 1rem;
+  margin-bottom: 16px;
+  color: #bbdefb;
+}
+
+.admin-panel-container nav button {
+  margin: 6px;
+  padding: 10px 16px;
+  background: #1565c0;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.admin-panel-container nav button:hover {
+  background: #0d47a1;
+  transform: scale(1.05);
+}
+
+.admin-panel-container main {
+  animation: slideIn 0.5s ease forwards;
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .admin-panel-container {
+    background: linear-gradient(to bottom, #0a192f, #1565c0);
+    color: #ffffff;
+  }
+
+  .admin-panel-container nav p {
+    color: #e3f2fd;
+  }
+
+  .admin-panel-container nav button {
+    background: #1e88e5;
+    color: #ffffff;
+  }
+
+  .admin-panel-container nav button:hover {
+    background: #42a5f5;
+  }
+
+  .admin-panel-container main {
+    background: #102840;
+    color: #ffffff;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .admin-panel-container {
+    padding: 20px 12px;
+  }
+
+  .admin-panel-container nav h2 {
+    font-size: 1.5rem;
+  }
+
+  .admin-panel-container nav p {
+    font-size: 0.95rem;
+  }
+
+  .admin-panel-container nav button {
+    width: 100%;
+    max-width: 300px;
+    display: block;
+    margin: 8px auto;
+  }
+}

@@ -1,0 +1,117 @@
+.pastor-summary-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(to bottom, #4a148c, #f8bbd0);
+  color: #ffffff;
+  animation: fadeSlideIn 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+  box-sizing: border-box;
+}
+
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pastor-summary-container h3 {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.pastor-summary-container label {
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.pastor-summary-container select,
+.pastor-summary-container input[type="text"],
+.pastor-summary-container input[type="date"],
+.pastor-summary-container textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #4a148c;
+  font-size: 1rem;
+  background: #ffffff;
+  color: #4a148c;
+  margin-bottom: 12px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pastor-summary-container input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+.pastor-summary-container input::placeholder {
+  color: #ffb3d9;
+  opacity: 0.8;
+}
+
+.pastor-summary-container textarea {
+  resize: vertical;
+}
+
+.pastor-summary-container button {
+  padding: 10px 16px;
+  background: #4a148c;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: transform 0.2s ease;
+}
+
+.pastor-summary-container button:hover {
+  background: #880e4f;
+  transform: scale(1.05);
+}
+
+.pastor-summary-container p {
+  margin-top: 12px;
+  font-weight: 600;
+}
+.pastor-summary-container select,
+.pastor-summary-container input[type="text"],
+.pastor-summary-container input[type="date"],
+.pastor-summary-container textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #4a148c;
+  font-size: 1rem;
+  background-color: #ffffff;
+  color: #4a148c !important; /* ✅ Force visible text */
+  margin-bottom: 12px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Fix for calendar icon visibility */
+.pastor-summary-container input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* Fix autofill text visibility */
+input:-webkit-autofill {
+  -webkit-text-fill-color: #4a148c !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Placeholder visibility */
+.pastor-summary-container input::placeholder,
+.pastor-summary-container textarea::placeholder {
+  color: #ffb3d9;
+  opacity: 0.8;
+}
+

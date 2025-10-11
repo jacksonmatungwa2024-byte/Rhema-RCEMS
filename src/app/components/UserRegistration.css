@@ -1,0 +1,134 @@
+.user-registration-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: "Segoe UI", Roboto, Inter, sans-serif;
+  background: linear-gradient(to bottom right, #0d47a1, #2196f3);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  color: #ffffff;
+  animation: flyIn 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes flyIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-registration-container h2,
+.user-registration-container h3 {
+  font-weight: 900;
+  margin-bottom: 16px;
+  color: #ffffff;
+}
+
+.user-registration-container h3 {
+  font-size: 1.2rem;
+  margin-top: 32px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.form-group input,
+.form-group select {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  background: #ffffff;
+  color: #0d47a1;
+  transition: box-shadow 0.3s ease;
+}
+
+.form-group input[type="file"] {
+  background: #ffffff;
+  color: #0d47a1;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #1565c0;
+}
+
+.submit-button,
+.assign-button {
+  padding: 12px 18px;
+  background: #1565c0;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.submit-button:hover,
+.assign-button:hover {
+  transform: scale(1.05);
+  background: #0d47a1;
+}
+
+.message {
+  margin-top: 12px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.user-list {
+  margin-top: 12px;
+  list-style: none;
+  padding-left: 0;
+}
+
+.user-item {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #0d47a1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  animation: flyIn 0.6s ease forwards;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #1565c0;
+}
+
+.divider {
+  margin: 40px 0;
+  border-color: #ffffff;
+}
+
+.admin-matangazo-container input[type="text"],
+.admin-matangazo-container textarea,
+.admin-matangazo-container input[type="file"] {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  color: #0d47a1;
+  background: #ffffff; /* ✅ Add this line */
+}

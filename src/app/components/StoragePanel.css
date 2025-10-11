@@ -1,0 +1,392 @@
+/* 🌌 Root Theme */
+:root {
+  --blue: #0a174e;
+  --blue-light: #142b73;
+  --gold: #ffd447;
+  --white: #ffffff;
+  --gray: #e0e0e0;
+  --text-dark: #1c1c1c;
+  --text-light: #f0f0f0;
+  --radius: 10px;
+  --transition: all 0.3s ease-in-out;
+}
+
+/* 🌙 Dark Mode (auto-detects system theme) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --blue: #071032;
+    --blue-light: #0d1a48;
+    --gold: #ffdf60;
+    --white: #fefefe;
+    --gray: #2c2c2c;
+    --text-dark: #fefefe;
+    --text-light: #cccccc;
+  }
+}
+
+/* 🌠 Global */
+body {
+  background: var(--blue);
+  color: var(--white);
+  font-family: 'Inter', 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  transition: var(--transition);
+}
+
+h3, label, strong {
+  color: var(--gold);
+  letter-spacing: 0.5px;
+}
+
+input, select {
+  border: 1px solid var(--gray);
+  border-radius: var(--radius);
+  padding: 8px;
+  width: 100%;
+  background-color: var(--white);
+  color: var(--text-dark);
+  transition: var(--transition);
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
+}
+
+/* 🌈 Tabs */
+.tab-buttons {
+  display: flex;
+  justify-content: start;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+
+.tab-buttons button {
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  font-weight: 600;
+  background: var(--blue-light);
+  color: var(--white);
+  transition: var(--transition);
+}
+
+.tab-buttons button.active {
+  background: var(--gold);
+  color: var(--blue);
+  transform: translateY(-2px);
+}
+
+.tab-buttons button:hover {
+  filter: brightness(1.1);
+}
+
+/* 🕊️ Upload Section */
+.upload-section {
+  background: var(--blue-light);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: var(--transition);
+}
+
+.upload-section input[type="file"] {
+  background: var(--white);
+  color: var(--text-dark);
+  cursor: pointer;
+}
+
+.upload-section ul {
+  list-style-type: none;
+  padding: 0;
+  color: var(--gray);
+}
+
+.upload-section ul li::before {
+  content: "📸 ";
+}
+
+.upload-section button {
+  background: var(--gold);
+  color: var(--blue);
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.upload-section button:hover {
+  background: #ffea85;
+  transform: scale(1.05);
+}
+
+/* 📈 Upload Progress */
+.progress-bar {
+  margin-top: 12px;
+  height: 10px;
+  background: var(--gray);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--gold);
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+.progress-text {
+  font-weight: 700;
+  margin-top: 6px;
+  color: var(--gold);
+  text-align: center;
+}
+
+/* 🖼️ Gallery */
+.gallery-section {
+  padding: 10px;
+}
+
+.gallery-section h3 {
+  text-align: left;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--gold);
+  padding-left: 8px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.gallery-item {
+  background: var(--blue-light);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  padding: 8px;
+  text-align: center;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 14px rgba(255, 212, 71, 0.3);
+}
+
+.gallery-item img {
+  border-radius: 6px;
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.gallery-item:hover img {
+  filter: brightness(1.1);
+}
+
+.gallery-item a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.gallery-item button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  margin: 4px;
+  transition: var(--transition);
+}
+
+.gallery-item button:hover {
+  transform: scale(1.1);
+  color: var(--gold);
+}
+
+.gallery-item small {
+  display: block;
+  margin-top: 4px;
+  color: var(--gray);
+}
+
+/* 🔍 Filters */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.filter-bar input,
+.filter-bar button {
+  border-radius: var(--radius);
+  padding: 8px;
+  font-size: 14px;
+}
+
+.filter-bar button {
+  background: var(--gold);
+  color: var(--blue);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.filter-bar button:hover {
+  filter: brightness(1.2);
+}
+
+/* 📱 Responsive */
+@media (max-width: 600px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .upload-section {
+    padding: 14px;
+  }
+
+  .tab-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+  }
+}
+
+.storage-panel {
+  background-color: #0a1a3f; /* dark blue background */
+  color: white; /* default text color */
+}
+
+/* Inputs and selects styling */
+.storage-panel input[type="text"],
+.storage-panel input[type="date"],
+.storage-panel input[type="file"],
+.storage-panel input[type="search"],
+.storage-panel input[type="email"],
+.storage-panel input[type="password"],
+.storage-panel select,
+.storage-panel textarea {
+  background-color: #142a6b; /* slightly lighter dark blue */
+  color: white;
+  border: 1px solid #ffc107; /* yellow border for contrast */
+  padding: 8px;
+  border-radius: 5px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  transition: border-color 0.3s ease;
+}
+
+/* Placeholder text color */
+.storage-panel input::placeholder,
+.storage-panel textarea::placeholder {
+  color: #ffd54f; /* warm yellow for placeholders */
+  opacity: 1; /* make sure visible */
+}
+
+/* Focus state for inputs */
+.storage-panel input:focus,
+.storage-panel select:focus,
+.storage-panel textarea:focus {
+  border-color: #ffea00; /* brighter yellow on focus */
+  outline: none;
+  background-color: #1e3a8a; /* slightly lighter background on focus */
+  color: white;
+}
+
+/* Labels styling */
+.storage-panel label {
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: block;
+  color: #ffc107; /* yellow label text */
+}
+
+/* Buttons */
+.storage-panel button {
+  background-color: #ffc107; /* yellow */
+  color: #0a1a3f; /* dark blue text */
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.storage-panel button:hover:not(:disabled) {
+  background-color: #ffd54f;
+}
+
+.storage-panel button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Filter inputs wrapper */
+.filter-bar input[type="text"],
+.filter-bar input[type="date"] {
+  background-color: #142a6b;  /* dark blue */
+  color: white;               /* visible text */
+  border: 1px solid #ffc107;  /* yellow border */
+  padding: 8px;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-right: 10px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+/* Date input placeholder fallback */
+.filter-bar input[type="date"]::-webkit-datetime-edit,
+.filter-bar input[type="date"]::-webkit-input-placeholder {
+  color: white !important;
+  opacity: 1 !important;
+}
+
+/* Firefox */
+.filter-bar input[type="date"]:-moz-placeholder {
+  color: white;
+  opacity: 1;
+}
+
+/* Focus styles */
+.filter-bar input[type="text"]:focus,
+.filter-bar input[type="date"]:focus {
+  border-color: #ffea00;
+  background-color: #1e3a8a;
+  outline: none;
+  color: white;
+}
+
+/* Filter button */
+.filter-bar button {
+  background-color: #ffc107;
+  color: #0a1a3f;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.filter-bar button:hover {
+  background-color: #ffd54f;
+}

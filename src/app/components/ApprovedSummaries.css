@@ -1,0 +1,124 @@
+.approved-summaries-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(to bottom, #4a148c, #f8bbd0);
+  color: #ffffff;
+  animation: fadeSlideIn 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+  box-sizing: border-box;
+}
+
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.approved-summaries-container h3 {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+
+.filters select,
+.filters input[type="date"] {
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #4a148c;
+  font-size: 1rem;
+  background: #ffffff;
+  color: #4a148c;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filters select:focus,
+.filters input[type="date"]:focus {
+  border-color: #880e4f;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
+  outline: none;
+}
+
+.filters button {
+  padding: 10px 16px;
+  background: #4a148c;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.filters button:hover {
+  background: #880e4f;
+  transform: scale(1.05);
+}
+
+.summary-card {
+  background: #ffffff;
+  color: #4a148c;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  animation: slideUp 0.5s ease forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+@keyframes slideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.summary-card h4 {
+  margin-bottom: 8px;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.summary-card p {
+  margin: 4px 0;
+  font-size: 1rem;
+}
+
+.approved-summaries-container .message {
+  margin-top: 12px;
+  font-weight: 600;
+  color: #ffebee;
+}
+.filters select,
+.filters input[type="date"] {
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #4a148c;
+  font-size: 1rem;
+  background: #ffffff;
+  color: #4a148c; /* ✅ Ensures visible text */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.filters input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(20%) sepia(100%) saturate(500%) hue-rotate(280deg);
+}
+
+.filters input[type="date"]::placeholder {
+  color: #4a148c;
+  opacity: 0.6;
+}

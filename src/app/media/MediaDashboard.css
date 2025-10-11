@@ -1,0 +1,337 @@
+:root {
+  --blue: #0a174e;
+  --blue-light: #142b73;
+  --white: #ffffff;
+  --yellow: #ffd447;
+  --purple: #4a148c;
+  --purple-dark: #6a1b9a;
+  --radius: 12px;
+  --transition: all 0.3s ease-in-out;
+}
+
+/* Container */
+.media-dashboard {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  background: var(--blue);
+  font-family: Inter, Roboto, Arial, sans-serif;
+  color: var(--white);
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: var(--blue-light);
+  padding: 20px 18px;
+  border-right: 1px solid var(--blue);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar-title {
+  font-size: 1.3rem;
+  color: var(--yellow);
+  margin-bottom: 20px;
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 0 8px var(--yellow);
+  animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 8px var(--yellow); }
+  to { text-shadow: 0 0 16px var(--yellow); }
+}
+
+/* Tab Buttons */
+.sidebar-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  background: transparent;
+  color: var(--yellow);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.sidebar-btn.active {
+  background: var(--yellow);
+  color: var(--blue);
+}
+
+/* Logout Button */
+.logout-btn {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #7b1fa2, var(--purple));
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-top: 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: var(--transition);
+}
+
+.logout-btn.hovered {
+  background: linear-gradient(135deg, #8e24aa, var(--purple-dark));
+  box-shadow: 0 4px 12px rgba(106, 27, 154, 0.35);
+  transform: translateY(-2px);
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 24px;
+  background: var(--blue);
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  margin: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+}
+
+.main-title {
+  font-size: 1.6rem;
+  color: var(--yellow);
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-shadow: 0 0 8px var(--yellow);
+}
+
+/* Responsive Mobile Layout */
+@media (max-width: 768px) {
+  .media-dashboard {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--blue);
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .sidebar-title {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .sidebar-btn {
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .main-content {
+    margin: 0;
+    border-radius: 0;
+    padding: 16px;
+  }
+
+  .main-title {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  .logout-btn {
+    width: 100%;
+    margin-top: 12px;
+  }
+}
+
+:root {
+  --blue: #0a174e;
+  --blue-light: #142b73;
+  --white: #ffffff;
+  --yellow: #ffd447;
+  --purple: #4a148c;
+  --purple-dark: #6a1b9a;
+  --radius: 12px;
+  --transition: all 0.3s ease-in-out;
+}
+
+/* Container */
+.media-dashboard {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  background: var(--blue);
+  font-family: Inter, Roboto, Arial, sans-serif;
+  color: var(--white);
+  position: relative;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: var(--blue-light);
+  padding: 20px 18px;
+  border-right: 1px solid var(--blue);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar-title {
+  font-size: 1.3rem;
+  color: var(--yellow);
+  margin-bottom: 20px;
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 0 8px var(--yellow);
+  animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 8px var(--yellow); }
+  to { text-shadow: 0 0 16px var(--yellow); }
+}
+
+/* Tab Buttons */
+.sidebar-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  background: transparent;
+  color: var(--yellow);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.sidebar-btn.active {
+  background: var(--yellow);
+  color: var(--blue);
+  animation: tabFade 0.4s ease-in-out;
+}
+
+@keyframes tabFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Logout Button */
+.logout-btn {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #7b1fa2, var(--purple));
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-top: 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: var(--transition);
+}
+
+.logout-btn.hovered {
+  background: linear-gradient(135deg, #8e24aa, var(--purple-dark));
+  box-shadow: 0 4px 12px rgba(106, 27, 154, 0.35);
+  transform: translateY(-2px);
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 24px;
+  background: var(--blue);
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  margin: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  animation: tabFade 0.4s ease-in-out;
+}
+
+.main-title {
+  font-size: 1.6rem;
+  color: var(--yellow);
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-shadow: 0 0 8px var(--yellow);
+}
+
+/* Floating Action Button (FAB) */
+.fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--yellow);
+  color: var(--blue);
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  font-size: 1.6rem;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: var(--transition);
+  z-index: 1000;
+}
+
+.fab:hover {
+  background: #ffea85;
+  transform: scale(1.05);
+}
+
+/* Responsive Mobile Layout */
+@media (max-width: 768px) {
+  .media-dashboard {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--blue);
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .sidebar-title {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .sidebar-btn {
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .main-content {
+    margin: 0;
+    border-radius: 0;
+    padding: 16px;
+  }
+
+  .main-title {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  .logout-btn {
+    width: 100%;
+    margin-top: 12px;
+  }
+}

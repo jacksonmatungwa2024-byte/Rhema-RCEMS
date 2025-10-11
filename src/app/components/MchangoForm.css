@@ -1,0 +1,259 @@
+:root {
+  --blue: #0a174e;
+  --green: #2e7d32;
+  --white: #ffffff;
+  --yellow: #ffd447;
+  --error: #c62828;
+  --radius: 12px;
+  --transition: all 0.3s ease-in-out;
+}
+
+/* Dark theme overrides */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --blue: #0a174e;
+    --white: #121212;
+    --green: #66bb6a;
+    --yellow: #ffeb3b;
+    --error: #ef5350;
+  }
+
+  body {
+    background-color: var(--white);
+    color: var(--yellow);
+  }
+}
+
+/* Container */
+.mchango-container {
+  max-width: 700px;
+  margin: auto;
+  padding: 24px;
+  background: var(--blue);
+  color: var(--white);
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Header */
+.mchango-container h2 {
+  text-align: center;
+  font-size: 1.6rem;
+  color: var(--yellow);
+  margin-bottom: 16px;
+  text-shadow: 0 0 6px var(--yellow);
+}
+
+/* Search Input */
+.search-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--radius);
+  border: none;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  background: var(--white);
+  color: var(--blue);
+}
+
+/* Suggestions Dropdown */
+.suggestions {
+  border: 1px solid #ddd;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px;
+  overflow-y: auto;
+  background: var(--white);
+  color: var(--blue);
+  border-radius: var(--radius);
+  animation: fadeSlide 0.3s ease;
+}
+
+.suggestions li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.suggestions li:hover {
+  background-color: #f3f3f3;
+}
+
+/* Form Grid */
+.form-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.form-grid label {
+  font-weight: 600;
+  color: var(--white);
+  font-size: 0.95rem;
+}
+
+.form-grid input {
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--radius);
+  border: none;
+  font-size: 0.95rem;
+  background: var(--white);
+  color: var(--blue);
+}
+
+.form-grid button {
+  padding: 10px;
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 0 6px rgba(46, 125, 50, 0.4);
+}
+
+.form-grid button:hover {
+  background: #1b5e20;
+  transform: translateY(-2px);
+}
+
+/* Alert */
+.alert {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-left: 4px solid var(--error);
+  color: var(--yellow);
+  font-weight: 600;
+  border-radius: var(--radius);
+}
+
+/* Dialog Overlay */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 23, 78, 0.7);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.4s ease;
+}
+
+/* Dialog Box */
+.dialog-box {
+  background: var(--white);
+  color: var(--blue);
+  padding: 24px;
+  border-radius: var(--radius);
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease;
+}
+
+.dialog-box h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--green);
+}
+
+.dialog-box p {
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
+
+/* Dialog Buttons */
+.dialog-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.dialog-buttons button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--white);
+  background: var(--green);
+}
+
+.dialog-buttons button:hover {
+  background: #1b5e20;
+}
+
+.cancel-btn {
+  background: var(--error);
+}
+
+.cancel-btn:hover {
+  background: #a30000;
+}
+
+/* Message */
+.message {
+  margin-top: 12px;
+  font-weight: 600;
+  text-align: center;
+  animation: fadeSlide 0.3s ease;
+  color: var(--yellow);
+}
+
+/* Animations */
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .mchango-container {
+    padding: 16px;
+  }
+
+  .form-grid input {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+
+  .form-grid button {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  .dialog-box h3 {
+    font-size: 1rem;
+  }
+
+  .dialog-box p {
+    font-size: 0.85rem;
+  }
+
+  .dialog-buttons button {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+}

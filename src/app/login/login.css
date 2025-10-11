@@ -1,0 +1,428 @@
+:root {
+  --yellow: #f4e842;
+  --blue: #0a174e;
+  --dark-bg: #0d0d0d;
+  --light-bg: #f5f5f5;
+  --text-light: #f5f5f5;
+  --text-dark: #222;
+  --accent: #009639;
+  --radius: 12px;
+  --transition: all 0.3s ease-in-out;
+}
+
+/* Theme Toggle Support */
+body[data-theme="dark"] {
+  background: var(--dark-bg);
+  color: var(--text-light);
+}
+
+body[data-theme="light"] {
+  background: var(--light-bg);
+  color: var(--text-dark);
+}
+
+/* Layout */
+.login-wrapper {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  background: radial-gradient(circle at center, #000 40%, #0a174e 100%);
+}
+
+/* Left Panel */
+.login-left {
+  flex: 1;
+  padding: 48px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.logo-container {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.church-logo {
+  max-width: 160px;
+  border-radius: var(--radius);
+  box-shadow: 0 0 12px var(--yellow);
+}
+
+/* Affirmation */
+.spiritual-affirmation {
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+  animation: discoText 3s infinite linear;
+}
+
+@keyframes discoText {
+  0% { color: #ffffff; text-shadow: 0 0 10px red; }
+  25% { color: #ffffff; text-shadow: 0 0 10px yellow; }
+  50% { color: #ffffff; text-shadow: 0 0 10px lime; }
+  75% { color: #ffffff; text-shadow: 0 0 10px cyan; }
+  100% { color: #ffffff; text-shadow: 0 0 10px magenta; }
+}
+
+/* Form */
+form {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  padding: 24px;
+  border-radius: var(--radius);
+  background: rgba(10, 23, 78, 0.8);
+  box-shadow: 0 0 20px rgba(244, 232, 66, 0.4), 0 0 40px rgba(0, 255, 255, 0.2);
+  animation: glowPulse 3s infinite alternate;
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 10px rgba(244, 232, 66, 0.4), 0 0 20px rgba(0, 255, 255, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(244, 232, 66, 0.6), 0 0 40px rgba(0, 255, 255, 0.4);
+  }
+}
+
+label {
+  font-weight: 600;
+  color: var(--yellow);
+}
+
+input {
+  padding: 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--accent);
+  background: #111;
+  color: var(--text-light);
+}
+
+button[type="submit"] {
+  background: var(--accent);
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background: #007f4f;
+}
+
+/* Forgot Password Button */
+button.forgot-btn {
+  margin-top: 1rem;
+  background: #009688;
+  color: #fff;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+/* Message */
+.login-message {
+  margin-top: 12px;
+  font-weight: 600;
+  color: var(--yellow);
+}
+
+/* Countdown */
+.countdown {
+  margin-top: 12px;
+  font-weight: 700;
+  color: #4a148c;
+}
+
+/* Cartoon */
+.cartoon-waiting {
+  max-width: 200px;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Right Panel */
+.login-right {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.tangazo-hero {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.tangazo-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.6);
+}
+
+.tangazo-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: rgba(10, 23, 78, 0.8);
+  color: var(--yellow);
+  padding: 16px;
+  animation: glowPulse 3s infinite alternate;
+}
+
+.scrolling-title h1,
+.scrolling-message p {
+  white-space: nowrap;
+  overflow: hidden;
+  animation: scrollText 20s linear infinite;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+@keyframes scrollText {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* Background Slideshow */
+.background-slideshow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.background-slideshow img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.background-slideshow img.active {
+  opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .login-wrapper {
+    flex-direction: column;
+  }
+
+  .login-left,
+  .login-right {
+    padding: 24px;
+  }
+
+  form {
+    padding: 16px;
+  }
+
+  .scrolling-title h1,
+  .scrolling-message p {
+    font-size: 1rem;
+  }
+}
+
+/* Light Theme Overrides */
+body[data-theme="light"] .spiritual-affirmation,
+body[data-theme="light"] h2,
+body[data-theme="light"] .login-message,
+body[data-theme="light"] .scrolling-title h1,
+body[data-theme="light"] .scrolling-message p {
+  color: #fff;
+  text-shadow: 0 0 10px pink, 0 0 20px #ff69b4;
+  animation: lightGlow 3s infinite alternate;
+}
+
+@keyframes lightGlow {
+  0% { text-shadow: 0 0 10px #ff69b4; }
+  50% { text-shadow: 0 0 20px #ffc0cb; }
+  100% { text-shadow: 0 0 10px #ff69b4; }
+}
+
+/* Tangazo Overlay Container */
+.tangazo-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: rgba(10, 23, 78, 0.8);
+  padding: 16px;
+  overflow: hidden;
+}
+
+/* Scrolling Title */
+.scrolling-title {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.scrolling-title h1 {
+  display: inline-block;
+  padding-left: 100%;
+  animation: scrollText 25s linear infinite;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #f4e842;
+}
+
+/* Scrolling Message */
+.scrolling-message {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
+  margin-top: 8px;
+}
+
+.scrolling-message p {
+  display: inline-block;
+  padding-left: 100%;
+  animation: scrollText 30s linear infinite;
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+/* Marquee Animation */
+@keyframes scrollText {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Light Theme Form Background & Text */
+body[data-theme="light"] form {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-dark);
+  box-shadow: 0 0 20px rgba(255, 182, 193, 0.4), 0 0 40px rgba(255, 105, 180, 0.2);
+  animation: fadeInUp 1s ease-out, bounceGlow 4s infinite alternate;
+}
+
+body[data-theme="light"] input {
+  background: #fff;
+  color: var(--text-dark);
+  border: 1px solid #ccc;
+}
+
+body[data-theme="light"] label {
+  color: #ff1493;
+}
+
+body[data-theme="light"] .tangazo-overlay {
+  background: rgba(255, 255, 255, 0.85);
+  color: #222;
+}
+
+body[data-theme="light"] .scrolling-title h1,
+body[data-theme="light"] .scrolling-message p {
+  color: #ff1493;
+  text-shadow: 0 0 10px #ff69b4;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceGlow {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 10px #ff69b4;
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px #ffc0cb;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px #ff69b4;
+  }
+}
+
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.login-wrapper {
+  height: 100%;
+  overflow: auto;
+}
+
+body[data-theme="light"] h2 {
+  color: var(--yellow);
+  text-shadow: 0 0 10px var(--yellow), 0 0 20px #fff176;
+  animation: yellowGlow 3s infinite alternate;
+}
+
+
+@keyframes yellowGlow {
+  0% { text-shadow: 0 0 10px #f4e842; }
+  50% { text-shadow: 0 0 20px #fff176; }
+  100% { text-shadow: 0 0 10px #f4e842; }
+}
+
+
+body[data-theme="light"] .login-message,
+body[data-theme="light"] .scrolling-title h1,
+body[data-theme="light"] .spiritual-affirmation {
+  color: var(--yellow);
+  text-shadow: 0 0 10px var(--yellow), 0 0 20px #fff176;
+  animation: yellowGlow 3s infinite alternate;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  flex: 1;
+  padding-right: 60px; /* space for the toggle button */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  color: #009688;
+}

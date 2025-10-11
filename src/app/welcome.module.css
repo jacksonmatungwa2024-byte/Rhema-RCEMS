@@ -1,0 +1,77 @@
+:root {
+  --color-red: #d62828;
+  --color-blue: #003f88;
+  --color-yellow: #fcbf49;
+  --color-green: #2a9d8f;
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-orange: #f77f00;
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 5px var(--color-yellow), 0 0 10px var(--color-orange);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--color-red), 0 0 30px var(--color-blue);
+  }
+  100% {
+    box-shadow: 0 0 5px var(--color-yellow), 0 0 10px var(--color-orange);
+  }
+}
+
+.container {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--color-black);
+  color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.videoBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.glowText {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  animation: glowPulse 4s infinite;
+}
+
+.glowButton {
+  background-color: var(--color-blue);
+  color: var(--color-white);
+  border: none;
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  animation: glowPulse 2.5s infinite;
+  transition: transform 0.3s ease;
+}
+
+.glowButton:hover {
+  transform: scale(1.05);
+  background-color: var(--color-red);
+}
+
+.footer {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: var(--color-yellow);
+}
+.footer a {
+  color: var(--color-green);
+  text-decoration: none;
+}

@@ -1,0 +1,34 @@
+.budgets-panel-container table {
+  width: 100%;
+  table-layout: fixed;
+  font-size: 0.9rem;
+  border-collapse: collapse;
+}
+
+.budgets-panel-container th,
+.budgets-panel-container td {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  word-break: break-word;
+  text-align: left;
+}
+
+.budgets-panel-container th {
+  background-color: #f8bbd0;
+  font-weight: 700;
+}
+
+.budgets-panel-container tbody tr:nth-child(even) {
+  background-color: #f3e5f5;
+}
+
+.budgets-panel-container tbody tr:hover {
+  background-color: #ffccde;
+}
+
+.budgets-panel-container .pdf-header {
+  text-align: center;
+  margin-bottom: 12px;
+  font-weight: bold;
+  color: #4a148c;
+}
