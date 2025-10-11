@@ -86,6 +86,11 @@ export default function AdminPanel() {
         .eq("key", "login_enabled")
         .single();
 
+      
+    };
+
+    checkLoginStatus();
+  }, []);
 
   useEffect(() => {
     const loadSession = async () => {
