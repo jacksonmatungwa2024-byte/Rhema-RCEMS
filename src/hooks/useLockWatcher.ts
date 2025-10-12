@@ -3,51 +3,74 @@
 import { useEffect } from "react"
 import { createClient } from "@supabase/supabase-js"
 
+// Initialize Supabase client
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+// Type for a row in the "settings" table
+interface Setting {
+  key: string
+  value: any // jsonb column can be boolean, string, object, etc.
+  id: number
+  [key: string]: any
+}
+
 export function useLockWatcher(userRole?: string) {
   useEffect(() => {
-    const checkLock = async () => {
-      const { data } = await supabase
-        .from("settings")
-        .select("value")
-        .eq("key", "system_locked")
-        .single()
+    const parseLockedValue = (value: any): boolean => {
+      if (typeof value === "boolean") return value
+      if (typeof value === "string") return value === "true"
+      if (typeof value === "object" && value !== null && "locked" in value) {
+        return Boolean(value.locked)
+      }
+      return false
+    }
 
-      const isLocked = data?.value === true || data?.value === "true"
-
-      // Only force logout if system is locked AND user is not admin
-      if (isLocked && userRole !== "admin") {
+    const signOutIfLocked = async (locked: any) => {
+      if (parseLockedValue(locked) && userRole !== "admin") {
         await supabase.auth.signOut()
         window.location.href = "/locked"
       }
     }
 
-    // initial check
+    const checkLock = async () => {
+      try {
+        const { data } = await supabase
+          .from("settings")
+          .select("value")
+          .eq("key", "system_locked")
+          .single()
+
+        const locked = data?.value
+        await signOutIfLocked(locked)
+      } catch (error) {
+        console.error("Error checking lock status:", error)
+      }
+    }
+
     checkLock()
 
-    // real-time subscription
-    const subscription = supabase
+    const channel = supabase
       .channel("lock-listener")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "settings" },
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "settings",
+          filter: 'key=eq.system_locked',
+        },
         (payload) => {
           const locked = payload.new?.value
-          if ((locked === true || locked === "true") && userRole !== "admin") {
-            supabase.auth.signOut().then(() => {
-              window.location.href = "/locked"
-            })
-          }
+          signOutIfLocked(locked)
         }
       )
       .subscribe()
 
     return () => {
-      supabase.removeChannel(subscription)
+      supabase.removeChannel(channel)
     }
   }, [userRole])
 }
