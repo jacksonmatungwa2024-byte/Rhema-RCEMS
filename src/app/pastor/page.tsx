@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
  import "./PastorPage.css";
 import PastorUsajili from "../components/PastorUsajili";
 import BudgetsPanel from "../components/BudgetsPanel";
