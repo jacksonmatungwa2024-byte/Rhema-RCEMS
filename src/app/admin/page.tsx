@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import "./AdminPanel.css";
 import AdminMatangazo from "../components/AdminMatangazo";
@@ -45,8 +45,9 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("tabManager");
   const [isMobile, setIsMobile] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [loginEnabled, setLoginEnabled] = useState(true);
+  const [systemLocked, setSystemLocked] = useState(false);
 
+  // Handle responsive UI
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
@@ -54,45 +55,37 @@ export default function AdminPanel() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Fetch current system lock status
   useEffect(() => {
-    const fetchLoginStatus = async () => {
-      const { data } = await supabase
+    const fetchLockStatus = async () => {
+      const { data, error } = await supabase
         .from("settings")
         .select("value")
-        .eq("key", "login_enabled")
+        .eq("key", "system_locked")
         .single();
 
-      if (data) setLoginEnabled(data.value === true || data.value === "true");
+      if (!error && data) {
+        const locked = data.value === true || data.value === "true";
+        setSystemLocked(locked);
+      }
     };
 
-    fetchLoginStatus();
+    fetchLockStatus();
   }, []);
 
-  const toggleLoginAccess = async () => {
-    const newValue = !loginEnabled;
+  // Toggle system lock
+  const toggleSystemLock = async () => {
+    const newValue = !systemLocked;
 
     const { error } = await supabase
       .from("settings")
-      .update({ value: JSON.stringify(newValue) }) // Cast to JSON string for jsonb
-      .eq("key", "login_enabled");
+      .update({ value: JSON.stringify(newValue) }) // JSONB-safe
+      .eq("key", "system_locked");
 
-    if (!error) setLoginEnabled(newValue);
+    if (!error) setSystemLocked(newValue);
   };
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const { data } = await supabase
-        .from("settings")
-        .select("value")
-        .eq("key", "login_enabled")
-        .single();
-
-      
-    };
-
-    checkLoginStatus();
-  }, []);
-
+  // Load admin session
   useEffect(() => {
     const loadSession = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
@@ -120,6 +113,7 @@ export default function AdminPanel() {
     loadSession();
   }, [router]);
 
+  // Logout
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
@@ -139,9 +133,10 @@ export default function AdminPanel() {
           <h2>🧭 Admin Panel</h2>
           <p>👤 {user.full_name}</p>
 
+          {/* System lock toggle */}
           <div style={{ marginTop: "1rem" }}>
-            <button onClick={toggleLoginAccess}>
-              {loginEnabled ? "🚫 Lock Login Access" : "✅ Unlock Login Access"}
+            <button onClick={toggleSystemLock}>
+              {systemLocked ? "✅ Unlock System" : "🚫 Lock Entire System"}
             </button>
           </div>
 
@@ -163,6 +158,8 @@ export default function AdminPanel() {
         <main>
           {tabs.find((tab) => tab.id === activeTab)?.component}
         </main>
+
+        <SpeedInsights />
       </div>
     </BucketProvider>
   );
