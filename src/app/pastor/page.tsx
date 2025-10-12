@@ -13,45 +13,25 @@ import SummaryApproval from "../components/SummaryApproval";
 import ApprovedSummaries from "../components/ApprovedSummaries";
 import RejectedSummaries from "../components/RejectedSummaries";
 import PastorMatangazo from "../components/PastorMatangazo";
-import UserGallery from "../components/UserGallery"; // ✅ new import
-import { useLockWatcher } from "@/hooks/useLockWatcher"; // optional lock watcher
+import UserGallery from "../components/UserGallery";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-// Default tab access per role
 const defaultAccess: Record<string, string[]> = {
   admin: [
-    "dashboard",
-    "usajili",
-    "bajeti",
-    "messages",
-    "reports",
-    "summary",
-    "approval",
-    "approved",
-    "rejected",
-    "matangazo",
-    "picha",
-    "profile",
+    "dashboard","usajili","bajeti","messages","reports","summary",
+    "approval","approved","rejected","matangazo","picha","profile",
   ],
   pastor: [
-    "dashboard",
-    "usajili",
-    "messages",
-    "reports",
-    "summary",
-    "approval",
-    "matangazo",
-    "picha",
-    "profile",
+    "dashboard","usajili","messages","reports","summary","approval",
+    "matangazo","picha","profile",
   ],
-  user: ["dashboard", "messages", "picha", "profile"],
+  user: ["dashboard","messages","picha","profile"],
 };
 
-// Tab definitions
 const tabs = [
   { key: "dashboard", label: "🏠 Dashboard" },
   { key: "usajili", label: "🗂️ Usajili" },
@@ -72,18 +52,13 @@ export default function PastorPage() {
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
 
-  // 🔒 Watch system lock
-  useLockWatcher(role);
-
+  // Load user and restore last active tab for non-admin
   useEffect(() => {
     const loadUser = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
       const email = sessionData?.session?.user?.email;
 
-      // Admin bypass: never redirect
-      const isAdmin = email?.includes("@") && role === "admin";
-
-      if (!email && !isAdmin) {
+      if (!email) {
         window.location.href = "/login";
         return;
       }
@@ -96,7 +71,7 @@ export default function PastorPage() {
 
       if (userErr || !userData) {
         alert("Haiwezekani kupata taarifa zako.");
-        if (!isAdmin) window.location.href = "/login";
+        window.location.href = "/login";
         return;
       }
 
@@ -104,15 +79,32 @@ export default function PastorPage() {
       setUsername(userData.username || "");
 
       const metadataTabs = userData.metadata?.allowed_tabs;
-      if (Array.isArray(metadataTabs)) {
-        setAllowedTabs(metadataTabs);
-      } else {
-        setAllowedTabs(defaultAccess[userData.role] || []);
+      setAllowedTabs(Array.isArray(metadataTabs) ? metadataTabs : defaultAccess[userData.role] || []);
+
+      // Restore last active tab for non-admin users
+      if (userData.role !== "admin") {
+        const lastTab = localStorage.getItem("pastor_active_tab");
+        if (lastTab && allowedTabs.includes(lastTab)) setActive(lastTab);
       }
     };
 
     loadUser();
   }, []);
+
+  // Save active tab for non-admin users
+  useEffect(() => {
+    if (role !== "admin") {
+      localStorage.setItem("pastor_active_tab", active);
+    }
+  }, [active, role]);
+
+  const handleLogout = async () => {
+    if (role !== "admin") {
+      await supabase.auth.signOut();
+      localStorage.removeItem("pastor_active_tab");
+      window.location.href = "/login";
+    }
+  };
 
   return (
     <div className="pastor-container">
@@ -133,12 +125,6 @@ export default function PastorPage() {
                 key={tab.key}
                 onClick={() => setActive(tab.key)}
                 className={`pastor-nav-item ${active === tab.key ? "active" : ""}`}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter" || e.key === " ") setActive(tab.key);
-                }}
-                aria-current={active === tab.key ? "page" : undefined}
               >
                 {tab.label}
               </div>
@@ -150,13 +136,7 @@ export default function PastorPage() {
             My Account
           </button>
           {role !== "admin" && (
-            <button
-              onClick={() => {
-                supabase.auth.signOut();
-                window.location.href = "/login";
-              }}
-              className="logout-btn"
-            >
+            <button onClick={handleLogout} className="logout-btn">
               Logout
             </button>
           )}
