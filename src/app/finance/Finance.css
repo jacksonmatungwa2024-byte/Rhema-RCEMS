@@ -1,128 +1,205 @@
-/* Finance.css */
+:root {
+  --light-bg: #f0f2f5;
+  --light-card: #ffffff;
+  --light-text: #050505;
 
-.home-wrapper {
-  display: flex;
-  min-height: 100vh;
-  background-color: #e3f2fd; /* Light blue background */
-  font-family: "Inter", sans-serif;
+  --dark-bg: #0a174e;
+  --dark-card: #1c1c1c;
+  --dark-text: #ffffff;
+
+  --facebook-blue: #1877f2;
+  --hover-blue: #d8dadf;
+  --logout-red: #f02849;
+  --radius: 12px;
 }
 
+/* Wrapper */
+.home-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--light-bg);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: var(--light-text);
+}
+
+body[data-theme="dark"] .home-wrapper {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+/* Layout */
 .home-layout {
   display: flex;
-  width: 100%;
+  flex-direction: row;
+  flex: 1;
 }
 
 /* Sidebar */
 .sidebar {
-  width: 220px;
-  background-color: #0d47a1; /* Dark blue */
-  color: #fff;
+  background-color: var(--light-card);
+  width: 250px;
+  min-width: 200px;
+  padding: 20px;
+  border-right: 1px solid #ccd0d5;
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-  border-radius: 0 12px 12px 0;
 }
 
+body[data-theme="dark"] .sidebar {
+  background-color: var(--dark-card);
+  border-right: 1px solid #2c3e70;
+}
+
+/* Sidebar Title */
 .sidebar-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 24px;
-  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--facebook-blue);
+  margin-bottom: 12px;
 }
 
+body[data-theme="dark"] .sidebar-title {
+  color: var(--dark-text);
+  text-shadow: 0 0 10px var(--facebook-blue);
+}
+
+/* Sidebar User */
 .sidebar-user {
   font-size: 0.9rem;
-  margin-bottom: 24px;
-  text-align: center;
-  background-color: #1565c0;
-  padding: 8px;
-  border-radius: 8px;
+  margin-bottom: 20px;
+  color: var(--light-text);
 }
 
+body[data-theme="dark"] .sidebar-user {
+  color: var(--dark-text);
+}
+
+/* Tabs */
 .sidebar-tabs {
-  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  margin-bottom: auto;
 }
 
 .tab-btn {
-  background-color: #1976d2;
+  padding: 10px 14px;
+  border-radius: 20px;
   border: none;
-  color: #fff;
-  padding: 10px 12px;
-  border-radius: 8px;
+  background: #e4e6eb;
+  color: var(--light-text);
+  font-weight: 500;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
   text-align: left;
-}
-
-.tab-btn:hover {
-  background-color: #1565c0;
+  transition: all 0.2s;
 }
 
 .tab-btn.active {
-  background-color: #82b1ff;
-  color: #0d47a1;
-  font-weight: 700;
-  transform: scale(1.03);
+  background-color: var(--facebook-blue);
+  color: #fff;
 }
 
-/* Logout button */
+.tab-btn:hover {
+  background-color: var(--hover-blue);
+}
+
+body[data-theme="dark"] .tab-btn {
+  background-color: #2c3e70;
+  color: var(--dark-text);
+}
+
+body[data-theme="dark"] .tab-btn:hover {
+  background-color: #3b4f8a;
+}
+
+body[data-theme="dark"] .tab-btn.active {
+  background-color: var(--facebook-blue);
+  color: #fff;
+}
+
+/* Logout Button */
 .logout-btn {
-  background-color: #c62828; /* red */
+  margin-top: 20px;
+  padding: 10px 14px;
+  border-radius: 25px;
   border: none;
-  padding: 10px 12px;
-  border-radius: 8px;
+  background-color: #e4e6eb;
+  font-weight: 500;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  margin-top: 16px;
+  transition: all 0.3s;
 }
 
 .logout-btn.hover,
 .logout-btn:hover {
-  background-color: #b71c1c;
+  background-color: var(--logout-red);
+  color: #fff;
 }
 
-/* Main content */
+body[data-theme="dark"] .logout-btn {
+  background-color: #2c3e70;
+  color: var(--dark-text);
+}
+
+body[data-theme="dark"] .logout-btn:hover {
+  background-color: var(--logout-red);
+  color: #fff;
+}
+
+/* Main Content */
 .main-content {
-  flex-grow: 1;
-  padding: 24px;
+  flex: 1;
+  padding: 16px;
   overflow-y: auto;
 }
 
-/* Loading text */
+/* Loading Text */
 .loading-text {
   text-align: center;
-  margin-top: 120px;
-  font-size: 1.2rem;
-  color: #0d47a1;
-  font-weight: 600;
+  margin-top: 50px;
+  font-size: 1.1rem;
+  color: var(--light-text);
 }
 
-/* Responsive */
+body[data-theme="dark"] .loading-text {
+  color: var(--dark-text);
+}
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
-  .home-wrapper {
+  .home-layout {
     flex-direction: column;
   }
+
   .sidebar {
     width: 100%;
-    border-radius: 0 0 12px 12px;
+    border-right: none;
+    border-bottom: 1px solid #ccd0d5;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 10px;
   }
-  .main-content {
-    padding: 16px;
+
+  body[data-theme="dark"] .sidebar {
+    border-bottom: 1px solid #2c3e70;
   }
+
   .sidebar-tabs {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 6px;
   }
+
   .tab-btn {
-    flex: 1 1 48%;
+    flex: 1 1 45%;
     text-align: center;
-    font-size: 0.85rem;
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .logout-btn {
+    flex: 1 1 100%;
+    margin-top: 10px;
   }
 }
