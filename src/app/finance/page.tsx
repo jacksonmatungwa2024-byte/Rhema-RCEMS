@@ -35,24 +35,27 @@ export default function FinancePage() {
   const [hovered, setHovered] = useState(false);
   const [user, setUser] = useState<any>(null);
 
+  // Logout for non-admin
   const handleLogout = async () => {
     if (user?.role !== "admin") {
       await supabase.auth.signOut();
+      localStorage.removeItem("finance_active_tab");
       window.location.href = "/login";
     }
   };
 
-  // Auto logout only for non-admin users
+  // Auto logout only for non-admin
   useEffect(() => {
-    if (user?.role === "admin") return;
+    if (!user || user.role === "admin") return;
 
     let timeout: NodeJS.Timeout;
     const resetTimer = () => {
       clearTimeout(timeout);
       timeout = setTimeout(async () => {
         await supabase.auth.signOut();
+        localStorage.removeItem("finance_active_tab");
         window.location.href = "/login";
-      }, 10 * 60 * 1000); // 10 minutes
+      }, 10 * 60 * 1000);
     };
 
     const events = ["mousemove", "keydown", "scroll", "click"];
@@ -78,7 +81,7 @@ export default function FinancePage() {
     checkSession();
   }, []);
 
-  // Fetch allowed tabs for user
+  // Fetch allowed tabs and restore last active tab
   useEffect(() => {
     const fetchUserTabs = async () => {
       if (!user) return;
@@ -106,20 +109,39 @@ export default function FinancePage() {
       }
 
       const { role, metadata } = userData;
+
+      // Determine allowed tabs
       if (role === "admin") {
-        // Admin sees all tabs and no logout
         setAllowedTabs(allTabs.map((t) => t.key));
       } else {
         const tabs = metadata?.allowed_tabs;
         setAllowedTabs(Array.isArray(tabs) ? tabs : ["finance", "profile"]);
       }
 
-      setActiveTab("finance");
+      // Restore last active tab from localStorage for non-admin
+      if (role !== "admin") {
+        const savedTab = localStorage.getItem("finance_active_tab");
+        if (savedTab && allTabs.some((t) => t.key === savedTab)) {
+          setActiveTab(savedTab);
+        } else {
+          setActiveTab("finance");
+        }
+      } else {
+        setActiveTab("finance");
+      }
+
       setLoading(false);
     };
 
     fetchUserTabs();
   }, [user]);
+
+  // Save active tab on change for non-admin users
+  useEffect(() => {
+    if (user?.role !== "admin") {
+      localStorage.setItem("finance_active_tab", activeTab);
+    }
+  }, [activeTab, user]);
 
   if (loading) {
     return (
