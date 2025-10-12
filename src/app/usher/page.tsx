@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import SajiliMuumini from "../components/SajiliMuumini";
 import SajiliMahadhurio from "../components/SajiliMahadhurio";
 import SajiliAliyeokoka from "../components/SajiliAliyeokoka";
