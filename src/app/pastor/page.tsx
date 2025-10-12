@@ -52,7 +52,7 @@ export default function PastorPage() {
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
 
-  // Load user and restore last active tab for non-admin
+  // Load user & restore last tab
   useEffect(() => {
     const loadUser = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
@@ -63,7 +63,7 @@ export default function PastorPage() {
         return;
       }
 
-      let { data: userData, error: userErr } = await supabase
+      const { data: userData, error: userErr } = await supabase
         .from("users")
         .select("*")
         .eq("email", email)
@@ -79,24 +79,49 @@ export default function PastorPage() {
       setUsername(userData.username || "");
 
       const metadataTabs = userData.metadata?.allowed_tabs;
-      setAllowedTabs(Array.isArray(metadataTabs) ? metadataTabs : defaultAccess[userData.role] || []);
+      const tabsToUse = Array.isArray(metadataTabs) ? metadataTabs : defaultAccess[userData.role] || [];
+      setAllowedTabs(tabsToUse);
 
-      // Restore last active tab for non-admin users
+      // Restore last tab for non-admin
       if (userData.role !== "admin") {
         const lastTab = localStorage.getItem("pastor_active_tab");
-        if (lastTab && allowedTabs.includes(lastTab)) setActive(lastTab);
+        if (lastTab && tabsToUse.includes(lastTab)) setActive(lastTab);
       }
     };
 
     loadUser();
   }, []);
 
-  // Save active tab for non-admin users
+  // Save active tab for non-admin
   useEffect(() => {
     if (role !== "admin") {
       localStorage.setItem("pastor_active_tab", active);
     }
   }, [active, role]);
+
+  // Auto logout after 10 minutes inactivity (non-admin)
+  useEffect(() => {
+    if (role === "admin") return;
+
+    let timeout: NodeJS.Timeout;
+    const resetTimer = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(async () => {
+        await supabase.auth.signOut();
+        localStorage.removeItem("pastor_active_tab");
+        window.location.href = "/login";
+      }, 10 * 60 * 1000);
+    };
+
+    const events = ["mousemove","keydown","click","scroll"];
+    events.forEach(e => window.addEventListener(e, resetTimer));
+    resetTimer();
+
+    return () => {
+      clearTimeout(timeout);
+      events.forEach(e => window.removeEventListener(e, resetTimer));
+    };
+  }, [role]);
 
   const handleLogout = async () => {
     if (role !== "admin") {
