@@ -1,25 +1,52 @@
-/* FinancePanel.css */
+:root {
+  --light-bg: #e3f2fd;
+  --light-card: #ffffff;
+  --light-text: #0d47a1;
 
+  --dark-bg: #0a174e;
+  --dark-card: #1c1c1c;
+  --dark-text: #ffffff;
+
+  --accent-blue: #1565c0;
+  --hover-blue: #90caf9;
+  --approved: #2e7d32;
+  --declined: #c62828;
+  --radius: 12px;
+}
+
+/* Container */
 .container {
   max-width: 600px;
   margin: 16px auto;
   padding: 16px;
-  background-color: #e3f2fd; /* light blue background */
-  border-radius: 12px;
-  color: #0d47a1; /* dark blue text */
+  border-radius: var(--radius);
   font-family: "Inter", sans-serif;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.4s ease-in-out;
+  background-color: var(--light-bg);
+  color: var(--light-text);
 }
 
+body[data-theme="dark"] .container {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+/* Heading */
 .heading {
   text-align: center;
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 16px;
-  color: #1565c0; /* stronger blue */
+  color: var(--accent-blue);
 }
 
+body[data-theme="dark"] .heading {
+  color: var(--dark-text);
+  text-shadow: 0 0 10px var(--accent-blue);
+}
+
+/* Tabs */
 .tabBar {
   display: flex;
   justify-content: space-between;
@@ -40,27 +67,48 @@
 
 .tab {
   background-color: #bbdefb;
-  color: #0d47a1;
+  color: var(--light-text);
 }
 
 .tab:hover {
-  background-color: #90caf9;
+  background-color: var(--hover-blue);
 }
 
 .active {
-  background-color: #0d47a1;
+  background-color: var(--light-text);
   color: #fff;
   transform: scale(1.05);
 }
 
+body[data-theme="dark"] .tab {
+  background-color: #1e2a4a;
+  color: var(--dark-text);
+}
+
+body[data-theme="dark"] .tab:hover {
+  background-color: #2c3e70;
+}
+
+body[data-theme="dark"] .active {
+  background-color: var(--accent-blue);
+  color: #fff;
+}
+
+/* Panel */
 .panel {
-  background-color: #ffffff;
-  border-radius: 12px;
+  background-color: var(--light-card);
+  border-radius: var(--radius);
   padding: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   animation: slideUp 0.4s ease-in-out;
 }
 
+body[data-theme="dark"] .panel {
+  background-color: var(--dark-card);
+  color: var(--dark-text);
+}
+
+/* Form */
 .form input,
 .form textarea,
 .form select {
@@ -68,21 +116,32 @@
   padding: 8px 12px;
   margin-bottom: 12px;
   border-radius: 8px;
-  border: 1px solid #90caf9;
+  border: 1px solid var(--hover-blue);
   font-size: 0.95rem;
   outline: none;
   transition: all 0.2s ease;
+  background-color: #fff;
+  color: var(--light-text);
+}
+
+body[data-theme="dark"] .form input,
+body[data-theme="dark"] .form textarea,
+body[data-theme="dark"] .form select {
+  background-color: #2a2a2a;
+  color: var(--dark-text);
+  border: 1px solid var(--accent-blue);
 }
 
 .form input:focus,
 .form textarea:focus,
 .form select:focus {
-  border-color: #0d47a1;
+  border-color: var(--accent-blue);
   box-shadow: 0 0 0 2px rgba(13, 71, 161, 0.2);
 }
 
+/* Button */
 .form button {
-  background-color: #0d47a1;
+  background-color: var(--light-text);
   color: #fff;
   padding: 10px 16px;
   border: none;
@@ -93,39 +152,64 @@
 }
 
 .form button:hover {
-  background-color: #1565c0;
+  background-color: var(--accent-blue);
   transform: scale(1.03);
 }
 
+body[data-theme="dark"] .form button {
+  background-color: var(--accent-blue);
+}
+
+/* Message */
 .message {
   margin-top: 12px;
   font-size: 0.95rem;
-  color: #0d47a1;
   font-weight: 500;
+  color: var(--accent-blue);
 }
 
+body[data-theme="dark"] .message {
+  color: var(--dark-text);
+}
+
+/* List */
 .list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+/* Cards */
 .card {
   padding: 12px 16px;
-  background-color: #e3f2fd;
-  border-left: 4px solid #0d47a1;
+  background-color: var(--light-bg);
+  border-left: 4px solid var(--light-text);
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
+body[data-theme="dark"] .card {
+  background-color: #1e2a4a;
+  border-left-color: var(--accent-blue);
+  color: var(--dark-text);
+}
+
 .card.approved {
-  border-left-color: #2e7d32; /* green for approved */
+  border-left-color: var(--approved);
   background-color: #e8f5e9;
 }
 
 .card.declined {
-  border-left-color: #c62828; /* red for declined */
+  border-left-color: var(--declined);
   background-color: #ffebee;
+}
+
+body[data-theme="dark"] .card.approved {
+  background-color: #1b3d2b;
+}
+
+body[data-theme="dark"] .card.declined {
+  background-color: #3b1e1e;
 }
 
 .card h4 {
@@ -133,6 +217,7 @@
   font-weight: 600;
 }
 
+/* Animations */
 @keyframes fadeIn {
   0% { opacity: 0; }
   100% { opacity: 1; }
@@ -143,7 +228,7 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Mobile responsiveness */
+/* Mobile */
 @media (max-width: 480px) {
   .container {
     padding: 12px;
