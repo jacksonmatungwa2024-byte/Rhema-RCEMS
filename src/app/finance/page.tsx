@@ -2,13 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
- import "./Finance.css";
+import "./Finance.css";
 import FinancePanel from "../components/FinancePanel";
 import Michango from "../components/Michango";
 import FinanceReports from "../components/FinanceReports";
 import FinanceProfile from "../components/FinanceProfile";
 import FinanceGallery from "../components/FinanceGallery";
-
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,7 +28,7 @@ const allTabs = [
   { key: "profile", label: "👥 Wasifu", component: <FinanceProfile /> },
 ];
 
-export default function HomePage() {
+export default function FinancePage() {
   const [activeTab, setActiveTab] = useState("finance");
   const [allowedTabs, setAllowedTabs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,37 +36,34 @@ export default function HomePage() {
   const [user, setUser] = useState<any>(null);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/login";
+    if (user?.role !== "admin") {
+      await supabase.auth.signOut();
+      window.location.href = "/login";
+    }
   };
 
-  // Sign-out on page unload
+  // Auto logout only for non-admin users
   useEffect(() => {
-    const handleUnload = async () => {
-      await supabase.auth.signOut();
-    };
-    window.addEventListener("beforeunload", handleUnload);
-    return () => window.removeEventListener("beforeunload", handleUnload);
-  }, []);
+    if (user?.role === "admin") return;
 
-  // Auto logout after 10 minutes of inactivity
-  useEffect(() => {
     let timeout: NodeJS.Timeout;
     const resetTimer = () => {
       clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        supabase.auth.signOut();
+      timeout = setTimeout(async () => {
+        await supabase.auth.signOut();
         window.location.href = "/login";
-      }, 10 * 60 * 1000);
+      }, 10 * 60 * 1000); // 10 minutes
     };
+
     const events = ["mousemove", "keydown", "scroll", "click"];
     events.forEach((event) => window.addEventListener(event, resetTimer));
     resetTimer();
+
     return () => {
       clearTimeout(timeout);
       events.forEach((event) => window.removeEventListener(event, resetTimer));
     };
-  }, []);
+  }, [user]);
 
   // Check login session
   useEffect(() => {
@@ -75,9 +71,9 @@ export default function HomePage() {
       const { data } = await supabase.auth.getUser();
       if (!data?.user) {
         window.location.href = "/login";
-      } else {
-        setUser(data.user);
+        return;
       }
+      setUser(data.user);
     };
     checkSession();
   }, []);
@@ -85,15 +81,7 @@ export default function HomePage() {
   // Fetch allowed tabs for user
   useEffect(() => {
     const fetchUserTabs = async () => {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-
-      if (error || !user) {
-        window.location.href = "/login";
-        return;
-      }
+      if (!user) return;
 
       const { id, email } = user;
       let { data: userData, error: userErr } = await supabase
@@ -119,6 +107,7 @@ export default function HomePage() {
 
       const { role, metadata } = userData;
       if (role === "admin") {
+        // Admin sees all tabs and no logout
         setAllowedTabs(allTabs.map((t) => t.key));
       } else {
         const tabs = metadata?.allowed_tabs;
@@ -130,7 +119,7 @@ export default function HomePage() {
     };
 
     fetchUserTabs();
-  }, []);
+  }, [user]);
 
   if (loading) {
     return (
@@ -162,22 +151,23 @@ export default function HomePage() {
               ))}
           </div>
 
-          <button
-            onClick={handleLogout}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            className={`logout-btn ${hovered ? "hover" : ""}`}
-          >
-            🚪 Toka / Logout
-          </button>
+          {/* Only show logout for non-admin */}
+          {user?.role !== "admin" && (
+            <button
+              onClick={handleLogout}
+              onMouseEnter={() => setHovered(true)}
+              onMouseLeave={() => setHovered(false)}
+              className={`logout-btn ${hovered ? "hover" : ""}`}
+            >
+              🚪 Toka / Logout
+            </button>
+          )}
         </nav>
 
         {/* Main content */}
         <main className="main-content">
           {allTabs
-            .filter(
-              (tab) => tab.key === activeTab && allowedTabs.includes(tab.key)
-            )
+            .filter((tab) => tab.key === activeTab && allowedTabs.includes(tab.key))
             .map((tab) => (
               <React.Fragment key={tab.key}>{tab.component}</React.Fragment>
             ))}
