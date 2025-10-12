@@ -1,151 +1,170 @@
 :root {
-  --blue: #0a174e;
-  --green: #2e7d32;
-  --orange: #f57c00;
-  --white: #ffffff;
-  --yellow: #ffd447;
-  --error: #c62828;
+  --light-bg: #f0f2f5;
+  --light-card: #ffffff;
+  --light-text: #050505;
+
+  --dark-bg: #0a174e;
+  --dark-card: #1c1c1c;
+  --dark-text: #ffffff;
+
+  --facebook-blue: #1877f2;
+  --pending-color: #f57c00;
+  --finished-color: #2e7d32;
   --radius: 12px;
-  --transition: all 0.3s ease-in-out;
 }
 
-/* Dark theme support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --blue: #121212;
-    --white: #0a174e;
-    --green: #66bb6a;
-    --orange: #ff9800;
-    --yellow: #ffeb3b;
-    --error: #ef5350;
-  }
-
-  body {
-    background-color: var(--blue);
-    color: var(--yellow);
-  }
+/* Theme-aware container */
+body[data-theme="light"] .container {
+  background-color: var(--light-bg);
+  color: var(--light-text);
 }
 
-/* Container */
+body[data-theme="dark"] .container {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
 .container {
-  padding: 24px;
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  background: var(--blue);
-  color: var(--white);
-  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+  border-radius: var(--radius);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 /* Heading */
 .heading {
-  font-size: 1.6rem;
-  font-weight: 700;
   text-align: center;
-  margin-bottom: 24px;
-  color: var(--yellow);
-  text-shadow: 0 0 6px var(--yellow);
+  color: var(--facebook-blue);
+  margin-bottom: 16px;
+  font-weight: 600;
+  font-size: 1.5rem;
 }
 
 /* Tabs */
 .tabBar {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.tab,
-.active {
-  padding: 10px 16px;
-  font-weight: 600;
-  background: transparent;
-  border: 2px solid var(--white);
-  border-radius: var(--radius);
-  color: var(--white);
+.tabBar .tab,
+.tabBar .active {
+  flex: 1;
+  padding: 10px;
+  border-radius: 25px;
+  text-align: center;
+  font-weight: 500;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s;
+  border: 1px solid #ccd0d5;
+  background-color: var(--light-card);
+  color: var(--light-text);
 }
 
-.active {
-  background: var(--green);
-  border-color: var(--green);
-  color: var(--white);
+body[data-theme="dark"] .tabBar .tab,
+body[data-theme="dark"] .tabBar .active {
+  background-color: var(--dark-card);
+  color: var(--dark-text);
+  border-color: #444;
 }
 
-.tab:hover {
-  background: rgba(255, 255, 255, 0.1);
+.tabBar .active {
+  background-color: var(--facebook-blue);
+  color: #fff;
+  border-color: var(--facebook-blue);
 }
 
 /* Panel */
 .panel {
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 /* List */
 .list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
-/* Card */
+/* Cards */
 .card {
-  background: var(--white);
-  color: var(--blue);
-  padding: 16px;
-  border-radius: var(--radius);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transition: var(--transition);
+  background-color: var(--light-card);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+  color: var(--light-text);
+}
+
+body[data-theme="dark"] .card {
+  background-color: var(--dark-card);
+  color: var(--dark-text);
+  box-shadow: 0 2px 8px rgba(255,255,255,0.05);
+}
+
+.card:hover {
+  transform: translateY(-2px);
 }
 
 .card h4 {
-  margin: 0 0 8px;
-  font-size: 1rem;
-  color: var(--green);
+  margin: 0 0 8px 0;
 }
 
 .card p {
   margin: 4px 0;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
-.pending {
-  border-left: 6px solid var(--orange);
+.card.pending {
+  border-left: 4px solid var(--pending-color);
 }
 
-.finished {
-  border-left: 6px solid var(--green);
+.card.finished {
+  border-left: 4px solid var(--finished-color);
 }
 
-/* Chart Heading */
-.panel h3 {
+.list p:first-of-type {
+  font-weight: 600;
+}
+
+/* Pie chart heading */
+h3 {
   text-align: center;
-  margin-bottom: 16px;
-  color: var(--yellow);
+  color: var(--facebook-blue);
+  margin-bottom: 12px;
+}
+
+/* Tooltip */
+.recharts-tooltip-wrapper {
+  background: var(--light-card) !important;
+  border-radius: 12px !important;
+  padding: 8px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  font-size: 0.9rem !important;
+}
+
+body[data-theme="dark"] .recharts-tooltip-wrapper {
+  background: var(--dark-card) !important;
+  color: var(--dark-text) !important;
+  box-shadow: 0 2px 8px rgba(255,255,255,0.1) !important;
+}
+
+/* Legend */
+.recharts-legend-wrapper {
+  font-size: 0.9rem;
+  color: var(--light-text);
+}
+
+body[data-theme="dark"] .recharts-legend-wrapper {
+  color: var(--dark-text);
 }
 
 /* Responsive */
-@media (max-width: 600px) {
+@media (max-width: 500px) {
   .tabBar {
     flex-direction: column;
-    gap: 8px;
-  }
-
-  .card h4 {
-    font-size: 0.95rem;
-  }
-
-  .card p {
-    font-size: 0.85rem;
-  }
-
-  .tab,
-  .active {
-    font-size: 0.9rem;
-    padding: 8px 12px;
-  }
-
-  .heading {
-    font-size: 1.4rem;
   }
 }
