@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import "./AdminPanel.css";
 import AdminMatangazo from "../components/AdminMatangazo";
