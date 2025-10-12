@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import "./MediaDashboard.css";
@@ -61,13 +61,12 @@ export default function MediaDashboard() {
 
       const { role, metadata } = userData;
 
-      // Restore last tab for non-admin
       if (role === "admin") {
         setAllowedTabs(allTabs.map((t) => t.key));
         setActiveTab("media");
       } else {
         const tabs = metadata?.allowed_tabs;
-        setAllowedTabs(Array.isArray(tabs) ? tabs : ["media","profile","usage"]);
+        setAllowedTabs(Array.isArray(tabs) ? tabs : ["media", "profile", "usage"]);
         const lastTab = localStorage.getItem("media_active_tab") as string;
         setActiveTab(lastTab && tabs?.includes(lastTab) ? lastTab : (tabs?.[0] || "media"));
       }
@@ -78,14 +77,37 @@ export default function MediaDashboard() {
     fetchUserTabs();
   }, []);
 
-  // Save active tab for non-admin
+  // Save last active tab for non-admin
   useEffect(() => {
     if (userRole !== "admin") {
       localStorage.setItem("media_active_tab", activeTab);
     }
   }, [activeTab, userRole]);
 
-  // Logout
+  // ✅ Auto logout for non-admin after 10 minutes inactivity
+  useEffect(() => {
+    if (userRole === "admin") return;
+
+    let timeout: NodeJS.Timeout;
+    const resetTimer = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        supabase.auth.signOut();
+        localStorage.removeItem("media_active_tab");
+        window.location.href = "/login";
+      }, 10 * 60 * 1000); // 10 minutes
+    };
+
+    const events = ["mousemove", "keydown", "scroll", "click"];
+    events.forEach((e) => window.addEventListener(e, resetTimer));
+    resetTimer();
+
+    return () => {
+      clearTimeout(timeout);
+      events.forEach((e) => window.removeEventListener(e, resetTimer));
+    };
+  }, [userRole]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     localStorage.removeItem("media_active_tab");
@@ -96,11 +118,9 @@ export default function MediaDashboard() {
 
   return (
     <div className="media-dashboard">
-      {/* Sidebar */}
       <aside className="sidebar">
         <div>
           <h2 className="sidebar-title">🎧 Media Center</h2>
-
           {allTabs
             .filter((tab) => allowedTabs.includes(tab.key))
             .map((tab) => (
@@ -124,10 +144,8 @@ export default function MediaDashboard() {
         </button>
       </aside>
 
-      {/* Main Content */}
       <main className="main-content">
         <h1 className="main-title">🕊️ Dashibodi ya Vyombo vya Habari</h1>
-
         {allTabs
           .filter((tab) => tab.key === activeTab && allowedTabs.includes(tab.key))
           .map((tab) => {
