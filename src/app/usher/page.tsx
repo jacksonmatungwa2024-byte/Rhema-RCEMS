@@ -41,15 +41,13 @@ export default function Home() {
   >("muumini");
   const [user, setUser] = useState<any>(null);
 
+  // Load user and restore last active tab/subtab
   useEffect(() => {
     const loadUser = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
       const email = sessionData?.session?.user?.email;
 
-      // Admin bypass: no redirect
-      const isAdmin = email && user?.role === "admin";
-
-      if (!email && !isAdmin) {
+      if (!email) {
         window.location.href = "/login";
         return;
       }
@@ -61,31 +59,56 @@ export default function Home() {
         .single();
 
       if (error || !userData || !["admin", "usher"].includes(userData.role)) {
-        if (!isAdmin) window.location.href = "/login";
+        window.location.href = "/login";
         return;
       }
 
       setUser(userData);
+
+      // Restore last active tab/subtab from localStorage for non-admin
+      if (userData.role !== "admin") {
+        const lastTab = localStorage.getItem("home_active_tab") as TabType;
+        const lastSub = localStorage.getItem("home_usajili_sub") as
+          | "muumini"
+          | "mahadhurio"
+          | "wokovu"
+          | "ushuhuda";
+
+        if (lastTab && ["home","usajili","mafunzo","reports","messages","profile","picha"].includes(lastTab))
+          setActiveTab(lastTab);
+        if (lastSub && ["muumini","mahadhurio","wokovu","ushuhuda"].includes(lastSub))
+          setUsajiliSub(lastSub);
+      }
     };
 
     loadUser();
   }, []);
 
-  if (!user) return null;
+  // Save active tab and subtab to localStorage for non-admin
+  useEffect(() => {
+    if (user?.role !== "admin") {
+      localStorage.setItem("home_active_tab", activeTab);
+      localStorage.setItem("home_usajili_sub", usajiliSub);
+    }
+  }, [activeTab, usajiliSub, user]);
 
-  const { role, full_name, branch } = user;
+  const { role, full_name, branch } = user || {};
   const allowedTabs: Record<string, TabType[]> = {
-    admin: ["home", "usajili", "mafunzo", "reports", "messages", "profile", "picha"],
-    usher: ["home", "usajili", "reports", "profile", "picha"],
+    admin: ["home","usajili","mafunzo","reports","messages","profile","picha"],
+    usher: ["home","usajili","reports","profile","picha"],
   };
   const visibleTabs = allowedTabs[role] || [];
 
   const handleLogout = async () => {
     if (role !== "admin") {
       await supabase.auth.signOut();
+      localStorage.removeItem("home_active_tab");
+      localStorage.removeItem("home_usajili_sub");
       window.location.href = "/login";
     }
   };
+
+  if (!user) return null;
 
   return (
     <div className={styles.container}>
@@ -93,9 +116,7 @@ export default function Home() {
       <aside className={styles.sidebar}>
         {visibleTabs.includes("home") && (
           <button
-            className={`${styles.tabBtn} ${
-              activeTab === "home" ? styles.active : ""
-            }`}
+            className={`${styles.tabBtn} ${activeTab === "home" ? styles.active : ""}`}
             onClick={() => setActiveTab("home")}
           >
             🏠 Home
@@ -104,9 +125,7 @@ export default function Home() {
 
         {visibleTabs.includes("usajili") && (
           <button
-            className={`${styles.tabBtn} ${
-              activeTab === "usajili" ? styles.active : ""
-            }`}
+            className={`${styles.tabBtn} ${activeTab === "usajili" ? styles.active : ""}`}
             onClick={() => setActiveTab("usajili")}
           >
             🗂️ Usajili
@@ -115,9 +134,7 @@ export default function Home() {
 
         {visibleTabs.includes("mafunzo") && (
           <button
-            className={`${styles.tabBtn} ${
-              activeTab === "mafunzo" ? styles.active : ""
-            }`}
+            className={`${styles.tabBtn} ${activeTab === "mafunzo" ? styles.active : ""}`}
             onClick={() => setActiveTab("mafunzo")}
           >
             📚 Mafunzo
@@ -126,9 +143,7 @@ export default function Home() {
 
         {visibleTabs.includes("reports") && (
           <button
-            className={`${styles.tabBtn} ${
-              activeTab === "reports" ? styles.active : ""
-            }`}
+            className={`${styles.tabBtn} ${activeTab === "reports" ? styles.active : ""}`}
             onClick={() => setActiveTab("reports")}
           >
             📊 Reports
@@ -137,9 +152,7 @@ export default function Home() {
 
         {visibleTabs.includes("picha") && (
           <button
-            className={`${styles.tabBtn} ${
-              activeTab === "picha" ? styles.active : ""
-            }`}
+            className={`${styles.tabBtn} ${activeTab === "picha" ? styles.active : ""}`}
             onClick={() => setActiveTab("picha")}
           >
             🖼️ Picha
@@ -148,16 +161,13 @@ export default function Home() {
 
         {visibleTabs.includes("profile") && (
           <button
-            className={`${styles.tabBtn} ${
-              activeTab === "profile" ? styles.active : ""
-            }`}
+            className={`${styles.tabBtn} ${activeTab === "profile" ? styles.active : ""}`}
             onClick={() => setActiveTab("profile")}
           >
             👤 Profile
           </button>
         )}
 
-        {/* Only show logout for non-admin */}
         {role !== "admin" && (
           <button onClick={handleLogout} className={styles.logoutBtn}>
             🚪 Toka / Logout
@@ -186,33 +196,25 @@ export default function Home() {
 
             <div className={styles.subTabs}>
               <button
-                className={`${styles.subBtn} ${
-                  usajiliSub === "muumini" ? styles.subActive : ""
-                }`}
+                className={`${styles.subBtn} ${usajiliSub === "muumini" ? styles.subActive : ""}`}
                 onClick={() => setUsajiliSub("muumini")}
               >
                 📝 Muumini
               </button>
               <button
-                className={`${styles.subBtn} ${
-                  usajiliSub === "mahadhurio" ? styles.subActive : ""
-                }`}
+                className={`${styles.subBtn} ${usajiliSub === "mahadhurio" ? styles.subActive : ""}`}
                 onClick={() => setUsajiliSub("mahadhurio")}
               >
                 📋 Mahadhurio
               </button>
               <button
-                className={`${styles.subBtn} ${
-                  usajiliSub === "wokovu" ? styles.subActive : ""
-                }`}
+                className={`${styles.subBtn} ${usajiliSub === "wokovu" ? styles.subActive : ""}`}
                 onClick={() => setUsajiliSub("wokovu")}
               >
                 🙏 Wokovu
               </button>
               <button
-                className={`${styles.subBtn} ${
-                  usajiliSub === "ushuhuda" ? styles.subActive : ""
-                }`}
+                className={`${styles.subBtn} ${usajiliSub === "ushuhuda" ? styles.subActive : ""}`}
                 onClick={() => setUsajiliSub("ushuhuda")}
               >
                 🗣️ Ushuhuda
@@ -221,15 +223,9 @@ export default function Home() {
 
             <div className={styles.sectionContent}>
               {usajiliSub === "muumini" && <SajiliMuumini />}
-              {usajiliSub === "mahadhurio" && (
-                <SajiliMahadhurio setActiveTab={setActiveTab} />
-              )}
-              {usajiliSub === "wokovu" && (
-                <SajiliAliyeokoka setActiveTab={setActiveTab} />
-              )}
-              {usajiliSub === "ushuhuda" && (
-                <SajiliUshuhuda setActiveTab={setActiveTab} />
-              )}
+              {usajiliSub === "mahadhurio" && <SajiliMahadhurio setActiveTab={setActiveTab} />}
+              {usajiliSub === "wokovu" && <SajiliAliyeokoka setActiveTab={setActiveTab} />}
+              {usajiliSub === "ushuhuda" && <SajiliUshuhuda setActiveTab={setActiveTab} />}
             </div>
           </div>
         )}
