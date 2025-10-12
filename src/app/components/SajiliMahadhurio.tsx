@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import type { TabType } from "../usher/page";
 
-  import "./SajiliMahadhurio.css";
+import "./SajiliMahadhurio.css";
 
 // ---- Supabase setup ----
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -12,26 +12,13 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
 
 // ---- Types ----
-interface Muumini {
-  id: number;
-  majina: string;
-  muumini_namba: string;
-  simu?: string;
-  jinsi?: string;
-  mahali_anapotokea?: string;
-  umbo?: string;
-  kundi_la_mtu_mzima?: string;
-  bahasha?: string;
-}
-
 interface Mahadhurio {
   id?: number;
-  muumini_id: number;
-  muumini_namba: string;
-  majina: string;
   aina: string;
   ibada?: string;
   tarehe: string;
+  jinsi?: string;
+  umbo?: string;
 }
 
 interface SajiliMahadhurioProps {
@@ -39,203 +26,101 @@ interface SajiliMahadhurioProps {
 }
 
 const SajiliMahadhurio: React.FC<SajiliMahadhurioProps> = ({ setActiveTab }) => {
-  const [searchNamba, setSearchNamba] = useState("");
-  const [searchMajina, setSearchMajina] = useState("");
-  const [searchResults, setSearchResults] = useState<Muumini[]>([]);
-  const [selectedMuumini, setSelectedMuumini] = useState<Muumini | null>(null);
-
+  const [tarehe, setTarehe] = useState("");
   const [ainaMahadhurio, setAinaMahadhurio] = useState("");
   const [ainaIbada, setAinaIbada] = useState("");
-  const [tarehe, setTarehe] = useState("");
+  const [idadi, setIdadi] = useState(1);
+  const [jinsi, setJinsi] = useState("");
+  const [umbo, setUmbo] = useState("");
   const [loading, setLoading] = useState(false);
-  const [searching, setSearching] = useState(false);
   const [message, setMessage] = useState("");
 
-  const [showModal, setShowModal] = useState(false);
-  const [mahadhurioList, setMahadhurioList] = useState<Mahadhurio[]>([]);
-
-  // ---- Search handler ----
-  const handleSearch = async (namba: string, majina: string) => {
-    setSearching(true);
-    const { data, error } = await supabase
-      .from("watu")
-      .select("*")
-      .or(`muumini_namba.ilike.%${namba}%,majina.ilike.%${majina}%`);
-
-    if (error) console.error(error);
-    setSearchResults((data as Muumini[]) ?? []);
-    setSearching(false);
-  };
-
-  // ---- Handle selecting a muumini ----
-  const handleSelectMuumini = (muu: Muumini) => {
-    setSelectedMuumini(muu);
-    setMessage("");
-  };
-
-  // ---- Handle inserting mahadhurio ----
   const handleWekaMahadhurio = async () => {
-    if (!selectedMuumini || !tarehe || !ainaMahadhurio) {
-      alert("Tafadhali jaza taarifa zote");
+    if (!tarehe || !ainaMahadhurio || idadi < 1) {
+      alert("Tafadhali jaza taarifa zote muhimu.");
       return;
     }
 
     setLoading(true);
+    setMessage("");
 
-    // Check existing records for this date
-    const { data: existing, error } = await supabase
-      .from("mahadhurio")
-      .select("*")
-      .eq("muumini_id", selectedMuumini.id)
-      .eq("tarehe", tarehe);
+    const records = Array.from({ length: idadi }, () => ({
+      aina: ainaMahadhurio,
+      ibada: ainaMahadhurio === "Ibada" ? ainaIbada : null,
+      tarehe,
+      jinsi: jinsi || null,
+      umbo: umbo || null,
+    }));
+
+    const { error } = await supabase.from("mahadhurio").insert(records);
 
     if (error) {
-      setMessage("❌ Hitilafu wakati wa kusoma data: " + error.message);
-      setLoading(false);
-      return;
-    }
-
-    const records = existing as Mahadhurio[];
-    const count = records.length;
-
-    if (count >= 3) {
-      setMessage("⚠️ Kafika ukomo wa mahadhurio kwa siku hii (mara 3).");
-      // Fetch full attendance list to show in modal
-      setMahadhurioList(records);
-      setShowModal(true);
-      setLoading(false);
-      return;
-    }
-
-    const remaining = 3 - (count + 1);
-    const { error: insertError } = await supabase.from("mahadhurio").insert([
-      {
-        muumini_id: selectedMuumini.id,
-        muumini_namba: selectedMuumini.muumini_namba,
-        majina: selectedMuumini.majina,
-        aina: ainaMahadhurio,
-        ibada: ainaIbada,
-        tarehe,
-      },
-    ]);
-
-    if (insertError) {
-      setMessage("❌ Hitilafu: " + insertError.message);
+      setMessage("❌ Hitilafu: " + error.message);
     } else {
-      setMessage(
-        `✅ Mahadhurio yamerekodiwa kwa ${selectedMuumini.majina}. Amebakiza ${remaining} kwa siku hii.`
-      );
+      setMessage(`✅ Mahadhurio ${idadi} yamerekodiwa kwa tarehe ${tarehe}.`);
+      // Optionally reset form:
+      setIdadi(1);
+      setJinsi("");
+      setUmbo("");
+      setAinaMahadhurio("");
+      setAinaIbada("");
+      setTarehe("");
     }
 
     setLoading(false);
   };
 
-  // ---- Render ----
   return (
     <div className="wrapper">
       <h2 className="heading">Sajili Mahadhurio</h2>
 
-      {/* Search Section */}
       <div className="section">
-        <h4 className="section-title">Tafuta Muumini kwa Namba au Majina</h4>
-        <div className="search-inputs">
-          <input
-            className="input"
-            placeholder="Namba ya Muumini"
-            value={searchNamba}
-            onChange={(e) => {
-              const val = e.target.value;
-              setSearchNamba(val);
-              handleSearch(val, searchMajina);
-            }}
-          />
-          <input
-            className="input"
-            placeholder="Majina kamili"
-            value={searchMajina}
-            onChange={(e) => {
-              const val = e.target.value;
-              setSearchMajina(val);
-              handleSearch(searchNamba, val);
-            }}
-          />
-        </div>
+        <label className="label">Idadi ya Watu</label>
+        <input
+          className="input"
+          type="number"
+          min={1}
+          value={idadi}
+          onChange={(e) => setIdadi(Number(e.target.value))}
+        />
 
-        {searching && (
-          <div className="progress-bar">
-            <div className="progress-fill"></div>
-          </div>
-        )}
-      </div>
+        <label className="label">Jinsi</label>
+        <select className="select" value={jinsi} onChange={(e) => setJinsi(e.target.value)}>
+          <option value="">Chagua</option>
+          <option value="Me">Me</option>
+          <option value="Ke">Ke</option>
+          <option value="Watoto">Watoto</option>
+        </select>
 
-      {/* Results Table */}
-      {searchResults.length > 0 && (
-        <div className="results">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Namba</th>
-                <th>Majina</th>
-                <th>Chagua</th>
-              </tr>
-            </thead>
-            <tbody>
-              {searchResults.map((m, i) => (
-                <tr key={m.id}>
-                  <td>{i + 1}</td>
-                  <td>{m.muumini_namba}</td>
-                  <td>{m.majina}</td>
-                  <td>
-                    <button
-                      className="btn"
-                      onClick={() => handleSelectMuumini(m)}
-                    >
-                      Chagua
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+        <label className="label">Umbo</label>
+        <select className="select" value={umbo} onChange={(e) => setUmbo(e.target.value)}>
+          <option value="">Chagua</option>
+          <option value="Mwanafunzi">Mtoto</option>
+          <option value="Mtu Mzima">Mtu Mzima</option>
+          <option value="Kijana">Kijana</option>
+        </select>
 
-      {/* Attendance Form */}
-      {selectedMuumini && (
-        <div className="section">
-          <h4 className="section-title">Taarifa za Muumini</h4>
+        <label className="label">Aina ya Mahadhurio</label>
+        <select
+          className="select"
+          value={ainaMahadhurio}
+          onChange={(e) => setAinaMahadhurio(e.target.value)}
+        >
+          <option value="">Chagua</option>
+          <option value="Ibada">Ibada</option>
+          <option value="Kikao">Kikao</option>
+          <option value="Sherehe">Sherehe</option>
+        </select>
 
-          <div className="readonly-details">
-            <p><strong>Jina:</strong> {selectedMuumini.majina}</p>
-            <p><strong>Namba:</strong> {selectedMuumini.muumini_namba}</p>
-            <p><strong>Simu:</strong> {selectedMuumini.simu || "-"}</p>
-            <p><strong>Mahali:</strong> {selectedMuumini.mahali_anapotokea || "-"}</p>
-            <p><strong>Umbo:</strong> {selectedMuumini.umbo || "-"}</p>
-            <p><strong>Kundi:</strong> {selectedMuumini.kundi_la_mtu_mzima || "-"}</p>
-          </div>
-
-          <label className="label">Aina ya Mahadhurio</label>
-          <select
-            className="select"
-            value={ainaMahadhurio}
-            onChange={(e) => setAinaMahadhurio(e.target.value)}
-          >
-            <option value="">Chagua</option>
-            <option value="Ibada">Ibada</option>
-            <option value="Kikao">Kikao</option>
-            <option value="Sherehe">Sherehe</option>
-          </select>
-
-          {ainaMahadhurio === "Ibada" && (
-            <>
-              <label className="label">Aina ya Ibada</label>
-              <select
-                className="select"
-                value={ainaIbada}
-                onChange={(e) => setAinaIbada(e.target.value)}
-              >
-                <option value="">Chagua</option>
+        {ainaMahadhurio === "Ibada" && (
+          <>
+            <label className="label">Aina ya Ibada</label>
+            <select
+              className="select"
+              value={ainaIbada}
+              onChange={(e) => setAinaIbada(e.target.value)}
+            >
+              <option value="">Chagua</option>
                 <option value="IBADA YA KWANZA">IBADA YA KWANZA</option>
                 <option value="IBADA YA PILI">IBADA YA PILI</option>
                 <option value="IBADA YA MAJIBU">IBADA YA MAJIBU</option>
@@ -253,57 +138,29 @@ const SajiliMahadhurio: React.FC<SajiliMahadhurioProps> = ({ setActiveTab }) => 
                 <option value="IBADA YA WANAFUNZI">IBADA YA WANAFUNZI</option>
                 <option value="IBADA YA HARUSI">IBADA YA HARUSI</option>
                 <option value="INGINE">INGINE</option>
-                
-              </select>
-            </>
-          )}
 
-          <label className="label">Tarehe</label>
-          <input
-            className="input"
-            type="date"
-            value={tarehe}
-            onChange={(e) => setTarehe(e.target.value)}
-          />
+            </select>
+          </>
+        )}
 
-          <button className="btn primary" onClick={handleWekaMahadhurio} disabled={loading}>
-            {loading ? "Inashughulikiwa..." : "Weka Mahadhurio"}
-          </button>
+        <label className="label">Tarehe</label>
+        <input
+          className="input"
+          type="date"
+          value={tarehe}
+          onChange={(e) => setTarehe(e.target.value)}
+        />
 
-          {message && <p className="message">{message}</p>}
-        </div>
-      )}
-<div className="spiritual-banner">
-  🕊️ “Kila mahadhurio ni ushuhuda wa uaminifu.” – RHEMA OUTREACH CHURCH TANZANIA
-</div>
+        <button className="btn primary" onClick={handleWekaMahadhurio} disabled={loading}>
+          {loading ? "Inashughulikiwa..." : "Weka Mahadhurio"}
+        </button>
 
-      {/* Modal */}
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Ukomo wa Mahadhurio</h3>
-            <p>
-              {selectedMuumini?.majina} ({selectedMuumini?.muumini_namba}) amefika
-              ukomo wa mahadhurio kwa siku hii.
-            </p>
+        {message && <p className="message">{message}</p>}
+      </div>
 
-            <h4>Rekodi za Leo:</h4>
-            <ul>
-              {mahadhurioList.map((m) => (
-                <li key={m.id}>
-                  {m.aina} - {m.ibada || "N/A"}
-                </li>
-              ))}
-            </ul>
-
-            <button className="btn close" onClick={() => setShowModal(false)}>
-              Funga
-            </button>
-           
-
-          </div>
-        </div>
-      )}
+      <div className="spiritual-banner">
+        🕊️ “Kila mahadhurio ni ushuhuda wa uaminifu.” – RHEMA OUTREACH CHURCH TANZANIA
+      </div>
     </div>
   );
 };
