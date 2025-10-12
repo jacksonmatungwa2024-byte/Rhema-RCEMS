@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import SajiliMuumini from "../components/SajiliMuumini";
 import SajiliMahadhurio from "../components/SajiliMahadhurio";
 import SajiliAliyeokoka from "../components/SajiliAliyeokoka";
@@ -46,7 +46,10 @@ export default function Home() {
       const { data: sessionData } = await supabase.auth.getSession();
       const email = sessionData?.session?.user?.email;
 
-      if (!email) {
+      // Admin bypass: no redirect
+      const isAdmin = email && user?.role === "admin";
+
+      if (!email && !isAdmin) {
         window.location.href = "/login";
         return;
       }
@@ -58,7 +61,7 @@ export default function Home() {
         .single();
 
       if (error || !userData || !["admin", "usher"].includes(userData.role)) {
-        window.location.href = "/login";
+        if (!isAdmin) window.location.href = "/login";
         return;
       }
 
@@ -68,11 +71,6 @@ export default function Home() {
     loadUser();
   }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/login";
-  };
-
   if (!user) return null;
 
   const { role, full_name, branch } = user;
@@ -81,6 +79,13 @@ export default function Home() {
     usher: ["home", "usajili", "reports", "profile", "picha"],
   };
   const visibleTabs = allowedTabs[role] || [];
+
+  const handleLogout = async () => {
+    if (role !== "admin") {
+      await supabase.auth.signOut();
+      window.location.href = "/login";
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -152,9 +157,12 @@ export default function Home() {
           </button>
         )}
 
-        <button onClick={handleLogout} className={styles.logoutBtn}>
-          🚪 Toka / Logout
-        </button>
+        {/* Only show logout for non-admin */}
+        {role !== "admin" && (
+          <button onClick={handleLogout} className={styles.logoutBtn}>
+            🚪 Toka / Logout
+          </button>
+        )}
       </aside>
 
       {/* Main Content */}
@@ -226,17 +234,13 @@ export default function Home() {
           </div>
         )}
 
-        {activeTab === "mafunzo" && (
-          <MafunzoMuumini setActiveTab={setActiveTab} />
-        )}
-        {activeTab === "reports" && (
-          <ReportsDashboard setActiveTab={setActiveTab} />
-        )}
+        {activeTab === "mafunzo" && <MafunzoMuumini setActiveTab={setActiveTab} />}
+        {activeTab === "reports" && <ReportsDashboard setActiveTab={setActiveTab} />}
         {activeTab === "picha" && <UsherGallery />}
-        {activeTab === "profile" && (
-          <UsherProfile onClose={() => setActiveTab("home")} />
-        )}
+        {activeTab === "profile" && <UsherProfile onClose={() => setActiveTab("home")} />}
       </main>
+
+      <SpeedInsights />
     </div>
   );
 }
