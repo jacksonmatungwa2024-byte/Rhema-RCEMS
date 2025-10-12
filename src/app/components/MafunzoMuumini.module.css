@@ -912,3 +912,231 @@
 .approvalBtn:hover {
   background-color: #007f4f;
 }
+
+
+/* MafunzoMuumini.module.css */
+
+.title {
+  text-align: center;
+  font-size: 1.8rem;
+  color: #25D366;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.searchWrapper {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.searchInput {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #25D366;
+  background-color: #128C7E;
+  color: #fff;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+}
+
+.searchInput:focus {
+  outline: 2px solid #25D366;
+  transform: scale(1.03);
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tabBtn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #25D366;
+  background-color: #128C7E;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.tabBtn:hover {
+  background-color: #25D366;
+  color: #075E54;
+  transform: scale(1.05);
+}
+
+.activeTab {
+  background-color: #25D366;
+  color: #075E54;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.table th, .table td {
+  padding: 6px 8px;
+  border: 1px solid #25D366;
+  text-align: left;
+}
+
+.table th {
+  background-color: #075E54;
+  color: #fff;
+  font-weight: 700;
+}
+
+.table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.message {
+  text-align: center;
+  margin-bottom: 12px;
+  color: #ffeb3b;
+  font-weight: 600;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(7, 94, 84, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.modalContent {
+  background-color: #075E54;
+  padding: 16px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 95%;
+  max-height: 90%;
+  overflow-y: auto;
+  color: #fff;
+  animation: slideUp 0.4s ease-in-out;
+  position: relative;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: #ffeb3b;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.closeBtn:hover {
+  transform: scale(1.2);
+}
+
+.lessonHistory, .lessonForm {
+  margin-top: 12px;
+}
+
+.lessonForm input {
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #25D366;
+  background-color: #128C7E;
+  color: #fff;
+  font-weight: 600;
+}
+
+.saveBtn, .approvalBtn {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #25D366;
+  color: #075E54;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: all 0.3s ease-in-out;
+}
+
+.saveBtn:hover, .approvalBtn:hover {
+  background-color: #128C7E;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.progressWrapper {
+  margin-top: 12px;
+  background-color: #128C7E;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  height: 20px;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: #25D366;
+  transition: width 0.4s ease-in-out;
+}
+
+.approvalSection {
+  margin-top: 12px;
+  text-align: center;
+  background-color: #075E54;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #25D366;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .searchWrapper {
+    flex-direction: column;
+  }
+  .tabs {
+    flex-direction: column;
+  }
+  .lessonForm input {
+    font-size: 0.9rem;
+  }
+  .saveBtn, .approvalBtn {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modalContent {
+    max-width: 95%;
+    padding: 12px;
+  }
+}
