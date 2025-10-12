@@ -1,6 +1,6 @@
 /* 🌈 THEME COLORS */
 :root {
-  --blue: #1e2a78;        /* Darker blue for header/buttons */
+  --blue: #1e2a78;        /* Darker blue for headers/buttons */
   --white: #f5f5f5;       /* Light background for cards/tables */
   --red: #e53935;          /* Accent red */
   --halotel: #43a047;      /* Green for actions/buttons */
@@ -11,7 +11,7 @@
   --text-light: #f9f9f9;
 }
 
-/* 🌙 DARK MODE SUPPORT */
+/* 🌙 DARK MODE */
 @media (prefers-color-scheme: dark) {
   :root {
     --white: #1c1c1c;
@@ -27,7 +27,7 @@
   }
 }
 
-/* 🧱 LAYOUT */
+/* 🧱 LAYOUT & BODY */
 body {
   font-family: "Segoe UI", Roboto, sans-serif;
   background-color: var(--white);
@@ -37,11 +37,12 @@ body {
 }
 
 .dashboard {
-  padding: 24px;
+  padding: 16px;
   background: var(--white);
   border-radius: var(--radius);
   color: var(--text-dark);
   transition: var(--transition);
+  max-width: 100%;
 }
 
 /* 🏷 HEADER */
@@ -50,31 +51,36 @@ body {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .title {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--halotel);
+  flex: 1 1 auto;
+  min-width: 150px;
 }
 
 /* 🔍 CONTROLS */
 .controls {
   display: flex;
-  gap: 12px;
-  align-items: center;
+  gap: 8px;
   flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
 }
 
 .input {
-  padding: 10px 14px;
+  padding: 10px;
   border-radius: var(--radius);
   border: 1px solid var(--halotel);
   background: #fff;
   color: var(--text-dark);
-  font-size: 1rem;
+  flex: 1 1 auto;
+  min-width: 120px;
+  font-size: 0.95rem;
   transition: var(--transition);
 }
 
@@ -88,73 +94,85 @@ body {
   color: #ffec99;
 }
 
-.runBtn, .groupBtn {
+.runBtn,
+.groupBtn {
   background: var(--halotel);
   color: #fff;
   border: none;
-  padding: 10px 16px;
+  padding: 10px 12px;
   border-radius: var(--radius);
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
 }
 
-.runBtn:hover, .groupBtn:hover {
+.runBtn:hover,
+.groupBtn:hover {
   background: #2e7d32;
   transform: scale(1.05);
 }
 
-/* 🧮 SUMMARY */
+/* 🧮 SUMMARY CARDS */
 .summaryCard {
   display: grid;
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .barChart {
   background: #fff;
-  padding: 16px;
+  padding: 12px;
   border-radius: var(--radius);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   color: var(--text-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.barChart div {
+  margin-bottom: 6px;
 }
 
 /* ⚙️ GROUP BUTTONS */
 .groupButtons {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
   justify-content: flex-start;
-  margin: 16px 0;
+  margin-bottom: 16px;
 }
 
 /* 📊 TABLE */
 .tableWrapper {
-  margin-top: 24px;
+  margin-top: 12px;
+  overflow-x: auto;
 }
 
 .tableTitle {
   font-size: 1.2rem;
   color: var(--halotel);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .rowCount {
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: var(--text-dark);
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  min-width: 400px;
 }
 
 .table th,
 .table td {
   border: 1px solid #ccc;
-  padding: 10px;
+  padding: 8px;
   text-align: left;
 }
 
@@ -173,7 +191,7 @@ body {
 .actions {
   margin-top: 16px;
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -181,11 +199,13 @@ body {
   background: var(--blue);
   color: white;
   border: none;
-  padding: 10px 16px;
+  padding: 10px 12px;
   border-radius: var(--radius);
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
+  flex: 1 1 auto;
+  min-width: 120px;
 }
 
 .actions button:hover {
@@ -196,7 +216,7 @@ body {
   background: var(--red);
   border: 2px solid var(--red);
   color: white;
-  padding: 10px 16px;
+  padding: 10px 12px;
   border-radius: var(--radius);
   font-weight: 600;
   cursor: pointer;
@@ -207,7 +227,7 @@ body {
   background: #c62828;
 }
 
-/* 💬 MESSAGE */
+/* 💬 MESSAGES */
 .message {
   margin-top: 12px;
   font-weight: 600;
@@ -218,13 +238,13 @@ body {
 /* 📱 MOBILE OPTIMIZATION */
 @media (max-width: 768px) {
   .dashboard {
-    padding: 16px;
+    padding: 12px;
   }
 
   .header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 8px;
   }
 
   .controls {
@@ -238,16 +258,11 @@ body {
   .groupBtn,
   .backBtn {
     width: 100%;
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
-  .groupButtons {
-    justify-content: center;
-  }
-
-  .actions {
-    flex-direction: column;
-    align-items: stretch;
+  .summaryCard {
+    grid-template-columns: 1fr 1fr;
   }
 
   .table {
@@ -255,5 +270,193 @@ body {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ReportsDashboard.module.css - WhatsApp Inspired Animated Mobile UI */
+
+.dashboard {
+  background-color: #075E54; /* WhatsApp dark green */
+  color: #f9f9f9;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  padding: 16px;
+  border-radius: 12px;
+  max-width: 1000px;
+  margin: auto;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.title {
+  color: #25D366; /* WhatsApp bright green */
+  font-weight: 700;
+  font-size: 1.6rem;
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.input[type="date"] {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #25D366;
+  background-color: #128C7E;
+  color: #f9f9f9;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+}
+
+.input[type="date"]:focus {
+  outline: 2px solid #25D366;
+  transform: scale(1.03);
+}
+
+.runBtn {
+  background-color: #25D366;
+  color: #075E54;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+}
+
+.runBtn:hover {
+  background-color: #128C7E;
+  color: #f9f9f9;
+  transform: scale(1.05);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.printArea {
+  margin-top: 16px;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.barChart {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background-color: #128C7E;
+  padding: 10px;
+  border-radius: 8px;
+  animation: slideUp 0.5s ease-in-out;
+}
+
+.barChart div:first-child {
+  font-weight: 700;
+  color: #25D366;
+}
+
+.subBreakdown {
+  margin-top: 12px;
+  background-color: #075E54;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #25D366;
+}
+
+.subBreakdown h4 {
+  color: #ffeb3b;
+  margin-bottom: 6px;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+}
+
+.actions button:hover {
+  transform: scale(1.05);
+}
+
+.backBtn {
+  background-color: #25D366;
+  color: #075E54;
+}
+
+.actions button:not(.backBtn) {
+  background-color: #128C7E;
+  color: #f9f9f9;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .controls {
+    flex-direction: column;
+  }
+
+  .barChart {
+    padding: 8px;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 12px;
   }
 }
