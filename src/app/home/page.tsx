@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from "react"
 import { createClient } from "@supabase/supabase-js"
 import "./Dashboard.css";
 import { useSessionGuard } from "@/hooks/useSessionGuard"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
