@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState, useRef } from "react"
 import { createClient } from "@supabase/supabase-js"
-import "./Dashboard.css";
-import { useSessionGuard } from "@/hooks/useSessionGuard"
+import "./Dashboard.css"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { useLockWatcher } from "@/hooks/useLockWatcher" // our new hook
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -17,7 +18,6 @@ const accessMap: Record<string, string[]> = {
   media: ["mediaTab"],
   finance: ["financeTab"],
 }
-
 
 const roleLabels: Record<string, string> = {
   admin: "Admin",
@@ -40,22 +40,25 @@ const Dashboard: React.FC = () => {
   const [audioPlaying, setAudioPlaying] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
+  // 🔒 Apply lock watcher, passing user role
+  useLockWatcher(role)
+
   useEffect(() => {
     const loadUser = async () => {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+      const { data: sessionData } = await supabase.auth.getSession()
       const email = sessionData?.session?.user?.email
-      if (sessionError || !email) {
+      if (!email) {
         window.location.href = "/login"
         return
       }
 
-      const { data: userData, error: userError } = await supabase
+      const { data: userData } = await supabase
         .from("users")
         .select("*")
         .eq("email", email)
         .single()
 
-      if (userError || !userData) {
+      if (!userData) {
         alert("Haiwezekani kupata taarifa zako.")
         window.location.href = "/login"
         return
@@ -102,40 +105,41 @@ const Dashboard: React.FC = () => {
     }
   }
 
- return (
-  <div className="dashboard-container">
-    <div className="theme-verse">“Nuru yako itangaze gizani.” — Isaya 60:1</div>
+  return (
+    <div className="dashboard-container">
+      <div className="theme-verse">“Nuru yako itangaze gizani.” — Isaya 60:1</div>
 
-    <h2>
-      Karibu {roleLabels[role] || ""} {fullName}
-    </h2>
+      <h2>Karibu {roleLabels[role] || ""} {fullName}</h2>
 
-    {branch && <div className="info-block">📍 Tawi: {branch}</div>}
-    {lastLogin && <div className="info-block">🕒 Ilipoingia mwisho: {lastLogin}</div>}
-    <div className="info-block">📖 {themeVerse || "Leo ni siku ya neema na uzima."}</div>
+      {branch && <div className="info-block">📍 Tawi: {branch}</div>}
+      {lastLogin && <div className="info-block">🕒 Ilipoingia mwisho: {lastLogin}</div>}
+      <div className="info-block">📖 {themeVerse || "Leo ni siku ya neema na uzima."}</div>
 
-    {profileUrl && <img src={profileUrl} alt="Profile" />}
+      {profileUrl && <img src={profileUrl} alt="Profile" />}
 
-    <button onClick={handleAudioPlay}>
-      🔊 {audioPlaying ? "Inapigwa..." : "Play Theme"}
-    </button>
+      <button onClick={handleAudioPlay}>
+        🔊 {audioPlaying ? "Inapigwa..." : "Play Theme"}
+      </button>
 
-    <audio ref={audioRef} loop>
-      <source src="/ana.mp3" type="audio/mp3" />
-    </audio>
+      <audio ref={audioRef} loop>
+        <source src="/ana.mp3" type="audio/mp3" />
+      </audio>
 
-    <div className={`status-indicator ${statusLight}`}>
-      {statusText}
+      <div className={`status-indicator ${statusLight}`}>
+        {statusText}
+      </div>
+
+      <div className="panel-links">
+        <div onClick={() => handleClick("adminTab", "/admin")}>Admin Panel</div>
+        <div onClick={() => handleClick("usherTab", "/usher")}>Usher Panel</div>
+        <div onClick={() => handleClick("pastorTab", "/pastor")}>Pastor Panel</div>
+        <div onClick={() => handleClick("mediaTab", "/media")}>Media Team</div>
+        <div onClick={() => handleClick("financeTab", "/finance")}>Finance</div>
+      </div>
+
+      <SpeedInsights />
     </div>
-
-    <div className="panel-links">
-      <div onClick={() => handleClick("adminTab", "/admin")}>Admin Panel</div>
-      <div onClick={() => handleClick("usherTab", "/usher")}>Usher Panel</div>
-      <div onClick={() => handleClick("pastorTab", "/pastor")}>Pastor Panel</div>
-      <div onClick={() => handleClick("mediaTab", "/media")}>Media Team</div>
-      <div onClick={() => handleClick("financeTab", "/finance")}>Finance</div>
-    </div>
-  </div>
-)
+  )
 }
+
 export default Dashboard
