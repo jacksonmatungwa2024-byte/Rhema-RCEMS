@@ -291,3 +291,119 @@
   animation: fadeSlide 0.6s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
+
+
+/* SajiliMahadhurio.css - WhatsApp Theme */
+
+.wrapper {
+  background-color: #075E54; /* WhatsApp dark green */
+  padding: 16px;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: auto;
+  color: #f9f9f9;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+.heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #25D366; /* WhatsApp green accent */
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  font-weight: 600;
+  color: #f9f9f9;
+  margin-bottom: 4px;
+}
+
+.input,
+.select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #25D366;
+  background-color: #128C7E; /* darker WhatsApp green */
+  color: #f9f9f9;
+  font-size: 0.95rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.input::placeholder {
+  color: #a7f0d3;
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: #ffeb3b;
+  box-shadow: 0 0 4px #ffeb3b;
+}
+
+.btn {
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px 14px;
+  margin-top: 8px;
+  transition: all 0.3s ease-in-out;
+  width: 100%;
+  text-align: center;
+  display: inline-block;
+}
+
+.btn.primary {
+  background-color: #25D366;
+  color: #075E54;
+}
+
+.btn.primary:hover {
+  background-color: #128C7E;
+  transform: scale(1.03);
+}
+
+.message {
+  margin-top: 10px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.message.success {
+  color: #25D366;
+}
+
+.message.error {
+  color: #ff4444;
+}
+
+/* Spiritual banner */
+.spiritual-banner {
+  margin-top: 16px;
+  font-style: italic;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  border-radius: 8px;
+  color: #ffeb3b;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 12px;
+  }
+
+  .input,
+  .select,
+  .btn {
+    font-size: 0.9rem;
+  }
+}
