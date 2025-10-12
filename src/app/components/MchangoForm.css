@@ -1,259 +1,174 @@
-:root {
-  --blue: #0a174e;
-  --green: #2e7d32;
-  --white: #ffffff;
-  --yellow: #ffd447;
-  --error: #c62828;
-  --radius: 12px;
-  --transition: all 0.3s ease-in-out;
-}
+/* MchangoForm.css - Facebook-style mobile UI */
 
-/* Dark theme overrides */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --blue: #0a174e;
-    --white: #121212;
-    --green: #66bb6a;
-    --yellow: #ffeb3b;
-    --error: #ef5350;
-  }
-
-  body {
-    background-color: var(--white);
-    color: var(--yellow);
-  }
-}
-
-/* Container */
 .mchango-container {
-  max-width: 700px;
-  margin: auto;
-  padding: 24px;
-  background: var(--blue);
-  color: var(--white);
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+  background-color: #f0f2f5; /* Facebook light gray background */
+  border-radius: 12px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-/* Header */
 .mchango-container h2 {
   text-align: center;
-  font-size: 1.6rem;
-  color: var(--yellow);
+  color: #1877f2; /* Facebook blue */
   margin-bottom: 16px;
-  text-shadow: 0 0 6px var(--yellow);
+  font-weight: 600;
+  font-size: 1.5rem;
 }
 
-/* Search Input */
 .search-input {
   width: 100%;
-  padding: 10px;
-  border-radius: var(--radius);
-  border: none;
-  font-size: 0.95rem;
-  margin-bottom: 8px;
-  background: var(--white);
-  color: var(--blue);
+  padding: 10px 14px;
+  border-radius: 25px;
+  border: 1px solid #ccd0d5;
+  font-size: 1rem;
+  background-color: #fff;
+  margin-bottom: 12px;
+  transition: all 0.3s;
 }
 
-/* Suggestions Dropdown */
+.search-input:focus {
+  outline: none;
+  border-color: #1877f2;
+  box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+}
+
 .suggestions {
-  border: 1px solid #ddd;
   list-style: none;
+  margin: 0 0 12px 0;
   padding: 0;
-  margin: 0;
-  max-height: 150px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  max-height: 180px;
   overflow-y: auto;
-  background: var(--white);
-  color: var(--blue);
-  border-radius: var(--radius);
-  animation: fadeSlide 0.3s ease;
 }
 
 .suggestions li {
-  padding: 10px;
-  cursor: pointer;
+  padding: 12px 16px;
   border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
 .suggestions li:hover {
-  background-color: #f3f3f3;
+  background-color: #f0f2f5;
 }
 
-/* Form Grid */
 .form-grid {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
-  margin-top: 16px;
 }
 
 .form-grid label {
-  font-weight: 600;
-  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #050505;
   font-size: 0.95rem;
 }
 
-.form-grid input {
-  width: 100%;
-  padding: 10px;
-  border-radius: var(--radius);
-  border: none;
-  font-size: 0.95rem;
-  background: var(--white);
-  color: var(--blue);
-}
-
-.form-grid button {
-  padding: 10px;
-  background: var(--green);
-  color: var(--white);
-  border: none;
-  border-radius: var(--radius);
-  font-weight: 700;
+.form-grid input,
+.form-grid textarea {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #ccd0d5;
   font-size: 1rem;
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: 0 0 6px rgba(46, 125, 50, 0.4);
+  margin-top: 6px;
+  transition: all 0.3s;
 }
 
-.form-grid button:hover {
-  background: #1b5e20;
-  transform: translateY(-2px);
+.form-grid input:focus,
+.form-grid textarea:focus {
+  outline: none;
+  border-color: #1877f2;
+  box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.15);
+  background-color: #fff;
 }
 
-/* Alert */
-.alert {
-  background: rgba(255, 255, 255, 0.1);
+button {
   padding: 12px;
-  border-left: 4px solid var(--error);
-  color: var(--yellow);
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
   font-weight: 600;
-  border-radius: var(--radius);
+  background-color: #1877f2;
+  color: #fff;
+  transition: background 0.3s;
 }
 
-/* Dialog Overlay */
+button:hover {
+  background-color: #165ecc;
+}
+
+.cancel-btn {
+  background-color: #e4e6eb;
+  color: #050505;
+}
+
+.cancel-btn:hover {
+  background-color: #d8dadf;
+}
+
+.alert {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffecb5;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #856404;
+}
+
+.message {
+  text-align: center;
+  font-weight: 500;
+  margin-top: 12px;
+  color: #1877f2;
+}
+
+/* Dialog */
 .dialog-overlay {
   position: fixed;
-  inset: 0;
-  background-color: rgba(10, 23, 78, 0.7);
-  backdrop-filter: blur(3px);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.25);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 9999;
-  animation: fadeIn 0.4s ease;
+  justify-content: center;
+  z-index: 999;
 }
 
-/* Dialog Box */
 .dialog-box {
-  background: var(--white);
-  color: var(--blue);
-  padding: 24px;
-  border-radius: var(--radius);
+  background-color: #fff;
+  border-radius: 16px;
   width: 90%;
   max-width: 400px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-  animation: slideUp 0.3s ease;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  text-align: center;
 }
 
 .dialog-box h3 {
-  margin-top: 0;
+  color: #1877f2;
   margin-bottom: 16px;
-  text-align: center;
-  font-size: 1.2rem;
-  color: var(--green);
 }
 
-.dialog-box p {
-  margin: 6px 0;
-  font-size: 0.95rem;
-}
-
-/* Dialog Buttons */
 .dialog-buttons {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 10px;
   margin-top: 16px;
 }
 
 .dialog-buttons button {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: var(--radius);
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: var(--transition);
-  color: var(--white);
-  background: var(--green);
+  width: 100%;
 }
 
-.dialog-buttons button:hover {
-  background: #1b5e20;
-}
-
-.cancel-btn {
-  background: var(--error);
-}
-
-.cancel-btn:hover {
-  background: #a30000;
-}
-
-/* Message */
-.message {
-  margin-top: 12px;
+div strong {
+  color: #050505;
   font-weight: 600;
-  text-align: center;
-  animation: fadeSlide 0.3s ease;
-  color: var(--yellow);
-}
-
-/* Animations */
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .mchango-container {
-    padding: 16px;
-  }
-
-  .form-grid input {
-    font-size: 0.85rem;
-    padding: 8px;
-  }
-
-  .form-grid button {
-    font-size: 0.9rem;
-    padding: 8px;
-  }
-
-  .dialog-box h3 {
-    font-size: 1rem;
-  }
-
-  .dialog-box p {
-    font-size: 0.85rem;
-  }
-
-  .dialog-buttons button {
-    font-size: 0.85rem;
-    padding: 8px;
-  }
 }
