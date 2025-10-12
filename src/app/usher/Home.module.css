@@ -1,24 +1,394 @@
-/* 🌈 THEME COLORS */
+/* 🌈 MODERN THEME */
+.container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--white);
+  transition: var(--transition);
+}
+
+.sidebar {
+  width: 220px;
+  background-color: var(--blue);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 12px;
+  border-right: 1px solid #ccc;
+  gap: 8px;
+}
+
+.tabBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  padding: 10px;
+  text-align: left;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.tabBtn:hover {
+  background-color: rgba(255, 235, 59, 0.2); /* Yellow hover effect */
+}
+
+.active {
+  background-color: var(--halotel);
+  color: #fff;
+}
+
+.logoutBtn {
+  margin-top: auto;
+  background-color: var(--red);
+  border: none;
+  color: #fff;
+  padding: 10px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.logoutBtn:hover {
+  background-color: #c62828;
+}
+
+.main {
+  flex: 1;
+  padding: 20px;
+  background-color: var(--white);
+  transition: var(--transition);
+}
+
+.homeTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: 4px;
+}
+
+.subText {
+  color: var(--text-dark);
+  margin-bottom: 4px;
+}
+
+.sectionTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--halotel);
+  margin-bottom: 8px;
+}
+
+.sectionText {
+  color: var(--text-dark);
+  margin-bottom: 12px;
+}
+
+.subTabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.subBtn {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.subBtn:hover {
+  background: #151f5a;
+  transform: scale(1.05);
+}
+
+.subActive {
+  background: var(--halotel);
+  color: #fff;
+}
+
+.sectionContent {
+  margin-top: 12px;
+}
+
+/* 📱 RESPONSIVE */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 10px;
+  }
+
+  .tabBtn {
+    flex: 1 0 auto;
+  }
+
+  .main {
+    padding: 16px;
+  }
+
+  .subTabs {
+    justify-content: flex-start;
+  }
+}
+/* 🟢 Modern Sub-tabs & Cards */
+
+/* Sub-tabs */
+.subTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.subBtn {
+  background: linear-gradient(135deg, var(--blue), #4a5fc1);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.subBtn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #1c2a70, #5a6ed3);
+}
+
+.subActive {
+  background: linear-gradient(135deg, var(--halotel), #66bb6a);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Section Content Cards */
+.sectionContent > div {
+  background: linear-gradient(145deg, #f5f5f5, #ffffff);
+  padding: 16px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  margin-bottom: 12px;
+}
+
+.sectionContent > div:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Reports Dashboard - Summary Cards */
+.summaryCard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.barChart {
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.barChart:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.barChart div {
+  font-weight: 600;
+  color: var(--blue);
+}
+
+/* Buttons inside Reports */
+.runBtn, .groupBtn {
+  background: linear-gradient(135deg, var(--halotel), #66bb6a);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.runBtn:hover, .groupBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #388e3c, #81c784);
+}
+
+/* Action Buttons */
+.actions button {
+  background: linear-gradient(135deg, var(--blue), #3f51b5);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.actions button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Back Button */
+.backBtn {
+  background: linear-gradient(135deg, var(--red), #ef5350);
+}
+
+.backBtn:hover {
+  background: linear-gradient(135deg, #c62828, #e53935);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* 🌈 Floating Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 100%;
+  background: linear-gradient(145deg, var(--blue), #3f51b5);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 12px;
+  gap: 8px;
+  border-radius: 0 12px 12px 0;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1000;
+}
+
+.tabBtn {
+  background: transparent;
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.tabBtn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(3px);
+}
+
+.active {
+  background: linear-gradient(135deg, var(--halotel), #66bb6a);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transform: translateX(2px);
+}
+
+/* Logout Button */
+.logoutBtn {
+  margin-top: auto;
+  background: linear-gradient(135deg, var(--red), #e53935);
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.logoutBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  background: linear-gradient(135deg, #c62828, #ef5350);
+}
+
+/* Main content adjusted for sidebar */
+.main {
+  margin-left: 240px;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+/* 📱 Mobile Adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 8px 0;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.2);
+    transform: translateY(0);
+  }
+
+  .tabBtn {
+    flex: 1;
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 8px 4px;
+  }
+
+  .main {
+    margin-left: 0;
+    margin-bottom: 60px; /* space for floating bottom nav */
+    padding: 12px;
+  }
+
+  /* Floating cards effect */
+  .sectionContent > div,
+  .summaryCard .barChart {
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    margin-bottom: 12px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .sectionContent > div:hover,
+  .summaryCard .barChart:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+  }
+}
+
+/* 🌈 WHATSAPP-THEME COLORS */
 :root {
-  --blue: #1b237e;        /* Deep navy for headers/buttons */
-  --white: #f9f9f9;       /* Light background for cards/tables */
-  --red: #d32f2f;          /* Bright red accent */
-  --halotel: #4caf50;      /* Fresh green for buttons/actions */
-  --yellow: #ffeb3b;       /* Highlight color */
+  --blue: #075E54;        /* WhatsApp dark green header/buttons */
+  --white: #128C7E;       /* WhatsApp green for cards and backgrounds */
+  --red: #D32F2F;         /* Accent red for alerts/buttons */
+  --halotel: #25D366;     /* WhatsApp bright green for buttons */
+  --yellow: #F4E842;      /* Highlights/text */
   --radius: 12px;
   --transition: all 0.3s ease-in-out;
-  --text-dark: #212121;    /* Dark gray for readable text */
-  --text-light: #f5f5f5;
+  --text-dark: #fff;      /* White text on green backgrounds */
+  --text-light: #e0f2f1;
 }
 
 /* 🌙 DARK MODE */
 @media (prefers-color-scheme: dark) {
   :root {
-    --white: #1a1a1a;
-    --red: #ef5350;
-    --halotel: #00cc66;
-    --text-dark: #fff;
+    --white: #075E54;      /* Dark green background for dark mode */
+    --halotel: #25D366;    /* Bright green remains */
     --text-light: #fff;
+    --text-dark: #fff;
   }
 
   body {
@@ -27,13 +397,13 @@
   }
 }
 
-/* 🧱 BODY & DASHBOARD */
+/* 🧱 LAYOUT & BODY */
 body {
   font-family: "Segoe UI", Roboto, sans-serif;
-  margin: 0;
-  padding: 0;
   background-color: var(--white);
   color: var(--text-dark);
+  margin: 0;
+  padding: 0;
 }
 
 .dashboard {
@@ -76,7 +446,7 @@ body {
   padding: 10px;
   border-radius: var(--radius);
   border: 1px solid var(--halotel);
-  background: #fff;
+  background: var(--blue);
   color: var(--text-dark);
   flex: 1 1 auto;
   min-width: 120px;
@@ -91,14 +461,13 @@ body {
 }
 
 .input::placeholder {
-  color: #ffec99;
+  color: #c2fbd7; /* lighter green placeholder */
 }
 
-/* 🟢 BUTTONS */
 .runBtn,
 .groupBtn {
   background: var(--halotel);
-  color: #fff;
+  color: var(--text-dark);
   border: none;
   padding: 10px 12px;
   border-radius: var(--radius);
@@ -109,23 +478,8 @@ body {
 
 .runBtn:hover,
 .groupBtn:hover {
-  background: #388e3c; /* Slightly darker green */
+  background: #128C7E;
   transform: scale(1.05);
-}
-
-.backBtn {
-  background: var(--red);
-  border: 2px solid var(--red);
-  color: #fff;
-  padding: 10px 12px;
-  border-radius: var(--radius);
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.backBtn:hover {
-  background: #b71c1c; /* Darker red */
 }
 
 /* 🧮 SUMMARY CARDS */
@@ -137,7 +491,7 @@ body {
 }
 
 .barChart {
-  background: #fff;
+  background: var(--blue);
   padding: 12px;
   border-radius: var(--radius);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
@@ -149,6 +503,15 @@ body {
 
 .barChart div {
   margin-bottom: 6px;
+}
+
+/* ⚙️ GROUP BUTTONS */
+.groupButtons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-bottom: 16px;
 }
 
 /* 📊 TABLE */
@@ -185,12 +548,12 @@ body {
 
 .table th {
   background: var(--halotel);
-  color: #fff;
+  color: var(--text-dark);
   text-transform: uppercase;
 }
 
 .table td {
-  background: var(--white);
+  background: var(--blue);
   color: var(--text-dark);
 }
 
@@ -204,7 +567,7 @@ body {
 
 .actions button {
   background: var(--blue);
-  color: white;
+  color: var(--text-dark);
   border: none;
   padding: 10px 12px;
   border-radius: var(--radius);
@@ -216,10 +579,25 @@ body {
 }
 
 .actions button:hover {
-  background: #0f1a3d;
+  background: #075E54;
 }
 
-/* 💬 MESSAGE */
+.backBtn {
+  background: var(--red);
+  border: 2px solid var(--red);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.backBtn:hover {
+  background: #c62828;
+}
+
+/* 💬 MESSAGES */
 .message {
   margin-top: 12px;
   font-weight: 600;
