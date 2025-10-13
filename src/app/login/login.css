@@ -1,144 +1,125 @@
-/* login.css - Fully optimized modern dark-blue Instagram-style UI */
+/* login.css - Responsive modern login page */
 
 :root {
-  --dark-bg-start: #0d1321;
-  --dark-bg-end: #1a1f36;
-  --dark-card: rgba(10, 25, 50, 0.85);
-  --dark-input: rgba(30, 40, 70, 0.8);
-  --dark-text: #ffffff;
+  --dark-bg: #0d1321;
+  --dark-card: rgba(10,25,50,0.85);
+  --dark-input: rgba(30,40,70,0.9);
+  --dark-text: #fff;
   --dark-subtext: #a0aec0;
   --dark-accent: #3b82f6;
   --dark-accent-hover: #60a5fa;
-  --dark-highlight: #facc15;
+  --highlight: #facc15;
+  --radius: 16px;
 
   --light-bg: #f0f2f5;
-  --light-card: #ffffff;
+  --light-card: #fff;
   --light-input: #e4e6eb;
   --light-text: #050505;
   --light-subtext: #6b7280;
   --light-accent: #1877f2;
   --light-accent-hover: #145dbf;
-  --light-highlight: #f59e0b;
-
-  --radius: 24px;
 }
 
-/* Base layout */
-body, html {
-  margin: 0;
-  padding: 0;
-  font-family: "Helvetica Neue", Arial, sans-serif;
-  height: 100%;
-  width: 100%;
+body[data-theme="light"] {
+  background: var(--light-bg);
+  color: var(--light-text);
 }
 
 .login-wrapper {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: row;
   min-height: 100vh;
-  background: linear-gradient(180deg, var(--dark-bg-start) 0%, var(--dark-bg-end) 100%);
-  color: var(--dark-text);
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
-@media (min-width: 768px) {
-  .login-wrapper {
-    flex-direction: row;
-  }
-}
-
-/* Left / Right panels */
 .login-left, .login-right {
   flex: 1;
-  padding: 24px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  position: relative;
-  min-height: 50vh;
+  padding: 24px;
 }
 
 .login-left {
   z-index: 2;
+  max-width: 480px;
 }
 
-/* Logo and Heading */
-.church-logo {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 50%;
-  margin-bottom: 16px;
-  border: 2px solid var(--dark-accent);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
+.login-left h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
   margin-bottom: 24px;
   text-align: center;
 }
 
-/* Login card */
-.login-card {
-  background-color: var(--dark-card);
-  backdrop-filter: blur(10px);
-  padding: 32px;
-  border-radius: 32px;
-  width: 90%;
-  max-width: 360px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+form {
   display: flex;
   flex-direction: column;
-  align-items: center;
-}
-
-/* Form styling */
-.login-form {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
   gap: 12px;
 }
 
 label {
   font-weight: 500;
   color: var(--dark-subtext);
-  text-align: left;
 }
 
-input {
+body[data-theme="light"] label {
+  color: var(--light-subtext);
+}
+
+.input, .select {
   padding: 12px;
-  border-radius: 16px;
+  border-radius: var(--radius);
   border: none;
-  background-color: var(--dark-input);
+  background: var(--dark-input);
   color: var(--dark-text);
-  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-input::placeholder {
-  color: #94a3b8;
+body[data-theme="light"] .input,
+body[data-theme="light"] .select {
+  background: var(--light-input);
+  color: var(--light-text);
+}
+
+.input::placeholder {
+  color: var(--dark-subtext);
+}
+
+body[data-theme="light"] .input::placeholder {
+  color: var(--light-subtext);
+}
+
+button, .toggle-password {
+  cursor: pointer;
+  border-radius: var(--radius);
+  border: none;
+  padding: 12px;
+  font-weight: 600;
+  transition: 0.3s;
 }
 
 button[type="submit"] {
-  background-color: var(--dark-accent);
+  background: var(--dark-accent);
   color: #fff;
-  padding: 12px;
-  border-radius: 24px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
 }
 
 button[type="submit"]:hover {
-  background-color: var(--dark-accent-hover);
+  background: var(--dark-accent-hover);
 }
 
-/* Password toggle */
+body[data-theme="light"] button[type="submit"] {
+  background: var(--light-accent);
+}
+
+body[data-theme="light"] button[type="submit"]:hover {
+  background: var(--light-accent-hover);
+}
+
 .password-wrapper {
   position: relative;
+  display: flex;
 }
 
 .toggle-password {
@@ -147,48 +128,44 @@ button[type="submit"]:hover {
   top: 50%;
   transform: translateY(-50%);
   background: none;
-  border: none;
-  color: var(--dark-accent-hover);
-  font-weight: bold;
-  cursor: pointer;
+  color: var(--dark-accent);
 }
 
-/* Messages */
+body[data-theme="light"] .toggle-password {
+  color: var(--light-accent);
+}
+
 .login-message {
   margin-top: 12px;
-  color: var(--dark-highlight);
   font-weight: 600;
+  color: var(--highlight);
   text-align: center;
 }
 
-/* Forgot button */
-.forgot-btn {
+/* Countdown and cartoon */
+.countdown, .show-cartoon {
+  text-align: center;
   margin-top: 16px;
-  background: #009688;
-  color: #fff;
-  padding: 10px;
-  border-radius: 16px;
   font-weight: bold;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s;
 }
 
-.forgot-btn:hover {
-  background: #00bfa5;
+.show-cartoon img {
+  max-width: 180px;
+  border-radius: var(--radius);
 }
 
-/* Media & marquee containers */
-.background-slideshow, .tangazo-hero, .marquee-section {
+/* Right panel tangazo / slideshow */
+.login-right {
+  position: relative;
+  overflow: hidden;
+}
+
+.background-slideshow, .tangazo-hero {
   position: relative;
   width: 100%;
-  max-height: 400px;
-  overflow: hidden;
+  height: 100%;
   border-radius: var(--radius);
-  margin: 12px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  overflow: hidden;
 }
 
 .background-slideshow img,
@@ -197,7 +174,6 @@ button[type="submit"]:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: var(--radius);
   position: absolute;
   top: 0;
   left: 0;
@@ -211,30 +187,20 @@ button[type="submit"]:hover {
   opacity: 1;
 }
 
-/* Overlay for tangazo */
 .tangazo-overlay {
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
+  width: 100%;
   padding: 12px 16px;
   background: rgba(0,0,0,0.5);
-  border-bottom-left-radius: var(--radius);
-  border-bottom-right-radius: var(--radius);
-  color: #fff;
-  font-weight: 600;
-  text-align: center;
 }
 
-/* Scrolling marquee */
 .scrolling-title h1,
 .scrolling-message p {
   margin: 0;
-  font-weight: 600;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
-  display: inline-block;
   animation: scrollText 15s linear infinite;
 }
 
@@ -243,215 +209,16 @@ button[type="submit"]:hover {
   100% { transform: translateX(-100%); }
 }
 
-/* Cartoon/Countdown images */
-.show-cartoon img {
-  width: 180px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  display: block;
-  margin: 12px auto;
-}
-
-/* Responsive adjustments */
+/* Mobile responsive */
 @media (max-width: 768px) {
   .login-wrapper {
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
-
   .login-left, .login-right {
     width: 100%;
-    padding: 16px;
+    max-width: 100%;
   }
-
-  .background-slideshow,
-  .tangazo-hero,
-  .marquee-section {
-    max-height: 250px;
+  .login-right {
+    height: 300px;
   }
-
-  .show-cartoon img {
-    width: 140px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .login-wrapper {
-    flex-direction: row;
-  }
-
-  .background-slideshow,
-  .tangazo-hero,
-  .marquee-section {
-    max-height: 500px;
-  }
-
-  .login-card {
-    max-width: 400px;
-    padding: 40px;
-  }
-}
-
-/* Light theme overrides */
-body[data-theme="light"] {
-  background: var(--light-bg);
-  color: var(--light-text);
-}
-
-body[data-theme="light"] .login-card {
-  background-color: var(--light-card);
-}
-
-body[data-theme="light"] input {
-  background-color: var(--light-input);
-  color: var(--light-text);
-}
-
-body[data-theme="light"] input::placeholder {
-  color: var(--light-subtext);
-}
-
-body[data-theme="light"] label {
-  color: var(--light-subtext);
-}
-
-body[data-theme="light"] button[type="submit"] {
-  background-color: var(--light-accent);
-}
-
-body[data-theme="light"] button[type="submit"]:hover {
-  background-color: var(--light-accent-hover);
-}
-
-body[data-theme="light"] .toggle-password {
-  color: var(--light-accent-hover);
-}
-
-body[data-theme="light"] .login-message {
-  color: var(--light-highlight);
-}
-
-/* login.css - Optimized with animations for slideshow, tangazo, and marquee */
-
-/* Keyframes for fading slides */
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: scale(1.05); }
-  10% { opacity: 1; transform: scale(1); }
-  90% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(0.95); }
-}
-
-/* Background slideshow animation */
-.background-slideshow img {
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: var(--radius);
-  animation: fadeInOut 15s infinite;
-}
-
-/* Each slide gets a different delay for smooth transition */
-.background-slideshow img:nth-child(1) { animation-delay: 0s; }
-.background-slideshow img:nth-child(2) { animation-delay: 5s; }
-.background-slideshow img:nth-child(3) { animation-delay: 10s; }
-
-/* Tangazo/video crossfade */
-.tangazo-hero img,
-.tangazo-hero video {
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: var(--radius);
-  animation: fadeInOut 15s infinite;
-}
-
-.tangazo-hero img:nth-child(1),
-.tangazo-hero video:nth-child(1) { animation-delay: 0s; }
-.tangazo-hero img:nth-child(2),
-.tangazo-hero video:nth-child(2) { animation-delay: 5s; }
-.tangazo-hero img:nth-child(3),
-.tangazo-hero video:nth-child(3) { animation-delay: 10s; }
-
-/* Marquee scrolling text */
-.scrolling-title h1,
-.scrolling-message p {
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-  animation: scrollText 20s linear infinite;
-}
-
-@keyframes scrollText {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
-
-/* Smooth entrance for login card */
-.login-card {
-  opacity: 0;
-  transform: translateY(30px);
-  animation: fadeInCard 1s forwards ease-out 0.5s;
-}
-
-@keyframes fadeInCard {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Button hover animation */
-button[type="submit"] {
-  transition: all 0.3s ease;
-}
-
-button[type="submit"]:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-}
-
-/* Tangazo overlay slide-up */
-.tangazo-overlay {
-  transform: translateY(20px);
-  opacity: 0;
-  animation: slideUpOverlay 1s forwards ease-out 1s;
-}
-
-@keyframes slideUpOverlay {
-  to { transform: translateY(0); opacity: 1; }
-}
-
-/* Cartoon image entrance */
-.show-cartoon img {
-  transform: translateY(20px);
-  opacity: 0;
-  animation: fadeInCard 0.8s forwards ease-out 0.8s;
-}
-
-/* Optional: Slight pulse effect on logo */
-.church-logo {
-  animation: pulseLogo 3s infinite alternate;
-}
-
-@keyframes pulseLogo {
-  from { transform: scale(1); }
-  to { transform: scale(1.05); }
-}
-
-/* Responsive adjustments preserved */
-@media (max-width: 768px) {
-  .background-slideshow,
-  .tangazo-hero,
-  .marquee-section { max-height: 250px; }
-  .show-cartoon img { width: 140px; }
-}
-
-@media (min-width: 1200px) {
-  .background-slideshow,
-  .tangazo-hero,
-  .marquee-section { max-height: 500px; }
 }
