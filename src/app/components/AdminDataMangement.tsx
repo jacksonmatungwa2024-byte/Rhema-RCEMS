@@ -98,15 +98,38 @@ export default function AdminDataManagement() {
   };
 
   const deleteAll = async () => {
-    const ids = rows.map(row => row[primaryKey]).filter(Boolean);
-    const { error } = await supabase.from(selectedTable!).delete().in(primaryKey, ids);
-    if (error) setStatus(`❌ Imeshindikana: ${error.message}`);
-    else {
+  if (!selectedTable || rows.length === 0) {
+    setStatus("⚠️ Hakuna data ya kufuta.");
+    return;
+  }
+
+  const ids = rows
+    .map(row => row[primaryKey])
+    .filter(id => typeof id === "string" || typeof id === "number");
+
+  if (ids.length === 0) {
+    setStatus("⚠️ Hakuna ID halali zilizopatikana.");
+    return;
+  }
+
+  try {
+    const { error } = await supabase
+      .from(selectedTable)
+      .delete()
+      .in(primaryKey, ids);
+
+    if (error) {
+      setStatus(`❌ Imeshindikana: ${error.message}`);
+    } else {
       setRows([]);
       setSelectedRows(new Set());
       setStatus("✅ Data zote zimefutwa.");
     }
-  };
+  } catch (err) {
+    setStatus(`❌ Hitilafu ya mfumo: ${String(err)}`);
+  }
+};
+
 
   return (
     <div className="admin-data-panel">
