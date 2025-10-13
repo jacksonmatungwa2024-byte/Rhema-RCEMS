@@ -97,38 +97,25 @@ export default function AdminDataManagement() {
     }
   };
 
-  const deleteAll = async () => {
-  if (!selectedTable || rows.length === 0) {
-    setStatus("⚠️ Hakuna data ya kufuta.");
+ const deleteAll = async () => {
+  if (!selectedTable) {
+    setStatus("⚠️ Hakuna jedwali lililochaguliwa.");
     return;
   }
 
-  const ids = rows
-    .map(row => row[primaryKey])
-    .filter(id => typeof id === "string" || typeof id === "number");
+  const { error } = await supabase.rpc("delete_all_from_table", {
+    table_name: selectedTable
+  });
 
-  if (ids.length === 0) {
-    setStatus("⚠️ Hakuna ID halali zilizopatikana.");
-    return;
-  }
-
-  try {
-    const { error } = await supabase
-      .from(selectedTable)
-      .delete()
-      .in(primaryKey, ids);
-
-    if (error) {
-      setStatus(`❌ Imeshindikana: ${error.message}`);
-    } else {
-      setRows([]);
-      setSelectedRows(new Set());
-      setStatus("✅ Data zote zimefutwa.");
-    }
-  } catch (err) {
-    setStatus(`❌ Hitilafu ya mfumo: ${String(err)}`);
+  if (error) {
+    setStatus(`❌ Imeshindikana: ${error.message}`);
+  } else {
+    setRows([]);
+    setSelectedRows(new Set());
+    setStatus("✅ Data zote zimefutwa kupitia RPC.");
   }
 };
+
 
 
   return (
