@@ -162,19 +162,6 @@ const [showPin, setShowPin] = useState(false)
       return
     }
 
-    // Check if login is allowed
-    const { data: loginStatus } = await supabase
-      .from("settings")
-      .select("value")
-      .eq("key", "login_enabled")
-      .single()
-
-    const loginAllowed = loginStatus?.value === true || loginStatus?.value === "true"
-    if (!loginAllowed && pin !== "2022") {
-      setLoginMessage("🚫 Mfumo umefungwa kwa sasa. Tafadhali wasiliana na admin au tumia PIN ya kufungua.")
-      return
-    }
-
     const { data: userRecord } = await supabase
       .from("users")
       .select("*")
