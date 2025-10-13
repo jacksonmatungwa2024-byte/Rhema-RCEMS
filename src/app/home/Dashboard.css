@@ -295,4 +295,5 @@ body[data-theme="light"] img {
 button {
   background-color: var(--dark-accent);
   color: #fff;
-  border: none
+  border: none;
+}
