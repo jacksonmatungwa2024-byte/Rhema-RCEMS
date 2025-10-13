@@ -225,6 +225,28 @@ body, .login-wrapper {
 
 
 
+/* Desktop layout: side-by-side login + tangazo */
+@media (min-width: 1024px) {
+  .login-wrapper {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 4rem;
+    gap: 3rem;
+  }
+
+  .login-left {
+    flex: 1;
+    max-width: 480px;
+  }
+
+  .login-right {
+    flex: 1.5;
+    max-width: 800px;
+    height: 400px;
+  }
+}
+
 
 
 
