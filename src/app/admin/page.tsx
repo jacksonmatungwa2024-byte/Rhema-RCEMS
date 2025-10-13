@@ -104,12 +104,7 @@ export default function AdminPanel() {
           <h2>🧭 Admin Panel</h2>
           <p>👤 {user.full_name}</p>
 
-          {/* System lock toggle */}
-          <div style={{ marginTop: "1rem" }}>
-            <button onClick={toggleSystemLock}>
-              {systemLocked ? "✅ Unlock System" : "🚫 Lock Entire System"}
-            </button>
-          </div>
+          
 
           <div>
             {tabs.map((tab) => (
