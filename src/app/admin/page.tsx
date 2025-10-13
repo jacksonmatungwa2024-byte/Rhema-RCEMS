@@ -55,35 +55,6 @@ export default function AdminPanel() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Fetch current system lock status
-  useEffect(() => {
-    const fetchLockStatus = async () => {
-      const { data, error } = await supabase
-        .from("settings")
-        .select("value")
-        .eq("key", "system_locked")
-        .single();
-
-      if (!error && data) {
-        const locked = data.value === true || data.value === "true";
-        setSystemLocked(locked);
-      }
-    };
-
-    fetchLockStatus();
-  }, []);
-
-  // Toggle system lock
-  const toggleSystemLock = async () => {
-    const newValue = !systemLocked;
-
-    const { error } = await supabase
-      .from("settings")
-      .update({ value: JSON.stringify(newValue) }) // JSONB-safe
-      .eq("key", "system_locked");
-
-    if (!error) setSystemLocked(newValue);
-  };
 
   // Load admin session
   useEffect(() => {
