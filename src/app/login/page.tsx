@@ -281,7 +281,7 @@ const [showPin, setShowPin] = useState(false)
         </div>
 
         <h2>
-          🔐 Ingia kwenye Mfumo
+          🔐 
           {settings?.branch_name && <> - {settings.branch_name}</>}
         </h2>
 
