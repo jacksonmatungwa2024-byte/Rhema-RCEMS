@@ -8,11 +8,18 @@
   --gradient-end: #515bd4;
 }
 
-/* Animated gradient background */
-body, .login-wrapper {
+/* Ensure full screen coverage */
+html, body {
+  width: 100%;
+  height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
   font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Animated gradient background */
+body, .login-wrapper {
   background: linear-gradient(45deg, var(--gradient-start), var(--gradient-mid1), var(--gradient-mid2), var(--gradient-end));
   background-size: 800% 800%;
   animation: gradientBG 20s ease infinite;
@@ -30,7 +37,7 @@ body, .login-wrapper {
   100% { background-position: 0% 50%; }
 }
 
-/* Top: Login card */
+/* Login card */
 .login-left {
   width: 100%;
   max-width: 480px;
@@ -130,7 +137,7 @@ body, .login-wrapper {
   text-align: center;
 }
 
-/* Bottom: Tangazo / video */
+/* Tangazo / video */
 .login-right {
   width: 100%;
   max-width: 800px;
@@ -209,7 +216,7 @@ body, .login-wrapper {
   font-size: 1rem;
 }
 
-/* Responsive */
+/* Mobile */
 @media (max-width: 768px) {
   .login-left, .login-right {
     max-width: 100%;
@@ -220,59 +227,33 @@ body, .login-wrapper {
   .login-wrapper {
     padding: 1rem;
     gap: 1.5rem;
+    flex-direction: column;
   }
 }
 
-
-
-/* Desktop layout: side-by-side login + tangazo */
+/* Desktop layout: fullscreen side-by-side */
 @media (min-width: 1024px) {
   .login-wrapper {
+    width: 100vw;
+    height: 100vh;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     padding: 2rem 4rem;
     gap: 3rem;
+    box-sizing: border-box;
   }
 
   .login-left {
     flex: 1;
-    max-width: 480px;
+    max-width: 600px;
+    height: auto;
   }
 
   .login-right {
     flex: 1.5;
     max-width: 800px;
-    height: 400px;
+    height: 100%;
+    max-height: 100vh;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
