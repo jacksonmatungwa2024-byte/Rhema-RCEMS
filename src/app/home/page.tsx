@@ -4,7 +4,6 @@ import React, { useEffect, useState, useRef } from "react"
 import { createClient } from "@supabase/supabase-js"
 import "./Dashboard.css"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { useLockWatcher } from "@/hooks/useLockWatcher" // our new hook
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
