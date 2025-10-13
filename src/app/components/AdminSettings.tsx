@@ -74,8 +74,11 @@ export default function AdminSettings() {
   async function handleSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaving(true);
+    
+const { id, ...payload } = settings;
 
-    const payload = { ...settings };
+
+
 
     const { data, error } = settings.id
       ? await supabase
