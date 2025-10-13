@@ -1,349 +1,156 @@
-/* SajiliMahadhurio.css */
+/* SajiliMahadhurio.css - WhatsApp-style green & dark blue theme with light mode support */
 
-/* Root variables for theme colors */
 :root {
-  --primary-green: #25d366; /* WhatsApp green */
-  --secondary-blue: #075e54; /* Dark blue for contrast */
-  --bg-light: #f0f2f5; /* Light background */
-  --bg-dark: #053d3b; /* Dark section background */
-  --text-dark: #111;
-  --text-light: #fff;
-  --input-bg: #fff;
-  --input-border: #ccc;
-  --btn-hover: #128c7e;
-  --shadow: rgba(0, 0, 0, 0.15);
+  --dark-bg: #0d1321;
+  --dark-card: #0e182e;
+  --dark-input: #1e2a40;
+  --dark-text: #ffffff;
+  --dark-subtext: #94a3b8;
+  --dark-accent: #25d366; /* WhatsApp green */
+  --dark-accent-hover: #1ebe5d;
+  --dark-highlight: #3b82f6;
+
+  --light-bg: #f0f2f5;
+  --light-card: #ffffff;
+  --light-input: #e4e6eb;
+  --light-text: #050505;
+  --light-subtext: #6b7280;
+  --light-accent: #25d366;
+  --light-accent-hover: #1ebe5d;
+  --light-highlight: #3b82f6;
+
+  --radius: 16px;
 }
 
-/* Wrapper */
 .wrapper {
-  max-width: 480px;
-  margin: 20px auto;
+  max-width: 1000px;
+  margin: 0 auto;
   padding: 16px;
-  background: var(--bg-light);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px var(--shadow);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 100vh;
 }
 
-/* Heading */
 .heading {
-  text-align: center;
-  color: var(--secondary-blue);
   font-size: 1.8rem;
-  margin-bottom: 20px;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--dark-text);
+  text-align: center;
 }
 
-/* Section */
 .section {
+  background-color: var(--dark-card);
+  border-radius: var(--radius);
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
 }
 
-/* Labels */
+body[data-theme="light"] .section {
+  background-color: var(--light-card);
+}
+
 .label {
   font-weight: 500;
-  color: var(--secondary-blue);
-  margin-bottom: 4px;
-  font-size: 0.95rem;
+  color: var(--dark-subtext);
 }
 
-/* Inputs and Selects */
-.input,
-.select {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--input-border);
-  font-size: 0.95rem;
-  outline: none;
-  transition: border 0.2s, box-shadow 0.2s;
+body[data-theme="light"] .label {
+  color: var(--light-subtext);
 }
 
-.input:focus,
-.select:focus {
-  border-color: var(--primary-green);
-  box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.3);
-  background: #fff;
-}
-
-/* Buttons */
-.btn {
-  padding: 10px 16px;
+.input, .select {
+  padding: 12px;
+  border-radius: var(--radius);
   border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  background-color: var(--dark-input);
+  color: var(--dark-text);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+body[data-theme="light"] .input,
+body[data-theme="light"] .select {
+  background-color: var(--light-input);
+  color: var(--light-text);
+}
+
+.input::placeholder {
+  color: var(--dark-subtext);
+}
+
+body[data-theme="light"] .input::placeholder {
+  color: var(--light-subtext);
 }
 
 .btn.primary {
-  background: var(--primary-green);
-  color: var(--text-light);
+  background-color: var(--dark-accent);
+  color: #fff;
+  padding: 12px;
+  font-weight: 600;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
-.btn.primary:hover {
-  background: var(--btn-hover);
-  transform: translateY(-1px);
+.btn.primary:hover:not(:disabled) {
+  background-color: var(--dark-accent-hover);
 }
 
-.btn:disabled {
+body[data-theme="light"] .btn.primary {
+  background-color: var(--light-accent);
+}
+
+body[data-theme="light"] .btn.primary:hover:not(:disabled) {
+  background-color: var(--light-accent-hover);
+}
+
+.btn.primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
 }
 
-/* Message */
 .message {
   margin-top: 12px;
-  font-size: 0.95rem;
-  color: var(--secondary-blue);
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--dark-highlight);
+}
+
+body[data-theme="light"] .message {
+  color: var(--light-highlight);
 }
 
 /* Spiritual Banner */
 .spiritual-banner {
-  margin-top: 24px;
+  text-align: center;
   padding: 12px;
-  border-radius: 10px;
-  background: var(--secondary-blue);
-  color: var(--text-light);
-  text-align: center;
-  font-style: italic;
-  font-size: 0.9rem;
-  box-shadow: 0 2px 6px var(--shadow);
+  border-radius: var(--radius);
+  background-color: var(--dark-card);
+  color: var(--dark-accent);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
-/* Responsive adjustments */
-@media (max-width: 600px) {
+body[data-theme="light"] .spiritual-banner {
+  background-color: var(--light-card);
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
   .wrapper {
-    margin: 10px;
     padding: 12px;
   }
 
-  .heading {
-    font-size: 1.5rem;
-  }
-
-  .input,
-  .select {
-    font-size: 0.9rem;
-    padding: 8px 10px;
-  }
-
-  .btn {
-    font-size: 0.95rem;
-    padding: 8px 12px;
-  }
-
-  .spiritual-banner {
-    font-size: 0.85rem;
+  .section {
+    padding: 16px;
   }
 }
 
-/* Optional: Dark Mode support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-light: #111;
-    --bg-dark: #053d3b;
-    --text-dark: #eee;
-    --text-light: #fff;
-    --input-bg: #222;
-    --input-border: #444;
-  }
-
-  .wrapper {
-    background: var(--bg-dark);
-    color: var(--text-light);
-  }
-
-  .input,
-  .select {
-    background: var(--input-bg);
-    color: var(--text-light);
-    border: 1px solid var(--input-border);
-  }
-
-  .message {
-    color: var(--primary-green);
-  }
+/* Optional smooth transitions */
+.input, .select, .btn.primary, .section, .spiritual-banner {
+  transition: all 0.3s ease;
 }
-
-
-
-/* SajiliMahadhurio.css */
-
-/* Root variables for theme colors */
-:root {
-  --primary-green: #25d366; /* WhatsApp green */
-  --secondary-blue: #075e54; /* Dark blue for contrast */
-  --bg-light: #f0f2f5; /* Light background */
-  --bg-dark: #053d3b; /* Dark section background */
-  --text-dark: #111;
-  --text-light: #fff;
-  --input-bg: #dcf8c6; /* WhatsApp chat bubble light green */
-  --input-border: #b2e2b9;
-  --btn-hover: #128c7e;
-  --shadow: rgba(0, 0, 0, 0.15);
-}
-
-/* Wrapper */
-.wrapper {
-  max-width: 480px;
-  margin: 20px auto;
-  padding: 16px;
-  background: var(--bg-light);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px var(--shadow);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Heading */
-.heading {
-  text-align: center;
-  color: var(--secondary-blue);
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-  font-weight: 600;
-}
-
-/* Section */
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* Labels */
-.label {
-  font-weight: 500;
-  color: var(--secondary-blue);
-  margin-bottom: 4px;
-  font-size: 0.95rem;
-}
-
-/* Inputs and Selects as chat bubbles */
-.input,
-.select {
-  padding: 10px 14px;
-  border-radius: 20px;
-  border: 1px solid var(--input-border);
-  font-size: 0.95rem;
-  outline: none;
-  background: var(--input-bg);
-  color: var(--text-dark);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-  transition: all 0.2s;
-  width: 100%;
-}
-
-/* Bubble focus effect */
-.input:focus,
-.select:focus {
-  border-color: var(--primary-green);
-  box-shadow: 0 0 6px rgba(37, 211, 102, 0.4);
-  background: #e6ffe6;
-}
-
-/* Buttons */
-.btn {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 20px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-}
-
-.btn.primary {
-  background: var(--primary-green);
-  color: var(--text-light);
-}
-
-.btn.primary:hover {
-  background: var(--btn-hover);
-  transform: translateY(-1px);
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Message */
-.message {
-  margin-top: 12px;
-  font-size: 0.95rem;
-  color: var(--secondary-blue);
-  font-weight: 500;
-}
-
-/* Spiritual Banner as dark chat bubble */
-.spiritual-banner {
-  margin-top: 24px;
-  padding: 12px 16px;
-  border-radius: 20px;
-  background: var(--secondary-blue);
-  color: var(--text-light);
-  text-align: center;
-  font-style: italic;
-  font-size: 0.9rem;
-  box-shadow: 0 2px 6px var(--shadow);
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  .wrapper {
-    margin: 10px;
-    padding: 12px;
-  }
-
-  .heading {
-    font-size: 1.5rem;
-  }
-
-  .input,
-  .select {
-    font-size: 0.9rem;
-    padding: 8px 12px;
-  }
-
-  .btn {
-    font-size: 0.95rem;
-    padding: 8px 12px;
-  }
-
-  .spiritual-banner {
-    font-size: 0.85rem;
-  }
-}
-
-/* Optional: Dark Mode support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-light: #111;
-    --bg-dark: #053d3b;
-    --text-dark: #eee;
-    --text-light: #fff;
-    --input-bg: #2b2b2b; /* Dark bubble */
-    --input-border: #444;
-  }
-
-  .wrapper {
-    background: var(--bg-dark);
-    color: var(--text-light);
-  }
-
-  .input,
-  .select {
-    background: var(--input-bg);
-    color: var(--text-light);
-    border: 1px solid var(--input-border);
-  }
-
-  .message {
-    color: var(--primary-green);
-  }
-}
-
