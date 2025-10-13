@@ -39,8 +39,7 @@ const Dashboard: React.FC = () => {
   const [audioPlaying, setAudioPlaying] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
-  // 🔒 Apply lock watcher, passing user role
-  useLockWatcher(role)
+  
 
   useEffect(() => {
     const loadUser = async () => {
