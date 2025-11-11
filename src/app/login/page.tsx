@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "./login.css";
 
-
 const supabase = createClient(
-  process.env.NEXTPUBLICSUPABASE_URL!,
-  process.env.NEXTPUBLICSUPABASEANONKEY!
-)
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+
 
 const LoginPage: React.FC = () => {
   const [loginMessage, setLoginMessage] = useState("")
