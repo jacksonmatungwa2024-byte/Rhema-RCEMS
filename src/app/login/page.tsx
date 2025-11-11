@@ -17,7 +17,6 @@ const LoginPage: React.FC = () => {
   const [showPin, setShowPin] = useState(false);
   const router = useRouter();
 
-  // ====== Fetch active settings ======
   useEffect(() => {
     const fetchSettings = async () => {
       const { data, error } = await supabase
@@ -35,7 +34,6 @@ const LoginPage: React.FC = () => {
     fetchSettings();
   }, []);
 
-  // ====== Handle login submission ======
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
@@ -135,6 +133,22 @@ const LoginPage: React.FC = () => {
         </button>
 
         <div className="login-message">{loginMessage}</div>
+
+        {/* 🌍 Footer */}
+        <footer
+          style={{
+            marginTop: "2rem",
+            textAlign: "center",
+            fontSize: "0.9rem",
+            color: "#4a148c",
+            borderTop: "1px solid #ddd",
+            paddingTop: "1rem",
+            opacity: 0.9,
+          }}
+        >
+          Mfumo huu umetengenezwa na <b>Abel Memorial Programmers</b> kwa ushirikiano na{" "}
+          <b>Kitengo cha Usimamizi wa Rasilimali na Utawala – Tanga Quarters</b>.
+        </footer>
       </div>
     </div>
   );
