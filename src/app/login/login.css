@@ -10,9 +10,10 @@ body, html {
   background: #f3e5f5;
   color: #4a148c;
   height: 100%;
+  overflow-x: hidden;
 }
 
-/* ========== Wrapper ========== */
+/* ========== Background Animation ========== */
 .login-wrapper {
   display: flex;
   align-items: center;
@@ -20,20 +21,48 @@ body, html {
   min-height: 100vh;
   background: linear-gradient(135deg, #6a1b9a, #9c27b0);
   padding: 1rem;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 1.5s ease-in;
+}
+
+/* Floating light effect (church-like glowing waves) */
+.login-wrapper::before,
+.login-wrapper::after {
+  content: "";
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3), transparent 70%);
+  animation: floatGlow 8s ease-in-out infinite alternate;
+}
+
+.login-wrapper::before {
+  top: -200px;
+  left: -150px;
+}
+
+.login-wrapper::after {
+  bottom: -200px;
+  right: -150px;
+  animation-delay: 2s;
 }
 
 /* ========== Login Card ========== */
 .login-left {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.95);
   width: 100%;
   max-width: 420px;
-  border-radius: 16px;
+  border-radius: 20px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: all 0.3s ease-in-out;
+  animation: slideUp 1.2s ease-out;
+  backdrop-filter: blur(8px);
+  transition: transform 0.3s ease-in-out;
 }
 
 /* Hover effect (desktop only) */
@@ -59,6 +88,7 @@ body, html {
   border: 3px solid #6a1b9a;
   padding: 5px;
   background: #fff;
+  animation: pulseGlow 3s infinite ease-in-out;
 }
 
 /* ========== Title ========== */
@@ -68,6 +98,7 @@ h2 {
   text-align: center;
   font-weight: 600;
   font-size: 1.3rem;
+  animation: fadeSlideDown 1.2s ease-in-out;
 }
 
 /* ========== Form Inputs ========== */
@@ -75,6 +106,7 @@ form {
   width: 100%;
   display: flex;
   flex-direction: column;
+  animation: fadeSlideUp 1.3s ease-in-out;
 }
 
 label {
@@ -93,11 +125,13 @@ input {
   outline: none;
   transition: all 0.2s ease-in-out;
   font-size: 0.95rem;
+  background: #fafafa;
 }
 
 input:focus {
   border-color: #6a1b9a;
-  box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.1);
+  box-shadow: 0 0 0 4px rgba(106, 27, 154, 0.1);
+  background: #fff;
 }
 
 /* ========== Password Wrapper ========== */
@@ -120,7 +154,7 @@ input:focus {
 /* ========== Submit Button ========== */
 button[type="submit"] {
   margin-top: 1.5rem;
-  background: #6a1b9a;
+  background: linear-gradient(135deg, #6a1b9a, #9c27b0);
   color: #fff;
   border: none;
   padding: 0.9rem;
@@ -128,21 +162,26 @@ button[type="submit"] {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
+  animation: buttonPop 0.8s ease-out;
 }
 
 button[type="submit"]:hover {
-  background: #4a148c;
+  background: linear-gradient(135deg, #7b1fa2, #4a148c);
+  transform: scale(1.03);
+  box-shadow: 0 6px 18px rgba(106, 27, 154, 0.45);
 }
 
 /* ========== Forgot Password Button ========== */
 button[style] {
   font-size: 0.95rem;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 button[style]:hover {
   background: #00796b !important;
+  transform: scale(1.02);
 }
 
 /* ========== Login Message ========== */
@@ -151,6 +190,7 @@ button[style]:hover {
   color: #d32f2f;
   font-weight: 500;
   text-align: center;
+  animation: fadeIn 1s ease-in;
 }
 
 /* ========== Footer ========== */
@@ -163,18 +203,55 @@ footer {
   border-top: 1px solid #e1bee7;
   padding-top: 1rem;
   opacity: 0.85;
+  animation: fadeSlideUp 2s ease-in-out;
 }
 
 footer b {
   color: #6a1b9a;
 }
 
-/* ========== Mobile View (max-width 600px) ========== */
+/* ========== Animations ========== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(106, 27, 154, 0.3); }
+  50% { box-shadow: 0 0 25px rgba(156, 39, 176, 0.6); }
+}
+
+@keyframes floatGlow {
+  from { transform: translateY(0) scale(1); opacity: 0.8; }
+  to { transform: translateY(-20px) scale(1.05); opacity: 1; }
+}
+
+@keyframes buttonPop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ========== Mobile Responsive ========== */
 @media (max-width: 600px) {
   .login-left {
     width: 100%;
     padding: 1.5rem 1rem;
-    border-radius: 12px;
+    border-radius: 14px;
   }
 
   h2 {
@@ -194,4 +271,10 @@ footer b {
     font-size: 0.8rem;
     padding-top: 0.8rem;
   }
-}
+
+  .login-wrapper::before,
+  .login-wrapper::after {
+    width: 400px;
+    height: 400px;
+  }
+  }
