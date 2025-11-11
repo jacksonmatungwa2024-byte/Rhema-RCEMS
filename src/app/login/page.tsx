@@ -1,25 +1,19 @@
-"use client"
-
 import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@supabase/supabase-js"
 import "./login.css"
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXTPUBLICSUPABASE_URL!,
+  process.env.NEXTPUBLICSUPABASEANONKEY!
 )
-
 
 const LoginPage: React.FC = () => {
   const [loginMessage, setLoginMessage] = useState("")
-  const [tangazo, setTangazo] = useState<any>(null)
   const [localAttempts, setLocalAttempts] = useState(0)
-  const [countdown, setCountdown] = useState("")
-  const [showCartoon, setShowCartoon] = useState(false)
-  const [settings, setSettings] = useState<{ logo_url: string; branch_name: string } | null>(null)
-const [showPassword, setShowPassword] = useState(false)
-const [showPin, setShowPin] = useState(false)
+  const [settings, setSettings] = useState<{ logourl: string; branchname: string } | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showPin, setShowPin] = useState(false)
   const router = useRouter()
 
   // ====== Handle reason query param ======
@@ -34,6 +28,226 @@ const [showPin, setShowPin] = useState(false)
     } else if (reason === "expired") {
       setLoginMessage(
         "⏳ Muda wako kwenye mfumo siku ya leo umeisha. Tafadhali sbiri tena ili kuendelea na safari ya uzima."
+      )
+    }
+  }, [])
+
+  // ====== Fetch settings ======
+  useEffect(() => {
+    fetchSettings()
+  }, [])
+
+  async function fetchSettings() {
+    const { data, error } = await supabase
+      .from("settings")
+      .select("logourl, branchname")
+      .eq("is_active", true)
+      .single()
+
+    if (!error) setSettings(data)
+  }
+
+  // ====== Handle login submission ======
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const form = e.target as HTMLFormElement
+    const email = (form.email as HTMLInputElement).value.trim()
+    const password = (form.password as HTMLInputElement).value.trim()
+    const pin = (form.pin as HTMLInputElement).value.trim()
+
+    setLoginMessage("")
+
+    if (!email || !password) {
+      setLoginMessage("Tafadhali jaza taarifa zote.")
+      return
+    }
+
+    const { data: userRecord } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .single()
+
+    if (!userRecord) {
+      const newAttempts = localAttempts + 1
+      setLocalAttempts(newAttempts)
+      if (newAttempts >= 3) router.push("/404")
+      setLoginMessage("❌ Akaunti haijapatikana.")
+      return
+    }
+
+    if (!userRecord.is_active) {
+      setLoginMessage("🚫 Akaunti yako imefungwa. Tafadhali wasiliana na admin.")
+      return
+    }
+
+    const now = new Date()
+    const expiry = userRecord.activeuntil ? new Date(userRecord.activeuntil) : null
+    if (expiry && now > expiry) {
+      await supabase
+        .from("users")
+        .update({ metadata: { resetstatus: "expired" }, activeuntil: null })
+        .eq("id", userRecord.id)
+      setLoginMessage("⏳ Akaunti yako imeisha muda wake. Tafadhali wasiliana na admin kwa upya.")
+      return
+    }
+
+    const status = userRecord.metadata?.reset_status
+    const readyAt = userRecord.metadata?.passwordresetready_at
+    const readyTime = readyAt ? new Date(readyAt) : null
+
+    if (status === "approvedbyadmin") {
+      const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000)
+      await supabase
+        .from("users")
+        .update({
+          metadata: {
+            resetstatus: "readyfor_user",
+            passwordresetready_at: oneHourLater.toISOString()
+          }
+        })
+        .eq("id", userRecord.id)
+      setLoginMessage("✅ Admin amepokea ombi lako. Login tena baada ya lisaa limoja.")
+      return
+    }
+
+    if (status === "readyforuser") {
+      if (readyTime && now < readyTime) {
+        setLoginMessage("⏳ Subiri lisaa limoja kabla ya kuweka nenosiri.")
+        return
+      }
+
+      router.push(`/set-password?user_id=${userRecord.id}`)
+      return
+    }
+
+    if (status === "waitbeforelogin") {
+      if (readyTime && now < readyTime) {
+        setLoginMessage("⏳ Umefanikiwa kubadilisha nenosiri. Login tena baada ya lisaa limoja.")
+        return
+      }
+
+      await supabase
+        .from("users")
+        .update({ metadata: { resetstatus: null, passwordresetreadyat: null } })
+        .eq("id", userRecord.id)
+    }
+
+    const lastFailed = userRecord.lastfailedlogin ? new Date(userRecord.lastfailedlogin) : null
+    const oneHour = 60 * 60 * 1000
+    if (userRecord.login_attempts >= 5 && lastFailed && now.getTime() - lastFailed.getTime() < oneHour) {
+      setLoginMessage("⏳ Umefungiwa kwa saa 1 baada ya majaribio 5 ya kuingia.")
+      return
+    }
+
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (authError || !authData?.user) {
+      const attempts = (userRecord.login_attempts || 0) + 1
+      const updates: any = { loginattempts: attempts, lastfailed_login: now.toISOString() }
+      if (attempts >= 10) updates.is_active = false
+      await supabase.from("users").update(updates).eq("id", userRecord.id)
+      setLoginMessage("❌ Taarifa si sahihi, jaribu tena.")
+      return
+    }
+
+    await supabase.from("users").update({ login_attempts: 0 }).eq("id", userRecord.id)
+    setLocalAttempts(0)
+
+    await fetch("/functions/v1/notify_admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: userRecord.id,
+        email: userRecord.email,
+        fullname: userRecord.fullname
+      })
+    })
+
+    router.push("/home")
+  }
+
+  return (
+    <div className="login-wrapper">
+      <div className="login-left">
+        <div className="logo-container">
+          {settings?.logourl ? (
+            <img src={settings.logourl} alt={settings.branchname || "Institute Logo"} className="church-logo" />
+          ) : (
+            <img src="/fallback-logo.png" alt="Default Logo" className="church-logo" />
+          )}
+        </div>
+
+        <h2>
+          🔐 
+          {settings?.branchname && <> - {settings.branchname}</>}
+        </h2>
+
+        <form onSubmit={handleSubmit} noValidate>
+          <label htmlFor="email">📧 Barua Pepe:</label>
+          <input type="email" id="email" name="email" required placeholder="Andika barua pepe yako" />
+
+          <label htmlFor="password">🔑 Nenosiri:</label>
+          <div className="password-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              required
+              placeholder="Andika nenosiri lako"
+            />
+            <button
+              type="button"
+              className="toggle-password"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+
+          <label htmlFor="pin">🔢 PIN ya Admin (hiari):</label>
+          <div className="password-wrapper">
+            <input
+              type={showPin ? "text" : "password"}
+              id="pin"
+              name="pin"
+              placeholder="Weka PIN kama wewe ni admin"
+            />
+            <button
+              type="button"
+              className="toggle-password"
+              onClick={() => setShowPin(!showPin)}
+            >
+              {showPin ? "Hide" : "Show"}
+            </button>
+          </div>
+
+          <button type="submit">🚪 Ingia</button>
+        </form>
+
+        <button
+          onClick={() => router.push("/forgot-password")}
+          style={{
+            marginTop: "1rem",
+            background: "#009688",
+            color: "#fff",
+            padding: "0.75rem",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          ❓ Umesahau Nenosiri?
+        </button>
+
+        <div className="login-message">{loginMessage}</div>
+      </div>
+    </div>
+  )
+}
+
+export default LoginPage
       )
     }
   }, [])
