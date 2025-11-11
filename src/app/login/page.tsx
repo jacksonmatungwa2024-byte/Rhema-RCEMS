@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { createClient } from "@supabase/supabase-js"
-import "./login.css"
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@supabase/supabase-js";
+import "./login.css";
+
 
 const supabase = createClient(
   process.env.NEXTPUBLICSUPABASE_URL!,
