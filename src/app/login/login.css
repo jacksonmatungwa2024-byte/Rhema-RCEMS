@@ -1,259 +1,197 @@
-/* Root variables for themes and radius */
-:root {
-  --radius: 16px;
-  --dark-card: rgba(10, 25, 50, 0.85);
-  --gradient-start: #f58529;
-  --gradient-mid1: #dd2a7b;
-  --gradient-mid2: #8134af;
-  --gradient-end: #515bd4;
-}
-
-/* Ensure full screen coverage */
-html, body {
-  width: 100%;
-  height: 100%;
+/* ========== Global Reset ========== */
+* {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  box-sizing: border-box;
 }
 
-/* Animated gradient background */
-body, .login-wrapper {
-  background: linear-gradient(45deg, var(--gradient-start), var(--gradient-mid1), var(--gradient-mid2), var(--gradient-end));
-  background-size: 800% 800%;
-  animation: gradientBG 20s ease infinite;
+body, html {
+  font-family: "Poppins", sans-serif;
+  background: #f3e5f5;
+  color: #4a148c;
+  height: 100%;
+}
+
+/* ========== Wrapper ========== */
+.login-wrapper {
   display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: flex-start;
   min-height: 100vh;
-  flex-direction: column;
-  gap: 2rem;
+  background: linear-gradient(135deg, #6a1b9a, #9c27b0);
+  padding: 1rem;
 }
 
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Login card */
+/* ========== Login Card ========== */
 .login-left {
+  background: #fff;
   width: 100%;
-  max-width: 480px;
-  background-color: var(--dark-card);
-  backdrop-filter: blur(10px);
-  border-radius: var(--radius);
-  padding: 2rem;
+  max-width: 420px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease-in-out;
 }
 
-.login-left:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+/* Hover effect (desktop only) */
+@media (hover: hover) {
+  .login-left:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+  }
 }
 
-.login-left .church-logo {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 1rem;
-  border: 2px solid #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-.login-left h2 {
-  color: #fff;
-  font-size: 1.6rem;
-  font-weight: 700;
-  text-align: center;
+/* ========== Logo ========== */
+.logo-container {
+  display: flex;
+  justify-content: center;
   margin-bottom: 1.5rem;
 }
 
-/* Login form */
-.login-left form {
+.church-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 3px solid #6a1b9a;
+  padding: 5px;
+  background: #fff;
+}
+
+/* ========== Title ========== */
+h2 {
+  color: #6a1b9a;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+
+/* ========== Form Inputs ========== */
+form {
+  width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+label {
+  margin-top: 1rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #4a148c;
+}
+
+input {
   width: 100%;
-  gap: 12px;
-}
-
-.login-left input, .login-left select {
-  padding: 12px;
-  border-radius: var(--radius);
-  border: none;
-  background-color: rgba(30, 40, 70, 0.85);
-  color: #fff;
-  font-size: 1rem;
+  padding: 0.75rem;
+  border: 2px solid #d1c4e9;
+  border-radius: 8px;
   outline: none;
+  transition: all 0.2s ease-in-out;
+  font-size: 0.95rem;
 }
 
-.login-left input::placeholder {
-  color: #b0c4de;
+input:focus {
+  border-color: #6a1b9a;
+  box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.1);
 }
 
-.login-left button {
-  padding: 12px;
-  border-radius: var(--radius);
-  border: none;
-  font-weight: 700;
-  cursor: pointer;
-  background: #3b82f6;
-  color: #fff;
-  transition: background 0.3s, transform 0.2s;
-}
-
-.login-left button:hover {
-  background: #60a5fa;
-  transform: translateY(-2px);
-}
-
-/* Toggle password button */
+/* ========== Password Wrapper ========== */
 .password-wrapper {
   position: relative;
 }
 
 .toggle-password {
   position: absolute;
-  right: 12px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
+  background: transparent;
   border: none;
-  color: #60a5fa;
-  font-weight: bold;
+  color: #6a1b9a;
+  font-weight: 600;
   cursor: pointer;
 }
 
-/* Login messages */
-.login-message {
-  margin-top: 12px;
-  color: #facc15;
-  font-weight: 600;
-  text-align: center;
-}
-
-/* Tangazo / video */
-.login-right {
-  width: 100%;
-  max-width: 800px;
-  height: 350px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  border-radius: var(--radius);
-  background-color: rgba(0,0,0,0.3);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-}
-
-/* Slideshow / video */
-.background-slideshow img,
-.tangazo-hero img,
-.tangazo-hero video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: absolute;
-  top: 0; left: 0;
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
-  border-radius: var(--radius);
-}
-
-.background-slideshow img.active,
-.tangazo-hero img.active,
-.tangazo-hero video.active {
-  opacity: 1;
-}
-
-/* Marquee overlay */
-.tangazo-overlay {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding: 12px;
-  background: rgba(0,0,0,0.6);
-  border-bottom-left-radius: var(--radius);
-  border-bottom-right-radius: var(--radius);
-}
-
-.scrolling-title h1,
-.scrolling-message p {
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
+/* ========== Submit Button ========== */
+button[type="submit"] {
+  margin-top: 1.5rem;
+  background: #6a1b9a;
   color: #fff;
-  font-weight: 700;
-  animation: scrollText 20s linear infinite;
-}
-
-@keyframes scrollText {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
-
-/* Cartoon / waiting animation */
-.show-cartoon img {
-  max-width: 200px;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-  display: block;
-  margin: 1rem auto 0 auto;
-}
-
-/* Countdown display */
-.countdown {
-  font-weight: 700;
-  color: #ffeb3b;
-  text-align: center;
-  margin-top: 12px;
+  border: none;
+  padding: 0.9rem;
+  border-radius: 10px;
   font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-  .login-left, .login-right {
-    max-width: 100%;
-  }
-  .login-right {
-    height: 250px;
-  }
-  .login-wrapper {
-    padding: 1rem;
-    gap: 1.5rem;
-    flex-direction: column;
-  }
+button[type="submit"]:hover {
+  background: #4a148c;
 }
 
-/* Desktop layout: fullscreen side-by-side */
-@media (min-width: 1024px) {
-  .login-wrapper {
-    width: 100vw;
-    height: 100vh;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 4rem;
-    gap: 3rem;
-    box-sizing: border-box;
-  }
+/* ========== Forgot Password Button ========== */
+button[style] {
+  font-size: 0.95rem;
+  transition: background 0.3s ease;
+}
 
+button[style]:hover {
+  background: #00796b !important;
+}
+
+/* ========== Login Message ========== */
+.login-message {
+  margin-top: 1.5rem;
+  color: #d32f2f;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ========== Footer ========== */
+footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #4a148c;
+  border-top: 1px solid #e1bee7;
+  padding-top: 1rem;
+  opacity: 0.85;
+}
+
+footer b {
+  color: #6a1b9a;
+}
+
+/* ========== Mobile View (max-width 600px) ========== */
+@media (max-width: 600px) {
   .login-left {
-    flex: 1;
-    max-width: 600px;
-    height: auto;
+    width: 100%;
+    padding: 1.5rem 1rem;
+    border-radius: 12px;
   }
 
-  .login-right {
-    flex: 1.5;
-    max-width: 800px;
-    height: 100%;
-    max-height: 100vh;
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  input, button {
+    font-size: 0.9rem;
+  }
+
+  .church-logo {
+    width: 75px;
+    height: 75px;
+  }
+
+  footer {
+    font-size: 0.8rem;
+    padding-top: 0.8rem;
   }
 }
