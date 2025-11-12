@@ -1,14 +1,13 @@
-"use client"
-
-import React, { useEffect, useState, useRef } from "react"
-import { createClient } from "@supabase/supabase-js"
-import "./Dashboard.css"
-import { SpeedInsights } from "@vercel/speed-insights/next"
+"use client";
+import React, { useEffect, useState, useRef } from "react";
+import { createClient } from "@supabase/supabase-js";
+import "./Dashboard.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+);
 
 const accessMap: Record<string, string[]> = {
   admin: ["adminTab", "usherTab", "pastorTab", "mediaTab", "financeTab"],
@@ -16,7 +15,7 @@ const accessMap: Record<string, string[]> = {
   pastor: ["pastorTab"],
   media: ["mediaTab"],
   finance: ["financeTab"],
-}
+};
 
 const roleLabels: Record<string, string> = {
   admin: "Admin",
@@ -24,51 +23,68 @@ const roleLabels: Record<string, string> = {
   pastor: "Mchungaji",
   media: "Media",
   finance: "Fedha",
-}
+};
 
 const Dashboard: React.FC = () => {
-  const [role, setRole] = useState("")
-  const [username, setUsername] = useState("")
-  const [fullName, setFullName] = useState("")
-  const [branch, setBranch] = useState("")
-  const [profileUrl, setProfileUrl] = useState("")
-  const [lastLogin, setLastLogin] = useState("")
-  const [statusLight, setStatusLight] = useState<"green" | "red" | "grey">("grey")
-  const [statusText, setStatusText] = useState("⏳ Tafadhali chagua paneli.")
-  const [themeVerse, setThemeVerse] = useState("")
-  const [audioPlaying, setAudioPlaying] = useState(false)
-  const audioRef = useRef<HTMLAudioElement>(null)
+  const [role, setRole] = useState("");
+  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [branch, setBranch] = useState("");
+  const [profileUrl, setProfileUrl] = useState("");
+  const [lastLogin, setLastLogin] = useState("");
+  const [statusLight, setStatusLight] = useState<"green" | "red" | "grey">("grey");
+  const [statusText, setStatusText] = useState("⏳ Tafadhali chagua paneli.");
+  const [themeVerse, setThemeVerse] = useState("");
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-  
-
+  // ===== Check session and enforce single active session =====
   useEffect(() => {
-    const loadUser = async () => {
-      const { data: sessionData } = await supabase.auth.getSession()
-      const email = sessionData?.session?.user?.email
+    const checkUserSession = async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const email = sessionData?.session?.user?.email;
+
       if (!email) {
-        window.location.href = "/login"
-        return
+        window.location.href = "/login";
+        return;
       }
 
+      // Fetch user info
       const { data: userData } = await supabase
         .from("users")
         .select("*")
         .eq("email", email)
-        .single()
+        .single();
 
       if (!userData) {
-        alert("Haiwezekani kupata taarifa zako.")
-        window.location.href = "/login"
-        return
+        alert("Haiwezekani kupata taarifa zako.");
+        window.location.href = "/login";
+        return;
       }
 
-      setRole(userData.role)
-      setUsername(userData.username || "")
-      setFullName(userData.full_name || "")
-      setBranch(userData.branch || "")
-      setProfileUrl(userData.profile_url || "")
-      setLastLogin(userData.last_login ? new Date(userData.last_login).toLocaleString() : "")
-    }
+      // If session token doesn't match stored token (optional: implement token column in users table)
+      // Here we assume a `current_session` column storing the last session id for that user
+      // If mismatched, force logout
+      if (userData.current_session && userData.current_session !== sessionData.session?.access_token) {
+        alert("Umeingia kwenye kifaa kingine. Tafadhali ingia tena.");
+        await supabase.auth.signOut();
+        window.location.href = "/login";
+        return;
+      }
+
+      setRole(userData.role);
+      setUsername(userData.username || "");
+      setFullName(userData.full_name || "");
+      setBranch(userData.branch || "");
+      setProfileUrl(userData.profile_url || "");
+      setLastLogin(userData.last_login ? new Date(userData.last_login).toLocaleString() : "");
+
+      // Update current_session for this login
+      await supabase
+        .from("users")
+        .update({ current_session: sessionData.session?.access_token })
+        .eq("email", email);
+    };
 
     const fetchTheme = async () => {
       const { data } = await supabase
@@ -76,32 +92,32 @@ const Dashboard: React.FC = () => {
         .select("message")
         .order("created_at", { ascending: false })
         .limit(1)
-        .single()
-      if (data) setThemeVerse(data.message)
-    }
+        .single();
+      if (data) setThemeVerse(data.message);
+    };
 
-    loadUser()
-    fetchTheme()
-  }, [])
+    checkUserSession();
+    fetchTheme();
+  }, []);
 
   const handleClick = (tabId: string, page: string) => {
     if (!accessMap[role]?.includes(tabId)) {
-      setStatusLight("red")
-      setStatusText("🚫 Huna ruhusa ya kuingia sehemu hii.")
-      return
+      setStatusLight("red");
+      setStatusText("🚫 Huna ruhusa ya kuingia sehemu hii.");
+      return;
     }
 
-    setStatusLight("green")
-    setStatusText(`✅ Unaelekezwa kwenye ${tabId}...`)
-    window.location.href = page
-  }
+    setStatusLight("green");
+    setStatusText(`✅ Unaelekezwa kwenye ${tabId}...`);
+    window.location.href = page;
+  };
 
   const handleAudioPlay = () => {
     if (audioRef.current) {
-      audioRef.current.play()
-      setAudioPlaying(true)
+      audioRef.current.play();
+      setAudioPlaying(true);
     }
-  }
+  };
 
   return (
     <div className="dashboard-container">
@@ -137,7 +153,7 @@ const Dashboard: React.FC = () => {
 
       <SpeedInsights />
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;
