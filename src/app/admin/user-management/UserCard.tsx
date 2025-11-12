@@ -1,67 +1,34 @@
 "use client";
-import React, { useState } from "react";
-import { deleteUser } from "./actions/deleteUser";
-import { generateOtp } from "./actions/generateOtp";
-import { approveOtp } from "./actions/approveOtp";
 
-export default function UserCard({ user, refresh }: any) {
-  const [saving, setSaving] = useState(false);
-  const meta = user.metadata || {};
-  const otp = meta.password_reset_otp;
-  const status = meta.reset_status;
-  const expiresAt = meta.otp_expires_at ? new Date(meta.otp_expires_at) : null;
-  const expired = expiresAt && expiresAt < new Date();
+import { useState } from "react";
+import CountryCodeSelector from "./CountryCodeSelector";
 
-  const handleDelete = async () => {
-    setSaving(true);
-    await deleteUser(user);
-    await refresh();
-    setSaving(false);
-  };
+interface UserCardProps {
+  user: any;
+  onDelete: (id: number, email: string) => void;
+  onGenerateOtp: (id: number, email: string, countryCode: string) => void;
+  onApprove: (id: number) => void;
+  saving: boolean;
+}
 
-  const handleGenerate = async () => {
-    setSaving(true);
-    await generateOtp(user);
-    await refresh();
-    setSaving(false);
-  };
-
-  const handleApprove = async () => {
-    setSaving(true);
-    await approveOtp(user);
-    await refresh();
-    setSaving(false);
-  };
+export default function UserCard({ user, onDelete, onGenerateOtp, onApprove, saving }: UserCardProps) {
+  const [countryCode, setCountryCode] = useState("+255");
 
   return (
     <div className="user-card">
-      <div className="name">
-        <strong>{user.full_name}</strong> ({user.role})
-      </div>
+      <div className="name">{user.full_name} ({user.role})</div>
       <div className="email">📧 {user.email}</div>
-      <div>🔐 Status: {expired ? "⌛ OTP imeisha" : status || "✅ Active"}</div>
+      <div className="status">🔐 Status: {user.metadata?.reset_status || "✅ Active"}</div>
 
-      {otp && (
-        <div className="otp">
-          🧾 OTP: <code>{otp}</code>{" "}
-          {expired ? "(ime-expire)" : "(valid kwa muda)"}
-        </div>
-      )}
+      <CountryCodeSelector value={countryCode} onChange={setCountryCode} />
 
       <div className="action-buttons">
-        <button onClick={handleDelete} disabled={saving}>
-          🗑️ Futa
-        </button>
-        <button onClick={handleGenerate} disabled={saving}>
-          🔐 Tuma OTP
-        </button>
-        {status === "waiting_approval" && !expired && (
-          <button onClick={handleApprove} disabled={saving}>
-            ✅ Idhinisha
-          </button>
+        <button onClick={() => onDelete(user.id, user.email)} disabled={saving}>🗑️ Futa Mtumiaji</button>
+        <button onClick={() => onGenerateOtp(user.id, user.email, countryCode)} disabled={saving}>🔐 Tuma OTP</button>
+        {user.metadata?.reset_status === "waiting_approval" && (
+          <button onClick={() => onApprove(user.id)} disabled={saving}>✅ Thibitisha OTP</button>
         )}
       </div>
     </div>
   );
 }
-
