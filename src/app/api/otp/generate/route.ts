@@ -11,10 +11,9 @@ export async function POST(req: Request) {
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY! // 👈 service key inaruhusu update
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    // Hakikisha user yupo
     const { data: user, error: userError } = await supabase
       .from("users")
       .select("id, metadata")
@@ -25,15 +24,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Mtumiaji hajapatikana." }, { status: 404 });
     }
 
-    // Tengeneza OTP mpya
+    // 🔢 Tengeneza OTP mpya
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // dakika 10
 
-    // Hifadhi OTP na status
     const metadata = {
       ...user.metadata,
       password_reset_otp: otp,
       reset_status: "waiting_approval",
       otp_generated_at: new Date().toISOString(),
+      otp_expires_at: expiry,
     };
 
     const { error: updateError } = await supabase
@@ -48,8 +48,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "OTP imezalishwa.",
-      otp, // optional kwa admin kuona kwenye console
+      message: "OTP imezalishwa. Inasubiri idhini ya admin.",
+      otp,
+      expires_at: expiry,
     });
   } catch (err) {
     console.error("❌ Server error:", err);
