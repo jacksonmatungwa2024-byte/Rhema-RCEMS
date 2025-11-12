@@ -6,9 +6,8 @@ import { deleteUser } from "./actions/deleteUser";
 import { generateOtp } from "./actions/generateOtp";
 import { approveOtp } from "./actions/approveOtp";
 import UserList from "./UserList";
-import "./UserManagement.css";
 
-export default function UserManagementWrapper() {
+export default function UserManagement() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -25,23 +24,21 @@ export default function UserManagementWrapper() {
   const handleDelete = async (userId: number, email: string) => {
     setSaving(true);
     await deleteUser(userId, email);
-    setUsers(prev => prev.filter(u => u.id !== userId));
+    setUsers((prev) => prev.filter((u) => u.id !== userId));
     setSaving(false);
   };
 
-  const handleGenerateOtp = async (userId: number, email: string, countryCode: string) => {
+  const handleGenerateOtp = async (userId: number, phoneNumberWithCode: string, currentMeta: any) => {
     setSaving(true);
-    const updatedUser = await generateOtp(userId, email, countryCode);
-    if (updatedUser)
-      setUsers(prev => prev.map(u => (u.id === userId ? updatedUser : u)));
+    const updatedUser = await generateOtp(userId, phoneNumberWithCode, currentMeta);
+    if (updatedUser) setUsers((prev) => prev.map((u) => (u.id === userId ? updatedUser : u)));
     setSaving(false);
   };
 
-  const handleApprove = async (userId: number) => {
+  const handleApprove = async (userId: number, currentMeta: any) => {
     setSaving(true);
-    const updatedUser = await approveOtp(userId);
-    if (updatedUser)
-      setUsers(prev => prev.map(u => (u.id === userId ? updatedUser : u)));
+    const updatedUser = await approveOtp(userId, currentMeta);
+    if (updatedUser) setUsers((prev) => prev.map((u) => (u.id === userId ? updatedUser : u)));
     setSaving(false);
   };
 
