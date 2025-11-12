@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { createClient } from "@supabase/supabase-js";
 import "./ForgotPassword.css";
 
 const supabase = createClient(
@@ -15,69 +15,73 @@ const WHATSAPP_PLAIN_NUMBER = "255626280792";
 const isValidEmail = (email: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-function useDebounce<T>(value: T, delay = 700) {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
-  return debounced;
-}
-
 export default function ForgotPassword() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [status, setStatus] = useState("");
-  const [showOtp, setShowOtp] = useState(false);
-  const [canRequestOtp, setCanRequestOtp] = useState(false);
-  const [popupMessage, setPopupMessage] = useState<string | null>(null);
   const [otpReady, setOtpReady] = useState(false);
   const otpInputRef = useRef<HTMLInputElement>(null);
+  const [canPromptWhatsApp, setCanPromptWhatsApp] = useState(false);
 
-  const debouncedEmail = useDebounce(email, 800);
-
-  // 🔍 Check if email exists
+  // 🔍 Check if email exists for WhatsApp button
   useEffect(() => {
-    const checkEmailExists = async () => {
-      if (!isValidEmail(debouncedEmail)) {
-        setCanRequestOtp(false);
-        return;
-      }
+    const checkEmail = async () => {
+      if (!isValidEmail(email)) return setCanPromptWhatsApp(false);
 
       const { data, error } = await supabase
         .from("users")
         .select("id")
-        .eq("email", debouncedEmail)
+        .eq("email", email)
         .single();
 
-      setCanRequestOtp(!error && !!data);
+      setCanPromptWhatsApp(!error && !!data);
     };
 
-    checkEmailExists();
-  }, [debouncedEmail]);
+    checkEmail();
+  }, [email]);
 
-  // 📲 Open WhatsApp to request OTP
-  const requestOtp = () => {
-    const message = `Naomba OTP kwa ${debouncedEmail}`;
-    const waLink = `https://wa.me/${WHATSAPP_PLAIN_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.open(waLink, "_blank")?.focus();
-
-    setPopupMessage("📲 WhatsApp imefunguliwa. Tuma ujumbe 'Naomba OTP' ili upokee OTP yako.");
-    setTimeout(() => setPopupMessage(null), 4000);
-    setOtpReady(true);
-
-    setTimeout(() => {
-      otpInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-      otpInputRef.current?.focus();
-      otpInputRef.current?.select();
-    }, 600);
-  };
-
-  // ✅ Verify OTP
-  const verifyOtp = async () => {
+  // 📲 Generate OTP
+  const generateOtp = async () => {
     if (!isValidEmail(email)) {
       setStatus("❌ Tafadhali weka email halali.");
+      return;
+    }
+
+    const res = await fetch("/api/otp/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      setStatus("✅ OTP imezalishwa. Subiri admin athibitishe.");
+      setOtpReady(true);
+
+      // focus input after short delay
+      setTimeout(() => {
+        otpInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        otpInputRef.current?.focus();
+      }, 300);
+    } else {
+      setStatus(`❌ Tatizo: ${data.error || "Haiwezi ku generate OTP."}`);
+    }
+  };
+
+  // 📲 Open WhatsApp to request OTP
+  const openWhatsAppForOtp = () => {
+    const message = `Naomba OTP kwa ${email}`;
+    const waLink = `https://wa.me/${WHATSAPP_PLAIN_NUMBER}?text=${encodeURIComponent(message)}`;
+    window.open(waLink, "_blank")?.focus();
+    generateOtp();
+  };
+
+  // ✅ Verify OTP & admin approval
+  const verifyOtp = async () => {
+    if (!isValidEmail(email) || !otp) {
+      setStatus("❌ Tafadhali weka email na OTP.");
       return;
     }
 
@@ -92,21 +96,14 @@ export default function ForgotPassword() {
       return;
     }
 
-    const metadata = typeof data.metadata === "string" ? JSON.parse(data.metadata) : data.metadata;
-    const storedOtp = metadata?.password_reset_otp?.toString().trim();
-    const resetStatus = metadata?.reset_status;
+    const storedOtp = data.metadata?.password_reset_otp;
+    const resetStatus = data.metadata?.reset_status;
 
-    if (!storedOtp) {
-      setStatus("❌ OTP haijazalishwa bado. Wasiliana na admin.");
-      return;
-    }
-
-    if (storedOtp === otp.trim() && resetStatus === "approved") {
-      setStatus("✅ OTP imeidhinishwa. Endelea kubadilisha password.");
-      setOtpReady(false); // hide OTP field
+    if (storedOtp === otp && resetStatus === "approved") {
+      setStatus("✅ OTP imeidhinishwa na admin. Unaelekezwa kwenye password mpya...");
       router.push(`/update-password?email=${encodeURIComponent(email)}`);
-    } else if (storedOtp === otp.trim() && resetStatus === "waiting_approval") {
-      setStatus("⌛ OTP sahihi, subiri admin athibitishe.");
+    } else if (storedOtp === otp && resetStatus === "waiting_approval") {
+      setStatus("⌛ OTP sahihi. Subiri admin athibitishe nenosiri.");
     } else {
       setStatus("❌ OTP si sahihi au haijathibitishwa.");
     }
@@ -114,9 +111,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="forgot-container">
-      {popupMessage && <div className="popup">{popupMessage}</div>}
-
-      <h2 className="title">🔑 Sahau Nenosiri</h2>
+      <h2>🔑 Sahau Nenosiri</h2>
 
       {!otpReady && (
         <>
@@ -128,27 +123,29 @@ export default function ForgotPassword() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          {canRequestOtp && (
-            <button className="btn btn-whatsapp" onClick={requestOtp}>
-              📲 Omba OTP
+          {canPromptWhatsApp && (
+            <button className="btn btn-whatsapp" onClick={openWhatsAppForOtp}>
+              📲 Pata OTP kwa WhatsApp
             </button>
           )}
+
+          <button className="btn btn-manual" onClick={generateOtp}>
+            ✍️ Generate OTP
+          </button>
         </>
       )}
 
       {otpReady && (
         <div className="otp-section">
           <p className="label">🕐 Ingiza OTP uliyopewa:</p>
-          <div className="otp-wrapper">
-            <input
-              ref={otpInputRef}
-              type="password"
-              placeholder="🔐 OTP"
-              className="input-field otp-input"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-            />
-          </div>
+          <input
+            ref={otpInputRef}
+            type="password"
+            placeholder="🔐 OTP"
+            className="input-field otp-input"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
           <button className="btn btn-verify" onClick={verifyOtp}>
             ✅ Thibitisha OTP
           </button>
@@ -162,5 +159,5 @@ export default function ForgotPassword() {
       )}
     </div>
   );
-    }
+}
                 
