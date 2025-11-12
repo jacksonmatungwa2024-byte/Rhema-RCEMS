@@ -10,7 +10,7 @@ export default function WelcomePage() {
   const [playing, setPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const introRef = useRef<HTMLAudioElement>(null); // 🔊 New intro sound
+  const introRef = useRef<HTMLAudioElement>(null);
 
   // 🎵 Preloader sound + timer
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function WelcomePage() {
       introRef.current.play().catch(() => {});
     }
 
-    const loadTimer = setTimeout(() => setLoading(false), 3000); // show loader for 3s
+    const loadTimer = setTimeout(() => setLoading(false), 3000); // loader 3s
     return () => clearTimeout(loadTimer);
   }, []);
 
@@ -55,14 +55,19 @@ export default function WelcomePage() {
     }
   };
 
-  // 🔄 Loader phase
+  // 🔄 Loader Phase (Light Rays + Glowing Cross)
   if (loading) {
     return (
       <div className={styles.loaderContainer}>
+        {/* Radiant Light Rays */}
+        <div className={styles.lightRays}></div>
+
+        {/* Glowing Cross */}
         <div className={styles.glowCross}></div>
+
         <p className={styles.loaderText}>Lumina Outreach System</p>
 
-        {/* Intro Sound */}
+        {/* Intro Tone */}
         <audio ref={introRef}>
           <source src="/intro-tone.mp3" type="audio/mp3" />
         </audio>
