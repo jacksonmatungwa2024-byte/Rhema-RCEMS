@@ -10,9 +10,15 @@ export default function WelcomePage() {
   const [playing, setPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const introRef = useRef<HTMLAudioElement>(null); // 🔊 New intro sound
 
-  // 🔄 Loader timer
+  // 🎵 Preloader sound + timer
   useEffect(() => {
+    if (introRef.current) {
+      introRef.current.volume = 0.8;
+      introRef.current.play().catch(() => {});
+    }
+
     const loadTimer = setTimeout(() => setLoading(false), 3000); // show loader for 3s
     return () => clearTimeout(loadTimer);
   }, []);
@@ -35,7 +41,7 @@ export default function WelcomePage() {
     }
   };
 
-  // 🎵 Play Lumina theme
+  // 🎶 Play Lumina theme
   const handleTheme = () => {
     if (videoRef.current) {
       videoRef.current.pause();
@@ -49,15 +55,22 @@ export default function WelcomePage() {
     }
   };
 
+  // 🔄 Loader phase
   if (loading) {
     return (
       <div className={styles.loaderContainer}>
         <div className={styles.glowCross}></div>
         <p className={styles.loaderText}>Lumina Outreach System</p>
+
+        {/* Intro Sound */}
+        <audio ref={introRef}>
+          <source src="/intro-tone.mp3" type="audio/mp3" />
+        </audio>
       </div>
     );
   }
 
+  // 🌟 Main Welcome Screen
   return (
     <div className={styles.container}>
       <video
