@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import "./UserManagement.css";
@@ -13,22 +12,20 @@ export default function UserManagement() {
   const [users, setUsers] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
 
-  // ✅ Fetch users from Supabase
-  const fetchUsers = async () => {
-    const { data, error } = await supabase
-      .from("users")
-      .select("id, email, full_name, role, metadata, active_until")
-      .order("full_name", { ascending: true });
-
-    if (error) console.error(error);
-    if (data) setUsers(data);
-  };
-
+  // 🔹 Fetch users
   useEffect(() => {
+    const fetchUsers = async () => {
+      const { data, error } = await supabase
+        .from("users")
+        .select("id, email, full_name, role, metadata, active_until")
+        .order("full_name", { ascending: true });
+      if (error) console.error(error);
+      if (data) setUsers(data);
+    };
     fetchUsers();
   }, []);
 
-  // 🗑️ Delete user completely
+  // 🔹 Delete user
   const deleteUser = async (userId: number, email: string) => {
     setSaving(true);
     try {
@@ -45,73 +42,42 @@ export default function UserManagement() {
     }
   };
 
-  // 🔐 Generate OTP (calls backend route)
-  const initiatePasswordReset = async (email: string) => {
-    setSaving(true);
-    try {
-      const res = await fetch("/api/otp/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+  // 🔹 Generate OTP (valid for 10 mins)
+  const initiatePasswordReset = async (userId: number) => {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // +10 mins
 
-      const data = await res.json();
+    const currentMeta = users.find((u) => u.id === userId)?.metadata || {};
+    const newMeta = {
+      ...currentMeta,
+      password_reset_otp: otp,
+      reset_status: "waiting_approval",
+      otp_expires_at: expiresAt,
+    };
 
-      if (data.success) {
-        alert(
-          `✅ OTP imezalishwa kwa ${email}\nOTP: ${data.otp}\nItaisha saa: ${new Date(
-            data.expires_at
-          ).toLocaleTimeString()}`
-        );
-        await fetchUsers();
-      } else {
-        alert(`❌ ${data.error || data.message}`);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("⚠️ Tatizo la kutuma OTP.");
-    } finally {
-      setSaving(false);
-    }
+    await supabase.from("users").update({ metadata: newMeta }).eq("id", userId);
+    alert(`✅ OTP ya kubadilisha nenosiri: ${otp}\n(Muda wake: Dakika 10)`);
   };
 
-  // ✅ Approve reset request (via API)
+  // 🔹 Approve OTP (admin)
   const approveResetRequest = async (userId: number) => {
-    setSaving(true);
-    try {
-      const res = await fetch("/api/otp/approve", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
-      });
+    const currentMeta = users.find((u) => u.id === userId)?.metadata || {};
+    const newMeta = {
+      ...currentMeta,
+      reset_status: "approved",
+    };
 
-      const data = await res.json();
-
-      if (data.success) {
-        alert("✅ Ombi la kubadilisha nenosiri limeidhinishwa.");
-        await fetchUsers();
-      } else {
-        alert(`❌ ${data.error || data.message}`);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("⚠️ Haiwezi kuidhinisha OTP kwa sasa.");
-    } finally {
-      setSaving(false);
-    }
+    await supabase.from("users").update({ metadata: newMeta }).eq("id", userId);
+    alert("✅ OTP imeidhinishwa. Mtumiaji sasa anaweza kuset nenosiri jipya.");
   };
 
-  // 🧾 Render user cards
   return (
     <div className="user-management-panel">
       <h2>🛠️ User Management</h2>
+
       {users.map((user) => {
         const status = user.metadata?.reset_status;
-        const otp = user.metadata?.password_reset_otp;
-        const expiresAt = user.metadata?.otp_expires_at
-          ? new Date(user.metadata.otp_expires_at)
-          : null;
-        const expired = expiresAt && new Date() > expiresAt;
+        const otpExists = user.metadata?.password_reset_otp;
 
         return (
           <div key={user.id} className="user-card">
@@ -119,18 +85,7 @@ export default function UserManagement() {
               {user.full_name} ({user.role})
             </div>
             <div className="email">📧 {user.email}</div>
-            <div className="status">
-              🔐 Status:{" "}
-              {expired
-                ? "⚠️ OTP imekwisha muda wake"
-                : status || "✅ Active"}
-            </div>
-            {otp && !expired && (
-              <div className="otp-info">
-                🔢 OTP: {otp} (Inaisha{" "}
-                {expiresAt?.toLocaleTimeString()})
-              </div>
-            )}
+            <div className="status">🔐 Status: {status || "✅ Active"}</div>
             <div className="active-until">
               📅 Active Until:{" "}
               {user.active_until
@@ -146,25 +101,20 @@ export default function UserManagement() {
               >
                 🗑️ Futa Mtumiaji
               </button>
-
               <button
-                onClick={() => initiatePasswordReset(user.email)}
+                onClick={() => initiatePasswordReset(user.id)}
                 className="action-button"
-                disabled={
-                  saving ||
-                  (status === "waiting_approval" && !expired)
-                }
+                disabled={saving}
               >
                 🔐 Tuma OTP
               </button>
-
-              {status === "waiting_approval" && !expired && (
+              {status === "waiting_approval" && otpExists && (
                 <button
                   onClick={() => approveResetRequest(user.id)}
                   className="action-button"
                   disabled={saving}
                 >
-                  ✅ Thibitisha Ombi
+                  ✅ Thibitisha OTP
                 </button>
               )}
             </div>
