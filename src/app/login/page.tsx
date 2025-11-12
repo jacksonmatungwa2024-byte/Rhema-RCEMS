@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "./login.css";
@@ -11,24 +10,27 @@ const supabase = createClient(
 );
 
 const LoginPage: React.FC = () => {
+  const router = useRouter();
   const [loginMessage, setLoginMessage] = useState("");
   const [settings, setSettings] = useState<{ logo_url: string; branch_name: string } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showPin, setShowPin] = useState(false);
-  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
+  // 🔄 Fetch active settings
   useEffect(() => {
     const fetchSettings = async () => {
-      const { data, error } = await supabase
-        .from("settings")
-        .select("logo_url, branch_name")
-        .eq("is_active", true)
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from("settings")
+          .select("logo_url, branch_name")
+          .eq("is_active", true)
+          .single();
 
-      if (error) {
-        console.error("Error fetching settings:", error.message);
-      } else if (data) {
-        setSettings(data);
+        if (error) throw error;
+        if (data) setSettings(data);
+      } catch (err) {
+        console.error("Error fetching settings:", err);
       }
     };
     fetchSettings();
@@ -36,42 +38,83 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setLoginMessage("");
+
     const form = e.target as HTMLFormElement;
     const email = (form.email as HTMLInputElement).value.trim();
     const password = (form.password as HTMLInputElement).value.trim();
+    const pin = (form.pin as HTMLInputElement).value.trim();
 
     if (!email || !password) {
-      setLoginMessage("Tafadhali jaza taarifa zote.");
+      setLoginMessage("⚠️ Tafadhali jaza taarifa zote.");
+      setLoading(false);
       return;
     }
 
-    const { data: userRecord } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", email)
-      .single();
+    try {
+      // 1️⃣ Check user
+      const { data: userRecord } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", email)
+        .single();
 
-    if (!userRecord) {
-      setLoginMessage("❌ Akaunti haijapatikana.");
-      return;
+      if (!userRecord) {
+        setLoginMessage("❌ Akaunti haijapatikana.");
+        setLoading(false);
+        return;
+      }
+
+      if (!userRecord.is_active) {
+        setLoginMessage("🚫 Akaunti yako imefungwa. Wasiliana na admin.");
+        setLoading(false);
+        return;
+      }
+
+      // 2️⃣ Enforce single session
+      if (userRecord.current_session) {
+        setLoginMessage("⚠️ Akaunti hii tayari imeingia mahali pengine. Inaisha sasa...");
+        // Optionally expire the old session
+        await supabase
+          .from("users")
+          .update({ current_session: null })
+          .eq("id", userRecord.id);
+      }
+
+      // 3️⃣ Authenticate
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError || !authData?.user) {
+        setLoginMessage("❌ Taarifa si sahihi, jaribu tena.");
+        setLoading(false);
+        return;
+      }
+
+      // 4️⃣ Optional PIN check
+      if (pin && pin !== "1234") {
+        setLoginMessage("❌ PIN si sahihi.");
+        setLoading(false);
+        return;
+      }
+
+      // 5️⃣ Update current session
+      await supabase
+        .from("users")
+        .update({ current_session: authData.session?.access_token, last_login: new Date() })
+        .eq("id", userRecord.id);
+
+      setLoginMessage("✅ Taarifa ni sahihi, unaelekezwa...");
+      setTimeout(() => router.push("/home"), 1500);
+    } catch (err) {
+      console.error(err);
+      setLoginMessage("❌ Hakuna mtandao au seva imeshindikana.");
+    } finally {
+      setLoading(false);
     }
-
-    if (!userRecord.is_active) {
-      setLoginMessage("🚫 Akaunti yako imefungwa. Tafadhali wasiliana na admin.");
-      return;
-    }
-
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (authError || !authData?.user) {
-      setLoginMessage("❌ Taarifa si sahihi, jaribu tena.");
-      return;
-    }
-
-    router.push("/home");
   };
 
   return (
@@ -89,7 +132,7 @@ const LoginPage: React.FC = () => {
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="email">📧 Barua Pepe:</label>
-          <input type="email" id="email" name="email" required placeholder="Andika barua pepe yako" />
+          <input type="email" id="email" name="email" placeholder="Andika barua pepe yako" />
 
           <label htmlFor="password">🔑 Nenosiri:</label>
           <div className="password-wrapper">
@@ -97,7 +140,6 @@ const LoginPage: React.FC = () => {
               type={showPassword ? "text" : "password"}
               id="password"
               name="password"
-              required
               placeholder="Andika nenosiri lako"
             />
             <button type="button" className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
@@ -107,13 +149,20 @@ const LoginPage: React.FC = () => {
 
           <label htmlFor="pin">🔢 PIN ya Admin (hiari):</label>
           <div className="password-wrapper">
-            <input type={showPin ? "text" : "password"} id="pin" name="pin" placeholder="Weka PIN kama wewe ni admin" />
+            <input
+              type={showPin ? "text" : "password"}
+              id="pin"
+              name="pin"
+              placeholder="Weka PIN kama wewe ni admin"
+            />
             <button type="button" className="toggle-password" onClick={() => setShowPin(!showPin)}>
               {showPin ? "Hide" : "Show"}
             </button>
           </div>
 
-          <button type="submit">🚪 Ingia</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "⌛ Inapakia..." : "🚪 Ingia"}
+          </button>
         </form>
 
         <button
@@ -134,7 +183,6 @@ const LoginPage: React.FC = () => {
 
         <div className="login-message">{loginMessage}</div>
 
-        {/* 🌍 Footer */}
         <footer
           style={{
             marginTop: "2rem",
@@ -155,3 +203,4 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
+              
