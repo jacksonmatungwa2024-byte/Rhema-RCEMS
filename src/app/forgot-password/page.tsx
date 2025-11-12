@@ -30,7 +30,7 @@ export default function ForgotPassword() {
   const [otp, setOtp] = useState("");
   const [status, setStatus] = useState("");
   const [showOtp, setShowOtp] = useState(false);
-  const [canPromptWhatsApp, setCanPromptWhatsApp] = useState(false);
+  const [canRequestOtp, setCanRequestOtp] = useState(false);
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
   const [otpReady, setOtpReady] = useState(false);
   const otpInputRef = useRef<HTMLInputElement>(null);
@@ -41,7 +41,7 @@ export default function ForgotPassword() {
   useEffect(() => {
     const checkEmailExists = async () => {
       if (!isValidEmail(debouncedEmail)) {
-        setCanPromptWhatsApp(false);
+        setCanRequestOtp(false);
         return;
       }
 
@@ -51,14 +51,14 @@ export default function ForgotPassword() {
         .eq("email", debouncedEmail)
         .single();
 
-      setCanPromptWhatsApp(!error && !!data);
+      setCanRequestOtp(!error && !!data);
     };
 
     checkEmailExists();
   }, [debouncedEmail]);
 
   // 📲 Open WhatsApp to request OTP
-  const openWhatsAppForOtp = () => {
+  const requestOtp = () => {
     const message = `Naomba OTP kwa ${debouncedEmail}`;
     const waLink = `https://wa.me/${WHATSAPP_PLAIN_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(waLink, "_blank")?.focus();
@@ -74,7 +74,7 @@ export default function ForgotPassword() {
     }, 600);
   };
 
-  // ✅ Verify OTP and check admin approval
+  // ✅ Verify OTP
   const verifyOtp = async () => {
     if (!isValidEmail(email)) {
       setStatus("❌ Tafadhali weka email halali.");
@@ -92,16 +92,21 @@ export default function ForgotPassword() {
       return;
     }
 
-    const storedOtp = data.metadata?.password_reset_otp;
-    const resetStatus = data.metadata?.reset_status;
+    const metadata = typeof data.metadata === "string" ? JSON.parse(data.metadata) : data.metadata;
+    const storedOtp = metadata?.password_reset_otp?.toString().trim();
+    const resetStatus = metadata?.reset_status;
 
-    if (storedOtp === otp && resetStatus === "approved") {
-      setStatus("✅ OTP imeidhinishwa na admin. Tafadhali weka email ili kuset password mpya.");
+    if (!storedOtp) {
+      setStatus("❌ OTP haijazalishwa bado. Wasiliana na admin.");
+      return;
+    }
+
+    if (storedOtp === otp.trim() && resetStatus === "approved") {
+      setStatus("✅ OTP imeidhinishwa. Endelea kubadilisha password.");
       setOtpReady(false); // hide OTP field
-      // redirect user to update-password page with email
       router.push(`/update-password?email=${encodeURIComponent(email)}`);
-    } else if (storedOtp === otp && resetStatus === "waiting_approval") {
-      setStatus("⌛ OTP sahihi. Subiri admin athibitishe nenosiri.");
+    } else if (storedOtp === otp.trim() && resetStatus === "waiting_approval") {
+      setStatus("⌛ OTP sahihi, subiri admin athibitishe.");
     } else {
       setStatus("❌ OTP si sahihi au haijathibitishwa.");
     }
@@ -114,19 +119,21 @@ export default function ForgotPassword() {
       <h2 className="title">🔑 Sahau Nenosiri</h2>
 
       {!otpReady && (
-        <input
-          type="email"
-          className="input-field"
-          placeholder="📧 Weka barua pepe"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      )}
+        <>
+          <input
+            type="email"
+            className="input-field"
+            placeholder="📧 Weka barua pepe"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-      {canPromptWhatsApp && !otpReady && (
-        <button className="btn btn-whatsapp" onClick={openWhatsAppForOtp}>
-          📲 Pata OTP kwa WhatsApp
-        </button>
+          {canRequestOtp && (
+            <button className="btn btn-whatsapp" onClick={requestOtp}>
+              📲 Omba OTP
+            </button>
+          )}
+        </>
       )}
 
       {otpReady && (
@@ -155,5 +162,5 @@ export default function ForgotPassword() {
       )}
     </div>
   );
-      }
-            
+    }
+                
