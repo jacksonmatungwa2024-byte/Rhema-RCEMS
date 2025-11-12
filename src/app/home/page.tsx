@@ -24,30 +24,31 @@ const roleLabels: Record<string, string> = {
   finance: "Fedha",
 };
 
-const Dashboard: React.FC = () => {
+export default function Dashboard() {
   const [role, setRole] = useState("");
-  const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [branch, setBranch] = useState("");
   const [profileUrl, setProfileUrl] = useState("");
   const [lastLogin, setLastLogin] = useState("");
   const [statusLight, setStatusLight] = useState<"green" | "red" | "grey">("grey");
   const [statusText, setStatusText] = useState("⏳ Tafadhali chagua paneli.");
-  const [themeVerse, setThemeVerse] = useState("");
   const [audioPlaying, setAudioPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // ===== Session & Auto-logout =====
+  // ===== Session check + single session enforcement =====
   useEffect(() => {
     const checkSession = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
       const email = sessionData?.session?.user?.email;
 
-      if (!email) {
+      if (!email || !accessToken) {
+        // No active session
         window.location.href = "/login";
         return;
       }
 
+      // Fetch user info
       const { data: userData } = await supabase
         .from("users")
         .select("*")
@@ -55,42 +56,57 @@ const Dashboard: React.FC = () => {
         .single();
 
       if (!userData) {
-        alert("Haiwezekani kupata taarifa zako.");
         window.location.href = "/login";
         return;
       }
 
-      // 🔹 Enforce single active session
-      if (userData.current_session && userData.current_session !== sessionData.session?.access_token) {
-        alert("Umeingia kwenye kifaa kingine. Tafadhali ingia tena.");
+      // 🔹 Single session enforcement
+      if (!userData.current_session || userData.current_session !== accessToken) {
+        alert("Umeingia kwenye kifaa kingine au session imeisha. Tafadhali ingia tena.");
         await supabase.auth.signOut();
         window.location.href = "/login";
         return;
       }
 
-      // Set user data
+      // Set state
       setRole(userData.role);
-      setUsername(userData.username || "");
       setFullName(userData.full_name || "");
       setBranch(userData.branch || "");
       setProfileUrl(userData.profile_url || "");
       setLastLogin(userData.last_login ? new Date(userData.last_login).toLocaleString() : "");
-
-      // 🔹 Save current session token
-      await supabase
-        .from("users")
-        .update({ current_session: sessionData.session?.access_token })
-        .eq("email", email);
 
       // 🔹 Auto logout after 30 mins inactivity
       setTimeout(async () => {
         alert("Umeachwa bila shughuli. Tafadhali ingia tena.");
         await supabase.auth.signOut();
         window.location.href = "/login";
-      }, 30 * 60 * 1000); // 30 minutes
+      }, 30 * 60 * 1000);
     };
 
     checkSession();
+
+    // 🔹 Optional: Poll every 10 sec to check if session is still valid
+    const interval = setInterval(async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      const email = sessionData?.session?.user?.email;
+
+      if (!email || !accessToken) return;
+
+      const { data: userData } = await supabase
+        .from("users")
+        .select("current_session")
+        .eq("email", email)
+        .single();
+
+      if (!userData || userData.current_session !== accessToken) {
+        alert("Session yako imeisha au imechukuliwa na login nyingine. Tafadhali ingia tena.");
+        await supabase.auth.signOut();
+        window.location.href = "/login";
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleClick = (tabId: string, page: string) => {
@@ -117,7 +133,6 @@ const Dashboard: React.FC = () => {
       <h2>Karibu {roleLabels[role] || ""} {fullName}</h2>
       {branch && <div className="info-block">📍 Tawi: {branch}</div>}
       {lastLogin && <div className="info-block">🕒 Ilipoingia mwisho: {lastLogin}</div>}
-      <div className="info-block">📖 {themeVerse || "Leo ni siku ya neema na uzima."}</div>
       {profileUrl && <img src={profileUrl} alt="Profile" />}
       <button onClick={handleAudioPlay}>
         🔊 {audioPlaying ? "Inapigwa..." : "Play Theme"}
@@ -137,6 +152,4 @@ const Dashboard: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default Dashboard;
+}
