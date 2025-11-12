@@ -6,10 +6,10 @@ import { createClient } from "@supabase/supabase-js";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import "./AdminPanel.css";
+
 import AdminMatangazo from "../components/AdminMatangazo";
 import AdminTabManager from "../components/AdminTabManager";
 import AdminReactivation from "../components/AdminReactivation";
-import UserManagement from "../components/UserManagement";
 import UserRegistration from "../components/UserRegistration";
 import AdminDataManagement from "../components/AdminDataMangement";
 import StorageDashboard from "../components/StorageDashboard";
@@ -31,7 +31,7 @@ const supabase = createClient(
 const tabs = [
   { id: "tabManager", label: "🛠️ Tab Manager", component: <AdminTabManager /> },
   { id: "reactivation", label: "🔁 Reactivation", component: <AdminReactivation /> },
-  { id: "users", label: "👥 User Management", component: <UserManagement /> },
+  { id: "users", label: "👥 User Management", link: "/admin/user-management" }, // 🚀 Now opens route
   { id: "registration", label: "📝 Registration", component: <UserRegistration /> },
   { id: "data", label: "📊 Data Management", component: <AdminDataManagement /> },
   { id: "matangazo", label: "📣 Matangazo", component: <AdminMatangazo /> },
@@ -45,18 +45,8 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("tabManager");
   const [isMobile, setIsMobile] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [systemLocked, setSystemLocked] = useState(false);
 
-  // Handle responsive UI
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-
-  // Load admin session
+  // 🔒 Load admin session
   useEffect(() => {
     const loadSession = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
@@ -84,18 +74,34 @@ export default function AdminPanel() {
     loadSession();
   }, [router]);
 
-  // Logout
+  // 📱 Handle responsiveness
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // 🚪 Logout
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
   };
 
+  // 🧭 Handle tab switching
+  const handleTabChange = (tabId: string, link?: string) => {
+    setActiveTab(tabId);
+    if (link) router.push(link);
+  };
+
   if (!user)
     return (
-      <div>
+      <div className="admin-loading">
         <p>⏳ Inapakia dashibodi ya admin...</p>
       </div>
     );
+
+  const currentTab = tabs.find((tab) => tab.id === activeTab);
 
   return (
     <BucketProvider>
@@ -104,13 +110,11 @@ export default function AdminPanel() {
           <h2>🧭 Admin Panel</h2>
           <p>👤 {user.full_name}</p>
 
-          
-
-          <div>
+          <div className="tab-buttons">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id, tab.link)}
                 aria-current={activeTab === tab.id ? "page" : undefined}
               >
                 {tab.label}
@@ -118,15 +122,16 @@ export default function AdminPanel() {
             ))}
           </div>
 
-          <button onClick={handleLogout}>🚪 Toka / Logout</button>
+          <button className="logout-btn" onClick={handleLogout}>
+            🚪 Toka / Logout
+          </button>
         </nav>
 
-        <main>
-          {tabs.find((tab) => tab.id === activeTab)?.component}
-        </main>
+        <main>{currentTab?.component}</main>
 
         <SpeedInsights />
       </div>
     </BucketProvider>
   );
-}
+    }
+      
