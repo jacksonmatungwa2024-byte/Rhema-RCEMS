@@ -41,7 +41,7 @@ export default function ForgotPassword() {
     checkEmail();
   }, [email]);
 
-  // 📲 Generate OTP
+  // 📲 Generate OTP (request admin approval)
   const generateOtp = async () => {
     if (!isValidEmail(email)) {
       setStatus("❌ Tafadhali weka email halali.");
@@ -78,13 +78,18 @@ export default function ForgotPassword() {
     generateOtp();
   };
 
-  // ✅ Verify OTP & admin approval
+  // ✅ Verify OTP & admin approval + expiry
   const verifyOtp = async () => {
-    if (!isValidEmail(email) || !otp) {
-      setStatus("❌ Tafadhali weka email na OTP.");
+    if (!isValidEmail(email)) {
+      setStatus("❌ Tafadhali weka barua pepe halali.");
+      return;
+    }
+    if (!otp || otp.trim().length === 0) {
+      setStatus("❌ Tafadhali weka OTP uliyopewa na admin.");
       return;
     }
 
+    // Fetch user metadata
     const { data, error } = await supabase
       .from("users")
       .select("metadata")
@@ -92,20 +97,41 @@ export default function ForgotPassword() {
       .single();
 
     if (error || !data) {
-      setStatus("❌ Email haijapatikana.");
+      setStatus("❌ Akaunti haijapatikana.");
       return;
     }
 
-    const storedOtp = data.metadata?.password_reset_otp;
-    const resetStatus = data.metadata?.reset_status;
+    const meta = data.metadata || {};
+    const storedOtp = meta.password_reset_otp;
+    const resetStatus = meta.reset_status;
+    const expiresAt = meta.otp_expires_at ? new Date(meta.otp_expires_at) : null;
 
-    if (storedOtp === otp && resetStatus === "approved") {
-      setStatus("✅ OTP imeidhinishwa na admin. Unaelekezwa kwenye password mpya...");
+    // ✅ Check OTP existence
+    if (!storedOtp) {
+      setStatus("❌ Hakuna OTP iliyoombwa kwa akaunti hii. Tafadhali omba mpya.");
+      return;
+    }
+
+    // ⏰ Check expiry
+    if (expiresAt && expiresAt < new Date()) {
+      setStatus("⌛ Muda wa OTP umeisha. Tafadhali omba OTP mpya.");
+      return;
+    }
+
+    // 🔒 Compare OTP
+    if (storedOtp !== otp) {
+      setStatus("❌ OTP uliyoingiza si sahihi.");
+      return;
+    }
+
+    // ✅ Check approval
+    if (resetStatus === "approved") {
+      setStatus("✅ OTP imeidhinishwa na admin. Unaelekezwa kwenye ukurasa wa kuweka nenosiri jipya...");
       router.push(`/update-password?email=${encodeURIComponent(email)}`);
-    } else if (storedOtp === otp && resetStatus === "waiting_approval") {
-      setStatus("⌛ OTP sahihi. Subiri admin athibitishe nenosiri.");
+    } else if (resetStatus === "waiting_approval") {
+      setStatus("⌛ OTP sahihi. Subiri admin athibitishe kwanza.");
     } else {
-      setStatus("❌ OTP si sahihi au haijathibitishwa.");
+      setStatus("⚠️ OTP sahihi, lakini haijathibitishwa na admin bado.");
     }
   };
 
@@ -153,11 +179,19 @@ export default function ForgotPassword() {
       )}
 
       {status && (
-        <div className={`status ${status.startsWith("✅") ? "success" : "error"}`}>
+        <div
+          className={`status ${
+            status.startsWith("✅")
+              ? "success"
+              : status.startsWith("⌛")
+              ? "pending"
+              : "error"
+          }`}
+        >
           {status}
         </div>
       )}
     </div>
   );
-}
-                
+  }
+        
