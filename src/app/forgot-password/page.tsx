@@ -1,104 +1,111 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect, useRef } from "react"
-import { createClient } from "@supabase/supabase-js"
-import "./ForgotPassword.css"
+import React, { useState, useEffect, useRef } from "react";
+import { createClient } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
+import "./ForgotPassword.css";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+);
 
-const WHATSAPP_PLAIN_NUMBER = "255698290332"
+const WHATSAPP_PLAIN_NUMBER = "255626280792";
 
 const isValidEmail = (email: string) =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 function useDebounce<T>(value: T, delay = 700) {
-  const [debounced, setDebounced] = useState(value)
+  const [debounced, setDebounced] = useState(value);
   useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay)
-    return () => clearTimeout(id)
-  }, [value, delay])
-  return debounced
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+  return debounced;
 }
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState("")
-  const [otp, setOtp] = useState("")
-  const [status, setStatus] = useState("")
-  const [showOtp, setShowOtp] = useState(false)
-  const [canPromptWhatsApp, setCanPromptWhatsApp] = useState(false)
-  const [popupMessage, setPopupMessage] = useState<string | null>(null)
-  const [otpReady, setOtpReady] = useState(false)
-  const otpInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [status, setStatus] = useState("");
+  const [showOtp, setShowOtp] = useState(false);
+  const [canPromptWhatsApp, setCanPromptWhatsApp] = useState(false);
+  const [popupMessage, setPopupMessage] = useState<string | null>(null);
+  const [otpReady, setOtpReady] = useState(false);
+  const otpInputRef = useRef<HTMLInputElement>(null);
 
-  const debouncedEmail = useDebounce(email, 800)
+  const debouncedEmail = useDebounce(email, 800);
 
-  // 🔍 Check kama email ipo kwenye DB
+  // 🔍 Check if email exists
   useEffect(() => {
     const checkEmailExists = async () => {
       if (!isValidEmail(debouncedEmail)) {
-        setCanPromptWhatsApp(false)
-        return
+        setCanPromptWhatsApp(false);
+        return;
       }
 
       const { data, error } = await supabase
         .from("users")
         .select("id")
         .eq("email", debouncedEmail)
-        .single()
+        .single();
 
-      setCanPromptWhatsApp(!error && !!data)
-    }
+      setCanPromptWhatsApp(!error && !!data);
+    };
 
-    checkEmailExists()
-  }, [debouncedEmail])
+    checkEmailExists();
+  }, [debouncedEmail]);
 
-  // 📲 Fungua WhatsApp, focus OTP field
+  // 📲 Open WhatsApp to request OTP
   const openWhatsAppForOtp = () => {
-    const message = `naomba otp for ${debouncedEmail}`
-    const waLink = `https://wa.me/${WHATSAPP_PLAIN_NUMBER}?text=${encodeURIComponent(message)}`
-    window.open(waLink, "_blank")?.focus()
+    const message = `Naomba OTP kwa ${debouncedEmail}`;
+    const waLink = `https://wa.me/${WHATSAPP_PLAIN_NUMBER}?text=${encodeURIComponent(message)}`;
+    window.open(waLink, "_blank")?.focus();
 
-    setPopupMessage("📲 WhatsApp imefunguliwa. Tuma ujumbe 'naomba otp' ili upokee OTP yako.")
-    setTimeout(() => setPopupMessage(null), 4000)
-    setOtpReady(true)
+    setPopupMessage("📲 WhatsApp imefunguliwa. Tuma ujumbe 'Naomba OTP' ili upokee OTP yako.");
+    setTimeout(() => setPopupMessage(null), 4000);
+    setOtpReady(true);
 
     setTimeout(() => {
-      otpInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
-      otpInputRef.current?.focus()
-      otpInputRef.current?.select()
-    }, 600)
-  }
+      otpInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      otpInputRef.current?.focus();
+      otpInputRef.current?.select();
+    }, 600);
+  };
 
-  // ✅ Kagua OTP
+  // ✅ Verify OTP and check admin approval
   const verifyOtp = async () => {
     if (!isValidEmail(email)) {
-      setStatus("❌ Tafadhali weka email halali.")
-      return
+      setStatus("❌ Tafadhali weka email halali.");
+      return;
     }
 
     const { data, error } = await supabase
       .from("users")
       .select("metadata")
       .eq("email", email)
-      .single()
+      .single();
 
     if (error || !data) {
-      setStatus("❌ Email haijapatikana.")
-      return
+      setStatus("❌ Email haijapatikana.");
+      return;
     }
 
-    const storedOtp = data.metadata?.password_reset_otp
-    const resetStatus = data.metadata?.reset_status
+    const storedOtp = data.metadata?.password_reset_otp;
+    const resetStatus = data.metadata?.reset_status;
 
-    if (storedOtp === otp && resetStatus === "waiting_approval") {
-      setStatus("✅ OTP sahihi. Tafadhali subiri admin athibitishe nenosiri.")
+    if (storedOtp === otp && resetStatus === "approved") {
+      setStatus("✅ OTP imeidhinishwa na admin. Tafadhali weka email ili kuset password mpya.");
+      setOtpReady(false); // hide OTP field
+      // redirect user to update-password page with email
+      router.push(`/update-password?email=${encodeURIComponent(email)}`);
+    } else if (storedOtp === otp && resetStatus === "waiting_approval") {
+      setStatus("⌛ OTP sahihi. Subiri admin athibitishe nenosiri.");
     } else {
-      setStatus("❌ OTP si sahihi au haijathibitishwa.")
+      setStatus("❌ OTP si sahihi au haijathibitishwa.");
     }
-  }
+  };
 
   return (
     <div className="forgot-container">
@@ -106,47 +113,35 @@ export default function ForgotPassword() {
 
       <h2 className="title">🔑 Sahau Nenosiri</h2>
 
-      <input
-        type="email"
-        className="input-field"
-        placeholder="📧 Weka barua pepe"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      {!otpReady && (
+        <input
+          type="email"
+          className="input-field"
+          placeholder="📧 Weka barua pepe"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      )}
 
-      {canPromptWhatsApp && (
+      {canPromptWhatsApp && !otpReady && (
         <button className="btn btn-whatsapp" onClick={openWhatsAppForOtp}>
           📲 Pata OTP kwa WhatsApp
         </button>
       )}
 
-      <div className="manual-otp">
-        <button className="btn btn-manual" onClick={() => setOtpReady(true)}>
-          ✍️ Ingiza OTP mwenyewe
-        </button>
-      </div>
-
       {otpReady && (
         <div className="otp-section">
           <p className="label">🕐 Ingiza OTP uliyopewa:</p>
-
           <div className="otp-wrapper">
             <input
               ref={otpInputRef}
-              type={showOtp ? "text" : "password"}
+              type="password"
               placeholder="🔐 OTP"
               className="input-field otp-input"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
             />
-            <button
-              className="btn-toggle"
-              onClick={() => setShowOtp(!showOtp)}
-            >
-              {showOtp ? "🙈" : "👁️"}
-            </button>
           </div>
-
           <button className="btn btn-verify" onClick={verifyOtp}>
             ✅ Thibitisha OTP
           </button>
@@ -159,5 +154,6 @@ export default function ForgotPassword() {
         </div>
       )}
     </div>
-  )
-}
+  );
+      }
+            
