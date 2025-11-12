@@ -5,56 +5,91 @@ import styles from "./welcome.module.css";
 
 export default function WelcomePage() {
   const router = useRouter();
-  const [showButton, setShowButton] = useState(false);
-  const [playingTheme, setPlayingTheme] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const [showOptions, setShowOptions] = useState(false);
+  const [playing, setPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowButton(true), 1000);
+    const timer = setTimeout(() => setShowOptions(true), 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  const handlePlay = () => {
+  // ======= Option 1: Play video with sound =======
+  const handleVideo = () => {
     if (videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current.play();
+      setPlaying(true);
+      // redirect after video ends
+      videoRef.current.onended = () => router.push("/login");
+    }
+  };
+
+  // ======= Option 2: Play Lumina theme =======
+  const handleTheme = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
       videoRef.current.classList.add(styles.fadeOut);
-      setTimeout(() => videoRef.current?.pause(), 800);
     }
     if (audioRef.current) {
       audioRef.current.volume = 1;
       audioRef.current.play();
-      setPlayingTheme(true);
+      setPlaying(true);
+      // redirect after 15 sec
+      setTimeout(() => router.push("/login"), 15000);
     }
-    setTimeout(() => router.push("/login"), 15000);
   };
 
   return (
     <div className={styles.container}>
-      <video ref={videoRef} className={styles.videoBackground} autoPlay playsInline>
+      {/* Background Video */}
+      <video
+        ref={videoRef}
+        className={styles.videoBackground}
+        autoPlay
+        muted
+        playsInline
+      >
         <source src="/aerial.mp4" type="video/mp4" />
       </video>
 
+      {/* Welcome Text */}
       <h1 className={`${styles.glowText} ${styles.fadeIn}`}>
         🕊️ Karibu <span className={styles.brand}>Lumina Outreach System</span>
       </h1>
-
       <p className={`${styles.subText} ${styles.fadeInDelay}`}>
         “Karibu mahali pa mwanga na uratibu.”
       </p>
 
-      {showButton && !playingTheme && (
-        <button className={styles.glowButton} onClick={handlePlay}>
-          🔊 Sikia Muziki
-        </button>
+      {/* User Options */}
+      {showOptions && !playing && (
+        <div className={styles.buttonGroup}>
+          <button className={styles.glowButton} onClick={handleVideo}>
+            ▶️ Sikiliza Video
+          </button>
+          <button className={styles.glowButton} onClick={handleTheme}>
+            🔊 Sikiliza Lumina
+          </button>
+        </div>
       )}
 
+      {/* Audio */}
       <audio ref={audioRef}>
         <source src="/theme.mp3" type="audio/mp3" />
       </audio>
 
+      {/* Footer */}
       <footer className={`${styles.footer} ${styles.fadeInDelay5}`}>
-        © November 2025, Lumina  Legacy
+        🙌 Mfumo huu umetengenezwa na <b>Abel Memorial Programmers</b>  
+        <br />
+        kwa ushirikiano na  
+        <br />
+        <b>Kitengo cha Usimamizi wa Rasilimali na Utawala – Tanga Quarters</b>
+        <br />
+        <span className={styles.legacy}>© Lumina RCEMS Legacy</span>
       </footer>
     </div>
   );
-}
+      }
+      
