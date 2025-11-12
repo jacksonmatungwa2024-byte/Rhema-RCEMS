@@ -13,74 +13,105 @@ export default function UserManagement() {
   const [users, setUsers] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
 
+  // ✅ Fetch users from Supabase
+  const fetchUsers = async () => {
+    const { data, error } = await supabase
+      .from("users")
+      .select("id, email, full_name, role, metadata, active_until")
+      .order("full_name", { ascending: true });
+
+    if (error) console.error(error);
+    if (data) setUsers(data);
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      const { data, error } = await supabase
-        .from("users")
-        .select("id, email, full_name, role, metadata, active_until")
-        .order("full_name", { ascending: true });
-
-      if (error) console.error(error);
-      if (data) setUsers(data);
-    };
-
     fetchUsers();
   }, []);
 
+  // 🗑️ Delete user completely
   const deleteUser = async (userId: number, email: string) => {
     setSaving(true);
     try {
       const { data: authData } = await supabase.auth.admin.listUsers();
-      const authUser = authData?.users?.find(u => u.email === email);
+      const authUser = authData?.users?.find((u) => u.email === email);
       if (!authUser) return alert("❌ Auth user not found.");
 
       await supabase.auth.admin.deleteUser(authUser.id);
       await supabase.from("users").delete().eq("id", userId);
-      setUsers(prev => prev.filter(u => u.id !== userId));
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
       alert("✅ Mtumiaji amefutwa kikamilifu.");
     } finally {
       setSaving(false);
     }
   };
 
-  const initiatePasswordReset = async (userId: number) => {
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const currentMeta = users.find(u => u.id === userId)?.metadata || {};
-    await supabase
-      .from("users")
-      .update({
-        metadata: {
-          ...currentMeta,
-          password_reset_otp: otp,
-          reset_status: "waiting_approval",
-        },
-      })
-      .eq("id", userId);
-    alert(`✅ OTP ya kubadilisha nenosiri: ${otp}`);
+  // 🔐 Generate OTP (calls backend route)
+  const initiatePasswordReset = async (email: string) => {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/otp/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert(
+          `✅ OTP imezalishwa kwa ${email}\nOTP: ${data.otp}\nItaisha saa: ${new Date(
+            data.expires_at
+          ).toLocaleTimeString()}`
+        );
+        await fetchUsers();
+      } else {
+        alert(`❌ ${data.error || data.message}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("⚠️ Tatizo la kutuma OTP.");
+    } finally {
+      setSaving(false);
+    }
   };
 
+  // ✅ Approve reset request (via API)
   const approveResetRequest = async (userId: number) => {
-    const currentMeta = users.find(u => u.id === userId)?.metadata || {};
-    await supabase
-      .from("users")
-      .update({
-        metadata: {
-          ...currentMeta,
-          reset_status: "approved_by_admin",
-        },
-      })
-      .eq("id", userId);
-    alert("✅ Ombi la kubadilisha nenosiri limeidhinishwa.");
+    setSaving(true);
+    try {
+      const res = await fetch("/api/otp/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("✅ Ombi la kubadilisha nenosiri limeidhinishwa.");
+        await fetchUsers();
+      } else {
+        alert(`❌ ${data.error || data.message}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("⚠️ Haiwezi kuidhinisha OTP kwa sasa.");
+    } finally {
+      setSaving(false);
+    }
   };
 
+  // 🧾 Render user cards
   return (
     <div className="user-management-panel">
       <h2>🛠️ User Management</h2>
-      {users.map(user => {
+      {users.map((user) => {
         const status = user.metadata?.reset_status;
-        const otpExists =
-          user.metadata?.password_reset_otp &&
-          user.metadata?.reset_status === "waiting_approval";
+        const otp = user.metadata?.password_reset_otp;
+        const expiresAt = user.metadata?.otp_expires_at
+          ? new Date(user.metadata.otp_expires_at)
+          : null;
+        const expired = expiresAt && new Date() > expiresAt;
 
         return (
           <div key={user.id} className="user-card">
@@ -89,8 +120,17 @@ export default function UserManagement() {
             </div>
             <div className="email">📧 {user.email}</div>
             <div className="status">
-              🔐 Status: {status || "✅ Active"}
+              🔐 Status:{" "}
+              {expired
+                ? "⚠️ OTP imekwisha muda wake"
+                : status || "✅ Active"}
             </div>
+            {otp && !expired && (
+              <div className="otp-info">
+                🔢 OTP: {otp} (Inaisha{" "}
+                {expiresAt?.toLocaleTimeString()})
+              </div>
+            )}
             <div className="active-until">
               📅 Active Until:{" "}
               {user.active_until
@@ -106,14 +146,19 @@ export default function UserManagement() {
               >
                 🗑️ Futa Mtumiaji
               </button>
+
               <button
-                onClick={() => initiatePasswordReset(user.id)}
+                onClick={() => initiatePasswordReset(user.email)}
                 className="action-button"
-                disabled={saving || otpExists}
+                disabled={
+                  saving ||
+                  (status === "waiting_approval" && !expired)
+                }
               >
                 🔐 Tuma OTP
               </button>
-              {status === "waiting_approval" && (
+
+              {status === "waiting_approval" && !expired && (
                 <button
                   onClick={() => approveResetRequest(user.id)}
                   className="action-button"
