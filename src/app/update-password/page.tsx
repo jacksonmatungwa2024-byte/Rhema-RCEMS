@@ -1,4 +1,6 @@
-"use client"; // <- this makes the entire page client-side
+"use client";
+
+export const dynamic = "force-dynamic"; // prevents prerendering
 
 import UpdatePassword from "./UpdatePassword";
 
