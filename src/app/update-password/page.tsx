@@ -1,4 +1,4 @@
-"use client";
+"use client"; // <- this makes the entire page client-side
 
 import UpdatePassword from "./UpdatePassword";
 
