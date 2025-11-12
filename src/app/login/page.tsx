@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
@@ -26,7 +27,6 @@ const LoginPage: React.FC = () => {
           .select("logo_url, branch_name")
           .eq("is_active", true)
           .single();
-
         if (error) throw error;
         if (data) setSettings(data);
       } catch (err) {
@@ -53,15 +53,28 @@ const LoginPage: React.FC = () => {
     }
 
     try {
-      // 1️⃣ Check user
-      const { data: userRecord } = await supabase
+      // 1️⃣ Authenticate with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError || !authData?.user) {
+        console.log("Supabase authError:", authError);
+        setLoginMessage("❌ Taarifa si sahihi, jaribu tena.");
+        setLoading(false);
+        return;
+      }
+
+      // 2️⃣ Fetch user metadata from 'users' table
+      const { data: userRecord, error: userError } = await supabase
         .from("users")
         .select("*")
         .eq("email", email)
         .single();
 
-      if (!userRecord) {
-        setLoginMessage("❌ Akaunti haijapatikana.");
+      if (userError || !userRecord) {
+        setLoginMessage("❌ Akaunti haijapatikana kwenye mfumo.");
         setLoading(false);
         return;
       }
@@ -72,46 +85,19 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      // 2️⃣ Enforce single session
-      if (userRecord.current_session) {
-        setLoginMessage("⚠️ Akaunti hii tayari imeingia mahali pengine. Inaisha sasa...");
-        // Optionally expire the old session
-        await supabase
-          .from("users")
-          .update({ current_session: null })
-          .eq("id", userRecord.id);
-      }
-
-      // 3️⃣ Authenticate
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (authError || !authData?.user) {
-        setLoginMessage("❌ Taarifa si sahihi, jaribu tena.");
-        setLoading(false);
-        return;
-      }
-
-      // 4️⃣ Optional PIN check
-      if (pin && pin !== "1234") {
+      // 3️⃣ Optional PIN check (admin)
+      if (userRecord.role === "admin" && pin && pin !== userRecord.metadata?.admin_pin) {
         setLoginMessage("❌ PIN si sahihi.");
         setLoading(false);
         return;
       }
 
-      // 5️⃣ Update current session
-      await supabase
-        .from("users")
-        .update({ current_session: authData.session?.access_token, last_login: new Date() })
-        .eq("id", userRecord.id);
-
+      // 4️⃣ Successful login: redirect
       setLoginMessage("✅ Taarifa ni sahihi, unaelekezwa...");
-      setTimeout(() => router.push("/home"), 1500);
+      setTimeout(() => router.push("/home"), 1000);
     } catch (err) {
-      console.error(err);
-      setLoginMessage("❌ Hakuna mtandao au seva imeshindikana.");
+      console.error("Login error:", err);
+      setLoginMessage("❌ Tatizo la mtandao au seva.");
     } finally {
       setLoading(false);
     }
@@ -203,4 +189,3 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
-              
