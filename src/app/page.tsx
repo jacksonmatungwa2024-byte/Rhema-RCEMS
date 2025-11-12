@@ -5,28 +5,37 @@ import styles from "./welcome.module.css";
 
 export default function WelcomePage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [showOptions, setShowOptions] = useState(false);
   const [playing, setPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
+  // 🔄 Loader timer
   useEffect(() => {
-    const timer = setTimeout(() => setShowOptions(true), 1000);
-    return () => clearTimeout(timer);
+    const loadTimer = setTimeout(() => setLoading(false), 3000); // show loader for 3s
+    return () => clearTimeout(loadTimer);
   }, []);
 
-  // ======= Option 1: Play video with sound =======
+  // 🎛️ Show buttons after animation
+  useEffect(() => {
+    if (!loading) {
+      const timer = setTimeout(() => setShowOptions(true), 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
+
+  // ▶️ Play video with sound
   const handleVideo = () => {
     if (videoRef.current) {
       videoRef.current.muted = false;
       videoRef.current.play();
       setPlaying(true);
-      // redirect after video ends
       videoRef.current.onended = () => router.push("/login");
     }
   };
 
-  // ======= Option 2: Play Lumina theme =======
+  // 🎵 Play Lumina theme
   const handleTheme = () => {
     if (videoRef.current) {
       videoRef.current.pause();
@@ -36,14 +45,21 @@ export default function WelcomePage() {
       audioRef.current.volume = 1;
       audioRef.current.play();
       setPlaying(true);
-      // redirect after 15 sec
       setTimeout(() => router.push("/login"), 15000);
     }
   };
 
+  if (loading) {
+    return (
+      <div className={styles.loaderContainer}>
+        <div className={styles.glowCross}></div>
+        <p className={styles.loaderText}>Lumina Outreach System</p>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
-      {/* Background Video */}
       <video
         ref={videoRef}
         className={styles.videoBackground}
@@ -54,15 +70,14 @@ export default function WelcomePage() {
         <source src="/aerial.mp4" type="video/mp4" />
       </video>
 
-      {/* Welcome Text */}
       <h1 className={`${styles.glowText} ${styles.fadeIn}`}>
         🕊️ Karibu <span className={styles.brand}>Lumina Outreach System</span>
       </h1>
+
       <p className={`${styles.subText} ${styles.fadeInDelay}`}>
         “Karibu mahali pa mwanga na uratibu.”
       </p>
 
-      {/* User Options */}
       {showOptions && !playing && (
         <div className={styles.buttonGroup}>
           <button className={styles.glowButton} onClick={handleVideo}>
@@ -74,12 +89,10 @@ export default function WelcomePage() {
         </div>
       )}
 
-      {/* Audio */}
       <audio ref={audioRef}>
         <source src="/theme.mp3" type="audio/mp3" />
       </audio>
 
-      {/* Footer */}
       <footer className={`${styles.footer} ${styles.fadeInDelay5}`}>
         🙌 Mfumo huu umetengenezwa na <b>Abel Memorial Programmers</b>  
         <br />
@@ -91,5 +104,4 @@ export default function WelcomePage() {
       </footer>
     </div>
   );
-      }
-      
+}
