@@ -21,7 +21,6 @@ export default function UpdatePassword() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🔍 Fetch user and check OTP approval
   useEffect(() => {
     if (!email) {
       setStatus("❌ Email haijapatikana. Tumia link sahihi kutoka OTP.");
@@ -41,9 +40,16 @@ export default function UpdatePassword() {
           return;
         }
 
-        // 🔹 Ensure OTP is approved by admin
-        if (data.metadata?.reset_status !== "approved_by_admin") {
+        const meta = data.metadata || {};
+        const now = new Date();
+
+        if (meta.reset_status !== "approved_by_admin") {
           setStatus("⏳ Subiri admin kuthibitisha OTP yako.");
+          return;
+        }
+
+        if (meta.password_reset_otp_expires_at && new Date(meta.password_reset_otp_expires_at) < now) {
+          setStatus("❌ OTP imeisha muda wake. Tafadhali jaribu tena.");
           return;
         }
 
@@ -128,12 +134,7 @@ export default function UpdatePassword() {
         </button>
       </form>
 
-      {status && (
-        <div className={`status ${status.startsWith("✅") ? "success" : "error"}`}>
-          {status}
-        </div>
-      )}
+      {status && <div className={`status ${status.startsWith("✅") ? "success" : "error"}`}>{status}</div>}
     </div>
   );
-  }
-      
+}
