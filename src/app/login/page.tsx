@@ -64,7 +64,7 @@ const LoginPage: React.FC = () => {
       const { data: userRecord, error: userError } = await supabase
         .from("users")
         .select("*")
-        .eq("id", authData.user.id) // match by auth user id
+        .eq("id", authData.user.id) // ensure id matches auth.users.id
         .single();
 
       if (userError || !userRecord) {
@@ -81,7 +81,7 @@ const LoginPage: React.FC = () => {
 
       // Step 3: Optional admin PIN check
       if (userRecord.role === "admin") {
-        const adminPin = userRecord.metadata?.admin_pin || "";
+        const adminPin = userRecord.admin_pin || ""; // use field from your table
         if (pinInput && pinInput !== adminPin) {
           setLoginMessage("❌ PIN ya admin si sahihi.");
           setLoading(false);
@@ -91,7 +91,6 @@ const LoginPage: React.FC = () => {
 
       // Success
       setLoginMessage("✅ Taarifa ni sahihi, unaelekezwa...");
-      // Redirect based on role
       setTimeout(() => {
         if (userRecord.role === "admin") {
           router.push("/admin");
@@ -164,6 +163,9 @@ const LoginPage: React.FC = () => {
       </div>
     </div>
   );
+};
+
+export default LoginPage;  );
 };
 
 export default LoginPage;
