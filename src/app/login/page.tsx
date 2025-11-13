@@ -17,6 +17,7 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPin, setShowPin] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<any>(null); // debug panel state
 
   // Fetch active settings
   useEffect(() => {
@@ -35,6 +36,7 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setLoginMessage("");
+    setDebugInfo(null);
 
     const form = e.target as HTMLFormElement;
     const emailInput = (form.email as HTMLInputElement).value.trim().toLowerCase();
@@ -55,26 +57,40 @@ const LoginPage: React.FC = () => {
       });
 
       if (authError || !authData.user) {
-        setLoginMessage("❌ Akaunti haijapatikana au nenosiri si sahihi.");
+        setLoginMessage("❌ Auth Error: " + (authError?.message || "User not found or password wrong"));
+        setDebugInfo({ authError, authData }); // show raw info
         setLoading(false);
         return;
       }
 
-      // Step 2: Fetch user info from users table by email
-      const { data: userRecord, error: userError } = await supabase
+      // Step 2: Fetch user info by ID
+      let { data: userRecord, error: userError } = await supabase
         .from("users")
         .select("*")
-        .eq("email", emailInput)
+        .eq("id", authData.user.id)
         .single();
 
+      // Fallback: if not found by ID, try by email
       if (userError || !userRecord) {
-        setLoginMessage("❌ Akaunti haijapatikana kwenye users table.");
-        setLoading(false);
-        return;
+        const { data: userByEmail, error: emailError } = await supabase
+          .from("users")
+          .select("*")
+          .eq("email", emailInput)
+          .single();
+
+        if (emailError || !userByEmail) {
+          setLoginMessage("❌ User Table Error: " + (emailError?.message || "User not found in users table"));
+          setDebugInfo({ userError, userRecord, emailError, userByEmail });
+          setLoading(false);
+          return;
+        }
+
+        userRecord = userByEmail;
       }
 
       if (!userRecord.is_active) {
         setLoginMessage("🚫 Akaunti yako imefungwa. Wasiliana na admin.");
+        setDebugInfo({ userRecord });
         setLoading(false);
         return;
       }
@@ -83,26 +99,24 @@ const LoginPage: React.FC = () => {
       if (userRecord.role === "admin") {
         const adminPin = userRecord.admin_pin || "";
         if (pinInput && pinInput !== adminPin) {
-          setLoginMessage("❌ PIN ya admin si sahihi.");
+          setLoginMessage("❌ PIN Error: PIN ya admin si sahihi.");
+          setDebugInfo({ userRecord, pinInput });
           setLoading(false);
           return;
         }
       }
 
-      // Step 4: Update last_login + current_session
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData?.session?.access_token;
-
+      // Step 4: Update last_login
       await supabase
         .from("users")
         .update({
           last_login: new Date().toISOString(),
-          current_session: accessToken,
         })
-        .eq("email", emailInput);
+        .eq("id", authData.user.id);
 
       // Step 5: Redirect based on role
-      setLoginMessage("✅ Taarifa ni sahihi, unaelekezwa...");
+      setLoginMessage("✅ Login Success: Unaelekezwa...");
+      setDebugInfo({ authData, userRecord });
       setTimeout(() => {
         if (userRecord.role === "admin") {
           router.push("/admin");
@@ -111,9 +125,9 @@ const LoginPage: React.FC = () => {
         }
       }, 1000);
 
-    } catch (err) {
-      console.error("Login error:", err);
-      setLoginMessage("❌ Tatizo la mtandao au seva.");
+    } catch (err: any) {
+      setLoginMessage("❌ Network/Server Error: " + err.message);
+      setDebugInfo({ err });
     } finally {
       setLoading(false);
     }
@@ -176,6 +190,14 @@ const LoginPage: React.FC = () => {
         </button>
 
         <div className="login-message">{loginMessage}</div>
+
+        {/* Debug panel */}
+        {debugInfo && (
+          <div className="debug-panel">
+            <h3>🛠 Debug Info</h3>
+            <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
+          </div>
+        )}
       </div>
     </div>
   );
