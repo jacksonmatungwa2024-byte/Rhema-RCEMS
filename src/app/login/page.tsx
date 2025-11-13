@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "./login.css";
 
+// ✅ Only use the ANON key on the frontend
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -21,17 +22,12 @@ const LoginPage: React.FC = () => {
   // 🔄 Fetch active settings
   useEffect(() => {
     const fetchSettings = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("settings")
-          .select("logo_url, branch_name")
-          .eq("is_active", true)
-          .single();
-        if (error) throw error;
-        if (data) setSettings(data);
-      } catch (err) {
-        console.error("Error fetching settings:", err);
-      }
+      const { data, error } = await supabase
+        .from("settings")
+        .select("logo_url, branch_name")
+        .eq("is_active", true)
+        .single();
+      if (!error && data) setSettings(data);
     };
     fetchSettings();
   }, []);
@@ -44,7 +40,6 @@ const LoginPage: React.FC = () => {
     const form = e.target as HTMLFormElement;
     const email = (form.email as HTMLInputElement).value.trim();
     const password = (form.password as HTMLInputElement).value.trim();
-    const pin = (form.pin as HTMLInputElement).value.trim();
 
     if (!email || !password) {
       setLoginMessage("⚠️ Tafadhali jaza taarifa zote.");
@@ -53,20 +48,20 @@ const LoginPage: React.FC = () => {
     }
 
     try {
-      // 1️⃣ Authenticate with Supabase Auth
+      // ✅ Authenticate user with Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (authError || !authData?.user) {
+      if (authError || !authData.user) {
         console.log("Supabase authError:", authError);
         setLoginMessage("❌ Taarifa si sahihi, jaribu tena.");
         setLoading(false);
         return;
       }
 
-      // 2️⃣ Fetch user metadata from 'users' table
+      // ✅ Check if user exists in your `users` table
       const { data: userRecord, error: userError } = await supabase
         .from("users")
         .select("*")
@@ -85,14 +80,17 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      // 3️⃣ Optional PIN check (admin)
-      if (userRecord.role === "admin" && pin && pin !== userRecord.metadata?.admin_pin) {
-        setLoginMessage("❌ PIN si sahihi.");
-        setLoading(false);
-        return;
+      // ✅ Optional PIN check for admin
+      if (userRecord.role === "admin") {
+        const pin = (form.pin as HTMLInputElement).value.trim();
+        if (pin && pin !== userRecord.metadata?.admin_pin) {
+          setLoginMessage("❌ PIN si sahihi.");
+          setLoading(false);
+          return;
+        }
       }
 
-      // 4️⃣ Successful login: redirect
+      // ✅ Successful login: redirect
       setLoginMessage("✅ Taarifa ni sahihi, unaelekezwa...");
       setTimeout(() => router.push("/home"), 1000);
     } catch (err) {
@@ -151,38 +149,11 @@ const LoginPage: React.FC = () => {
           </button>
         </form>
 
-        <button
-          onClick={() => router.push("/forgot-password")}
-          style={{
-            marginTop: "1rem",
-            background: "#009688",
-            color: "#fff",
-            padding: "0.75rem",
-            borderRadius: "8px",
-            fontWeight: "bold",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
+        <button onClick={() => router.push("/forgot-password")} className="forgot-btn">
           ❓ Umesahau Nenosiri?
         </button>
 
         <div className="login-message">{loginMessage}</div>
-
-        <footer
-          style={{
-            marginTop: "2rem",
-            textAlign: "center",
-            fontSize: "0.9rem",
-            color: "#4a148c",
-            borderTop: "1px solid #ddd",
-            paddingTop: "1rem",
-            opacity: 0.9,
-          }}
-        >
-          Mfumo huu umetengenezwa na <b>Abel Memorial Programmers</b> kwa ushirikiano na{" "}
-          <b>Kitengo cha Usimamizi wa Rasilimali na Utawala – Tanga Quarters</b>.
-        </footer>
       </div>
     </div>
   );
