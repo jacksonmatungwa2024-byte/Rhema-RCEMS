@@ -60,7 +60,7 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      // Step 2: Fetch role from users table by email
+      // Step 2: Fetch user info from users table by email
       const { data: userRecord, error: userError } = await supabase
         .from("users")
         .select("*")
@@ -101,7 +101,7 @@ const LoginPage: React.FC = () => {
         })
         .eq("email", emailInput);
 
-      // Success
+      // Step 5: Redirect based on role
       setLoginMessage("✅ Taarifa ni sahihi, unaelekezwa...");
       setTimeout(() => {
         if (userRecord.role === "admin") {
@@ -169,6 +169,10 @@ const LoginPage: React.FC = () => {
 
         <button onClick={() => router.push("/forgot-password")} className="forgot-btn">
           ❓ Umesahau Nenosiri?
+        </button>
+
+        <button onClick={() => router.push("/signup")} className="signup-btn">
+          📝 Huna akaunti? Jisajili hapa
         </button>
 
         <div className="login-message">{loginMessage}</div>
