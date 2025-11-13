@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "./login.css";
 
+// Supabase client for table access only
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -18,6 +19,7 @@ const LoginPage: React.FC = () => {
   const [showPin, setShowPin] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Fetch active settings
   useEffect(() => {
     const fetchSettings = async () => {
       const { data, error } = await supabase
@@ -36,23 +38,25 @@ const LoginPage: React.FC = () => {
     setLoginMessage("");
 
     const form = e.target as HTMLFormElement;
-    const email = (form.email as HTMLInputElement).value.trim();
-    const password = (form.password as HTMLInputElement).value.trim();
-    const pin = (form.pin as HTMLInputElement).value.trim();
+    const emailInput = (form.email as HTMLInputElement).value.trim().toLowerCase();
+    const passwordInput = (form.password as HTMLInputElement).value.trim();
+    const pinInput = (form.pin as HTMLInputElement).value.trim();
 
-    if (!email || !password) {
+    if (!emailInput || !passwordInput) {
       setLoginMessage("⚠️ Tafadhali jaza taarifa zote.");
       setLoading(false);
       return;
     }
 
     try {
-      // ✅ Fetch user directly from `users` table
+      // Fetch user from users table
       const { data: userRecord, error: userError } = await supabase
         .from("users")
         .select("*")
-        .eq("email", email)
+        .eq("email", emailInput)
         .single();
+
+      console.log("User record fetched:", userRecord);
 
       if (userError || !userRecord) {
         setLoginMessage("❌ Akaunti haijapatikana kwenye mfumo.");
@@ -66,21 +70,24 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      if (password !== userRecord.password) {
+      // Check password
+      if (passwordInput !== userRecord.password) {
         setLoginMessage("❌ Nenosiri si sahihi.");
         setLoading(false);
         return;
       }
 
-      // ✅ Admin PIN check (if role is admin)
-      const metadata = userRecord.metadata || {};
-      if (userRecord.role === "admin" && pin && pin !== metadata.admin_pin) {
-        setLoginMessage("❌ PIN si sahihi.");
-        setLoading(false);
-        return;
+      // Optional admin PIN check
+      if (userRecord.role === "admin") {
+        const adminPin = userRecord.metadata?.admin_pin || "";
+        if (pinInput && pinInput !== adminPin) {
+          setLoginMessage("❌ PIN ya admin si sahihi.");
+          setLoading(false);
+          return;
+        }
       }
 
-      // ✅ Successful login
+      // Success
       setLoginMessage("✅ Taarifa ni sahihi, unaelekezwa...");
       setTimeout(() => router.push("/home"), 1000);
 
@@ -97,7 +104,7 @@ const LoginPage: React.FC = () => {
       <div className="login-left">
         <div className="logo-container">
           {settings?.logo_url ? (
-            <img src={settings.logo_url} alt={settings.branch_name || "Institute Logo"} className="church-logo" />
+            <img src={settings.logo_url} alt={settings.branch_name || "Logo"} className="church-logo" />
           ) : (
             <img src="/fallback-logo.png" alt="Default Logo" className="church-logo" />
           )}
@@ -128,7 +135,7 @@ const LoginPage: React.FC = () => {
               type={showPin ? "text" : "password"}
               id="pin"
               name="pin"
-              placeholder="Weka PIN kama wewe ni admin"
+              placeholder="Weka PIN kama admin"
             />
             <button type="button" className="toggle-password" onClick={() => setShowPin(!showPin)}>
               {showPin ? "Hide" : "Show"}
@@ -151,3 +158,4 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
+                      
