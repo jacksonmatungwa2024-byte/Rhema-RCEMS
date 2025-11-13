@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
 import "./Dashboard.css";
@@ -43,7 +44,6 @@ export default function Dashboard() {
       const email = sessionData?.session?.user?.email;
 
       if (!email || !accessToken) {
-        // No active session
         window.location.href = "/login";
         return;
       }
@@ -76,37 +76,27 @@ export default function Dashboard() {
       setLastLogin(userData.last_login ? new Date(userData.last_login).toLocaleString() : "");
 
       // 🔹 Auto logout after 30 mins inactivity
-      setTimeout(async () => {
+      const timeout = setTimeout(async () => {
         alert("Umeachwa bila shughuli. Tafadhali ingia tena.");
         await supabase.auth.signOut();
         window.location.href = "/login";
       }, 30 * 60 * 1000);
+
+      return () => clearTimeout(timeout);
     };
 
     checkSession();
 
-    // 🔹 Optional: Poll every 10 sec to check if session is still valid
-    const interval = setInterval(async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData?.session?.access_token;
-      const email = sessionData?.session?.user?.email;
-
-      if (!email || !accessToken) return;
-
-      const { data: userData } = await supabase
-        .from("users")
-        .select("current_session")
-        .eq("email", email)
-        .single();
-
-      if (!userData || userData.current_session !== accessToken) {
-        alert("Session yako imeisha au imechukuliwa na login nyingine. Tafadhali ingia tena.");
-        await supabase.auth.signOut();
+    // 🔹 Listen for auth state changes
+    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_OUT" || !session) {
         window.location.href = "/login";
       }
-    }, 10000);
+    });
 
-    return () => clearInterval(interval);
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   const handleClick = (tabId: string, page: string) => {
@@ -125,6 +115,11 @@ export default function Dashboard() {
       audioRef.current.play();
       setAudioPlaying(true);
     }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/login";
   };
 
   return (
@@ -150,6 +145,9 @@ export default function Dashboard() {
         <div onClick={() => handleClick("mediaTab", "/media")}>Media Team</div>
         <div onClick={() => handleClick("financeTab", "/finance")}>Finance</div>
       </div>
+      <button onClick={handleLogout} className="logout-btn">
+        🚪 Logout
+      </button>
     </div>
   );
-}
+        }
