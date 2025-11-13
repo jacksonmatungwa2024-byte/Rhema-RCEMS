@@ -222,7 +222,7 @@ export default LoginPage;    setLoading(true);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="login-wrapper">
