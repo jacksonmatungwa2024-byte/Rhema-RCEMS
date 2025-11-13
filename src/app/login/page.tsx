@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "./login.css";
 
-// ✅ Only use the ANON key on the frontend
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -19,7 +18,6 @@ const LoginPage: React.FC = () => {
   const [showPin, setShowPin] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // 🔄 Fetch active settings
   useEffect(() => {
     const fetchSettings = async () => {
       const { data, error } = await supabase
@@ -40,6 +38,7 @@ const LoginPage: React.FC = () => {
     const form = e.target as HTMLFormElement;
     const email = (form.email as HTMLInputElement).value.trim();
     const password = (form.password as HTMLInputElement).value.trim();
+    const pin = (form.pin as HTMLInputElement).value.trim();
 
     if (!email || !password) {
       setLoginMessage("⚠️ Tafadhali jaza taarifa zote.");
@@ -48,20 +47,7 @@ const LoginPage: React.FC = () => {
     }
 
     try {
-      // ✅ Authenticate user with Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (authError || !authData.user) {
-        console.log("Supabase authError:", authError);
-        setLoginMessage("❌ Taarifa si sahihi, jaribu tena.");
-        setLoading(false);
-        return;
-      }
-
-      // ✅ Check if user exists in your `users` table
+      // ✅ Fetch user directly from `users` table
       const { data: userRecord, error: userError } = await supabase
         .from("users")
         .select("*")
@@ -80,19 +66,24 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      // ✅ Optional PIN check for admin
-      if (userRecord.role === "admin") {
-        const pin = (form.pin as HTMLInputElement).value.trim();
-        if (pin && pin !== userRecord.metadata?.admin_pin) {
-          setLoginMessage("❌ PIN si sahihi.");
-          setLoading(false);
-          return;
-        }
+      if (password !== userRecord.password) {
+        setLoginMessage("❌ Nenosiri si sahihi.");
+        setLoading(false);
+        return;
       }
 
-      // ✅ Successful login: redirect
+      // ✅ Admin PIN check (if role is admin)
+      const metadata = userRecord.metadata || {};
+      if (userRecord.role === "admin" && pin && pin !== metadata.admin_pin) {
+        setLoginMessage("❌ PIN si sahihi.");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Successful login
       setLoginMessage("✅ Taarifa ni sahihi, unaelekezwa...");
       setTimeout(() => router.push("/home"), 1000);
+
     } catch (err) {
       console.error("Login error:", err);
       setLoginMessage("❌ Tatizo la mtandao au seva.");
