@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import "./UpdatePassword.css";
@@ -11,25 +11,30 @@ const supabase = createClient(
 
 export default function UpdatePassword() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const emailParam = searchParams.get("email") || ""; // email passed from ForgotPassword
+  const [email] = useState(emailParam);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState("");
 
-  // Step: update password (works only if user came via reset link)
+  // Step: update password via RPC
   const updatePassword = async () => {
     if (!password || password.length < 6) {
       setStatus("❌ Nenosiri lazima liwe angalau herufi 6.");
       return;
     }
 
-    // ✅ Update password in Supabase Auth (session exists because of reset link)
-    const { error } = await supabase.auth.updateUser({ password });
+    // ✅ Call RPC function
+    const { error } = await supabase.rpc("reset_password_with_otp", {
+      user_email: email,
+      new_password: password,
+    });
 
     if (error) {
       setStatus("❌ Tatizo katika kubadilisha nenosiri: " + error.message);
     } else {
       setStatus("✅ Nenosiri limebadilishwa kikamilifu!");
-      await supabase.auth.signOut(); // 🔒 force logout
       setTimeout(() => router.push("/login"), 1500);
     }
   };
@@ -61,4 +66,4 @@ export default function UpdatePassword() {
       {status && <div className="status">{status}</div>}
     </div>
   );
-}
+      }
