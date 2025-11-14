@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
+import "./signup.css"; // ✅ IMPORT CSS HERE
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,35 +23,72 @@ const SignupPage: React.FC = () => {
 
     const form = e.currentTarget;
 
-    const email = (form.elements.namedItem("email") as HTMLInputElement)?.value.trim().toLowerCase();
-    const password = (form.elements.namedItem("password") as HTMLInputElement)?.value.trim();
-    const fullName = (form.elements.namedItem("full_name") as HTMLInputElement)?.value.trim();
-    const role = (form.elements.namedItem("role") as HTMLSelectElement)?.value.trim();
-    const branch = (form.elements.namedItem("branch") as HTMLInputElement)?.value.trim();
-    const username = (form.elements.namedItem("username") as HTMLInputElement)?.value.trim();
-    const phone = (form.elements.namedItem("phone") as HTMLInputElement)?.value.trim();
-    const profileUrl = (form.elements.namedItem("profile_url") as HTMLInputElement)?.value.trim();
+    const email = (form.elements.namedItem("email") as HTMLInputElement)?.value
+      .trim()
+      .toLowerCase();
 
-    if (!email || !password || !fullName || !role) {
-      setMessage("⚠️ Tafadhali jaza taarifa zote muhimu.");
+    const password = (form.elements.namedItem("password") as HTMLInputElement)
+      ?.value.trim();
+
+    const fullName = (form.elements.namedItem("full_name") as HTMLInputElement)
+      ?.value.trim();
+
+    const role = (form.elements.namedItem("role") as HTMLSelectElement)?.value.trim();
+
+    const branch = (form.elements.namedItem("branch") as HTMLInputElement)?.value.trim();
+
+    const username = (form.elements.namedItem("username") as HTMLInputElement)?.value.trim();
+
+    const phone = (form.elements.namedItem("phone") as HTMLInputElement)?.value.trim();
+
+    const profileFile = (form.elements.namedItem("profile_file") as HTMLInputElement)
+      ?.files?.[0];
+
+    if (!email || !password || !fullName || !role || !profileFile) {
+      setMessage("⚠️ Tafadhali jaza taarifa zote muhimu na weka picha ya profile.");
       setLoading(false);
       return;
     }
 
     try {
+      // 1️⃣ Create account in Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
       });
 
       if (authError || !authData.user || !authData.session) {
-        console.error("Auth error:", authError?.message);
-        setMessage(`❌ Usajili umeshindikana: ${authError?.message || "Hakuna session."}`);
+        setMessage(`❌ Usajili umeshindikana: ${authError?.message}`);
         setLoading(false);
         return;
       }
 
       const accessToken = authData.session.access_token;
+
+      // 2️⃣ Upload profile picture
+      const fileExt = profileFile.name.split(".").pop();
+      const fileName = `${Date.now()}-${email}.${fileExt}`;
+      const filePath = `profile-pictures/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("profile-pictures")
+        .upload(filePath, profileFile);
+
+      if (uploadError) {
+        setMessage(`❌ Picha haijapakiwa: ${uploadError.message}`);
+        setLoading(false);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("profile-pictures")
+        .getPublicUrl(filePath);
+
+      const profileUrl = urlData?.publicUrl;
+
+      // 3️⃣ Insert into users table
+      const sixMonthsFromNow = new Date();
+      sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
 
       const { error: insertError } = await supabase.from("users").insert({
         email,
@@ -59,19 +97,18 @@ const SignupPage: React.FC = () => {
         branch,
         username: username || null,
         phone: phone || null,
-        profile_url: profileUrl || null,
+        profile_url: profileUrl,
         is_active: true,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         last_login: new Date().toISOString(),
         current_session: accessToken,
-        active_until: null,
+        active_until: sixMonthsFromNow.toISOString(),
         metadata: {},
       });
 
       if (insertError) {
-        console.error("Insert error:", insertError.message);
-        setMessage(`❌ Usajili umeshindikana: ${insertError.message}`);
+        setMessage(`❌ Usajili haukufanikiwa: ${insertError.message}`);
         setLoading(false);
         return;
       }
@@ -80,8 +117,7 @@ const SignupPage: React.FC = () => {
       setTimeout(() => router.push("/login"), 1500);
 
     } catch (err: any) {
-      console.error("Signup error:", err);
-      setMessage(`❌ Tatizo la mtandao au seva: ${err.message}`);
+      setMessage(`❌ Tatizo: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -90,41 +126,43 @@ const SignupPage: React.FC = () => {
   return (
     <div className="signup-wrapper">
       <h2>📝 Sajili Akaunti Mpya</h2>
+
       <form onSubmit={handleSignup}>
-        <label htmlFor="full_name">👤 Jina Kamili:</label>
-        <input type="text" id="full_name" name="full_name" placeholder="Jina kamili" />
+        <label>👤 Jina Kamili:</label>
+        <input type="text" id="full_name" name="full_name" required />
 
-        <label htmlFor="username">🆔 Jina la Mtumiaji:</label>
-        <input type="text" id="username" name="username" placeholder="Mfano: jdoe" />
+        <label>🆔 Jina la Mtumiaji:</label>
+        <input type="text" id="username" name="username" required />
 
-        <label htmlFor="email">📧 Barua Pepe:</label>
-        <input type="email" id="email" name="email" placeholder="Barua pepe sahihi" />
+        <label>📧 Barua Pepe:</label>
+        <input type="email" id="email" name="email" required />
 
-        <label htmlFor="password">🔑 Nenosiri:</label>
+        <label>🔑 Nenosiri:</label>
         <div className="password-field">
           <input
             type={showPassword ? "text" : "password"}
             id="password"
             name="password"
-            placeholder="Nenosiri lenye nguvu"
+            required
           />
           <button
             type="button"
             className="toggle-btn"
             onClick={() => setShowPassword(!showPassword)}
           >
-            {showPassword ? "🙈 Ficha" : "👁️ Onyesha"}
+            {showPassword ? "🙈" : "👁️"}
           </button>
         </div>
 
-        <label htmlFor="phone">📞 Simu:</label>
-        <input type="text" id="phone" name="phone" placeholder="Namba ya simu (hiari)" />
+        <label>📞 Simu:</label>
+        <input type="text" id="phone" name="phone" />
 
-        <label htmlFor="profile_url">🖼️ Picha ya Profile:</label>
-        <input type="text" id="profile_url" name="profile_url" placeholder="URL ya picha (hiari)" />
+        <label>🖼️ Picha ya Profile:</label>
+        <input type="file" id="profile_file" name="profile_file" accept="image/*" required />
 
-        <label htmlFor="role">🎯 Nafasi:</label>
-        <select id="role" name="role">
+        <label>🎯 Nafasi:</label>
+        <select id="role" name="role" required>
+          <option value="">-- Chagua Nafasi --</option>
           <option value="usher">Mhudumu</option>
           <option value="pastor">Mchungaji</option>
           <option value="media">Media</option>
@@ -132,8 +170,8 @@ const SignupPage: React.FC = () => {
           <option value="admin">Admin</option>
         </select>
 
-        <label htmlFor="branch">📍 Tawi:</label>
-        <input type="text" id="branch" name="branch" placeholder="Tawi lako (hiari)" />
+        <label>📍 Tawi:</label>
+        <input type="text" id="branch" name="branch" />
 
         <button type="submit" disabled={loading}>
           {loading ? "⌛ Inasajili..." : "📝 Sajili"}
@@ -146,3 +184,4 @@ const SignupPage: React.FC = () => {
 };
 
 export default SignupPage;
+        
