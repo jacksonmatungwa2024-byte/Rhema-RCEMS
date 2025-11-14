@@ -200,11 +200,14 @@ const LoginPage: React.FC = () => {
               {loading ? "⌛ Inapakia..." : "🚪 Ingia"}
             </button>
           </form>
+{/* Forgot Password */}
+<button
+  onClick={() => router.push("/chatbot")}
+  className="forgot-btn"
+>
+  ❓ Umesahau Nenosiri?
+</button>
 
-          {/* Forgot Password */}
-          <button onClick={() => router.push("/forgot-password")} className="forgot-btn">
-            ❓ Umesahau Nenosiri?
-          </button>
 
           {/* Signup */}
           <button onClick={() => router.push("/signup")} className="signup-btn">
