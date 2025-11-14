@@ -19,12 +19,11 @@ const SignupPage: React.FC = () => {
     setLoading(true);
     setMessage("");
 
-    // Cast form and input elements to their correct types
     const form = e.target as HTMLFormElement;
     const email = (form.email as HTMLInputElement).value.trim().toLowerCase();
     const password = (form.password as HTMLInputElement).value.trim();
     const fullName = (form.full_name as HTMLInputElement).value.trim();
-    const role = (form.role as HTMLSelectElement).value;  // Correct casting for select
+    const role = (form.role as HTMLSelectElement)?.value;  // Fix here
     const branch = (form.branch as HTMLInputElement).value.trim();
 
     if (!email || !password || !fullName || !role) {
@@ -188,4 +187,3 @@ const SignupPage: React.FC = () => {
 };
 
 export default SignupPage;
-                                               
