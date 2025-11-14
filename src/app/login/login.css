@@ -1,280 +1,157 @@
-/* ========== Global Reset ========== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body, html {
-  font-family: "Poppins", sans-serif;
-  background: #f3e5f5;
-  color: #4a148c;
-  height: 100%;
-  overflow-x: hidden;
-}
-
-/* ========== Background Animation ========== */
+/* Wrapper */
 .login-wrapper {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #6a1b9a, #9c27b0);
-  padding: 1rem;
-  position: relative;
-  overflow: hidden;
-  animation: fadeIn 1.5s ease-in;
+  background: #f5f6fa;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Floating light effect (church-like glowing waves) */
-.login-wrapper::before,
-.login-wrapper::after {
-  content: "";
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.3), transparent 70%);
-  animation: floatGlow 8s ease-in-out infinite alternate;
-}
-
-.login-wrapper::before {
-  top: -200px;
-  left: -150px;
-}
-
-.login-wrapper::after {
-  bottom: -200px;
-  right: -150px;
-  animation-delay: 2s;
-}
-
-/* ========== Login Card ========== */
+/* Left section */
 .login-left {
-  background: rgba(255, 255, 255, 0.95);
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   width: 100%;
   max-width: 420px;
-  border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  padding: 2rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  animation: slideUp 1.2s ease-out;
-  backdrop-filter: blur(8px);
-  transition: transform 0.3s ease-in-out;
 }
 
-/* Hover effect (desktop only) */
-@media (hover: hover) {
-  .login-left:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
-  }
-}
-
-/* ========== Logo ========== */
+/* Logo */
 .logo-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 .church-logo {
-  width: 90px;
-  height: 90px;
-  object-fit: contain;
-  border-radius: 50%;
-  border: 3px solid #6a1b9a;
-  padding: 5px;
-  background: #fff;
-  animation: pulseGlow 3s infinite ease-in-out;
+  max-width: 120px;
+  height: auto;
 }
 
-/* ========== Title ========== */
+/* Headings */
 h2 {
-  color: #6a1b9a;
-  margin-bottom: 1.5rem;
   text-align: center;
-  font-weight: 600;
-  font-size: 1.3rem;
-  animation: fadeSlideDown 1.2s ease-in-out;
+  margin-bottom: 1.5rem;
+  color: #333;
 }
 
-/* ========== Form Inputs ========== */
+/* Form */
 form {
-  width: 100%;
   display: flex;
   flex-direction: column;
-  animation: fadeSlideUp 1.3s ease-in-out;
+  gap: 1rem;
 }
 
 label {
-  margin-top: 1rem;
-  margin-bottom: 0.3rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #4a148c;
+  font-weight: 600;
+  color: #444;
 }
 
 input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #d1c4e9;
-  border-radius: 8px;
-  outline: none;
-  transition: all 0.2s ease-in-out;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
   font-size: 0.95rem;
-  background: #fafafa;
+  width: 100%;
 }
 
 input:focus {
-  border-color: #6a1b9a;
-  box-shadow: 0 0 0 4px rgba(106, 27, 154, 0.1);
-  background: #fff;
+  border-color: #0070f3;
+  outline: none;
 }
 
-/* ========== Password Wrapper ========== */
+/* Password + PIN wrapper */
 .password-wrapper {
-  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  flex: 1;
 }
 
 .toggle-password {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
+  margin-left: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
   border: none;
-  color: #6a1b9a;
-  font-weight: 600;
+  border-radius: 6px;
+  background: #eee;
   cursor: pointer;
 }
 
-/* ========== Submit Button ========== */
+.toggle-password:hover {
+  background: #ddd;
+}
+
+/* Buttons */
 button[type="submit"] {
-  margin-top: 1.5rem;
-  background: linear-gradient(135deg, #6a1b9a, #9c27b0);
+  background: #0070f3;
   color: #fff;
-  border: none;
-  padding: 0.9rem;
-  border-radius: 10px;
-  font-size: 1rem;
   font-weight: 600;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
-  animation: buttonPop 0.8s ease-out;
+  transition: background 0.2s ease;
 }
 
 button[type="submit"]:hover {
-  background: linear-gradient(135deg, #7b1fa2, #4a148c);
-  transform: scale(1.03);
-  box-shadow: 0 6px 18px rgba(106, 27, 154, 0.45);
+  background: #005bb5;
 }
 
-/* ========== Forgot Password Button ========== */
-button[style] {
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
+.forgot-btn,
+.signup-btn {
+  margin-top: 0.8rem;
+  background: transparent;
+  border: none;
+  color: #0070f3;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
 }
 
-button[style]:hover {
-  background: #00796b !important;
-  transform: scale(1.02);
+.forgot-btn:hover,
+.signup-btn:hover {
+  color: #005bb5;
 }
 
-/* ========== Login Message ========== */
+/* Login message */
 .login-message {
+  margin-top: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Debug panels */
+.debug-panel,
+.env-debug {
   margin-top: 1.5rem;
-  color: #d32f2f;
-  font-weight: 500;
-  text-align: center;
-  animation: fadeIn 1s ease-in;
-}
-
-/* ========== Footer ========== */
-footer {
-  margin-top: 2rem;
-  text-align: center;
+  padding: 1rem;
+  border-radius: 8px;
   font-size: 0.85rem;
-  line-height: 1.4;
-  color: #4a148c;
-  border-top: 1px solid #e1bee7;
-  padding-top: 1rem;
-  opacity: 0.85;
-  animation: fadeSlideUp 2s ease-in-out;
+  background: #f0f0f0;
+  color: #222;
+  overflow-x: auto;
 }
 
-footer b {
-  color: #6a1b9a;
+.debug-panel h3,
+.env-debug h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #0070f3;
 }
 
-/* ========== Animations ========== */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.debug-panel pre {
+  background: #fff;
+  padding: 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
-@keyframes slideUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+.env-debug p {
+  margin: 0.3rem 0;
 }
-
-@keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeSlideDown {
-  from { opacity: 0; transform: translateY(-30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 10px rgba(106, 27, 154, 0.3); }
-  50% { box-shadow: 0 0 25px rgba(156, 39, 176, 0.6); }
-}
-
-@keyframes floatGlow {
-  from { transform: translateY(0) scale(1); opacity: 0.8; }
-  to { transform: translateY(-20px) scale(1.05); opacity: 1; }
-}
-
-@keyframes buttonPop {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-/* ========== Mobile Responsive ========== */
-@media (max-width: 600px) {
-  .login-left {
-    width: 100%;
-    padding: 1.5rem 1rem;
-    border-radius: 14px;
-  }
-
-  h2 {
-    font-size: 1.1rem;
-  }
-
-  input, button {
-    font-size: 0.9rem;
-  }
-
-  .church-logo {
-    width: 75px;
-    height: 75px;
-  }
-
-  footer {
-    font-size: 0.8rem;
-    padding-top: 0.8rem;
-  }
-
-  .login-wrapper::before,
-  .login-wrapper::after {
-    width: 400px;
-    height: 400px;
-  }
-  }
