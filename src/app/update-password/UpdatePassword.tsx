@@ -59,12 +59,20 @@ export default function UpdatePassword() {
       return;
     }
 
+    // ✅ Update password in Supabase Auth
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
       setStatus("❌ Tatizo katika kubadilisha nenosiri: " + error.message);
     } else {
+      // ✅ Update metadata in users table
+      await supabase
+        .from("users")
+        .update({ updated_at: new Date().toISOString() })
+        .eq("email", email);
+
       setStatus("✅ Nenosiri limebadilishwa kikamilifu!");
+      await supabase.auth.signOut(); // 🔒 force logout
       setTimeout(() => router.push("/login"), 1500);
     }
   };
