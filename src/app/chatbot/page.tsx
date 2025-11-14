@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import "./chatbot.css";
+import "./chatbot.css"; // Make sure we will add CSS animations
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,59 +22,70 @@ const ChatBotPage: React.FC = () => {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [message, setMessage] = useState<string | null>(null);
+  const [userInputName, setUserInputName] = useState<string[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
 
-  // Fetch first user (simulate logged-in user)
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data } = await supabase
-        .from("users")
-        .select("id, full_name, email")
-        .limit(1)
-        .single();
-      if (data) setUser({ id: data.id, full_name: data.full_name, email: data.email });
-    };
-    fetchUser();
-  }, []);
+    if (message) {
+      const audio = new Audio("/notification.mp3");
+      audio.play().catch(() => {});
+    }
+  }, [message]);
 
   const startChat = () => {
-    setMessage(`👋 Karibu ${user?.full_name || ""}! Naitwa Lumina, msaidizi wako.`);
-    setTimeout(() => setStep(1), 1200);
+    setMessage("👋 Hello! Karibu Lumina, msaidizi wako. Tafadhali andika jina lako la kwanza na la pili:");
+    setStep(1);
   };
 
-  const handleAnswer = async (answer: string) => {
+  const handleNameInput = async (firstName: string, lastName: string) => {
+    const fullNameInput = `${firstName} ${lastName}`.trim();
+    setUserInputName([firstName, lastName]);
+
+    const { data: foundUser } = await supabase
+      .from("users")
+      .select("id, full_name, email")
+      .ilike("full_name", fullNameInput)
+      .limit(1)
+      .single();
+
+    if (foundUser) {
+      setUser({ id: foundUser.id, full_name: foundUser.full_name, email: foundUser.email });
+      setMessage(`👋 Karibu ${foundUser.full_name}! Je unataka OTP kutoka kwa admin?`);
+      setStep(2);
+    } else {
+      setMessage(`Ooh pole, hatukuweza kupata ${fullNameInput}. Tafadhali jaribu tena.`);
+    }
+  };
+
+  const handleOtpAnswer = (answer: string) => {
     if (!user) return;
 
-    if (step === 1) {
-      if (answer.toLowerCase() === "ndiyo") {
-        // simulate OTP existence check
-        const otpExists = false; // change if already exists
+    if (answer.toLowerCase() === "ndiyo") {
+      const textMessage = encodeURIComponent(
+        `📩 Nimesahau nenosiri, naomba OTP.\nJina: ${user.full_name}\nEmail: ${user.email}`
+      );
+      const link = `https://wa.me/${ADMIN_WHATSAPP.replace("+", "")}?text=${textMessage}`;
+      setWhatsappLink(link);
+      setMessage(
+        `Sawa! Bonyeza kitufe hapa kufungua WhatsApp na kutuma OTP kwa admin:`
+      );
+      setStep(4);
+    } else {
+      setMessage("Je tayari umeshajaza OTP?");
+      setStep(3);
+    }
+  };
 
-        if (otpExists) {
-          setMessage("✅ Tayari umeshajaza OTP, nakuelekeza /update-password...");
-          setTimeout(() => router.push("/update-password"), 1500);
-        } else {
-          setMessage("Je unataka kujaza OTP?");
-          setStep(2);
-        }
-      } else {
-        setMessage("Ooh pole Ndugu, ikiwa unahitaji msaada zaidi unaweza kuwasiliana na admin.");
-        setStep(0); // go back to hello state
-      }
-    } else if (step === 2) {
-      if (answer.toLowerCase() === "ndiyo") {
-        setMessage(`Sawa! Nitapeleka ujumbe kwa admin kwenye WhatsApp ${ADMIN_WHATSAPP}...`);
-        setTimeout(() => {
-          alert(`📩 Ujumbe umetumwa kwa admin:
-Jina: ${user.full_name}
-Email: ${user.email}
-Ujumbe: "Nimesahau nenosiri, naomba OTP."`);
-          router.push("/forgot-password");
-        }, 1500);
-      } else {
-        setMessage("Sawa, nitakuondoa hapa. Karibu tena wakati wowote.");
-        setTimeout(() => setStep(0), 2000);
-      }
+  const handleOtpConfirm = (answer: string) => {
+    if (!user) return;
+
+    if (answer.toLowerCase() === "ndiyo") {
+      setMessage("✅ Nakuelekeza kwenye /update-password...");
+      setTimeout(() => router.push("/update-password"), 1200);
+    } else {
+      setMessage("Sawa, tutarudi kwenye message ya karibu. Karibu tena!");
+      setTimeout(() => startChat(), 1200);
     }
   };
 
@@ -91,29 +102,58 @@ Bonyeza hapa kuona tangazo la leo.`
       <div className="chatbox">
         {step === 0 && !message && (
           <>
-            <p>👋 Karibu! Naitwa Lumina, msaidizi wako.</p>
-            <button onClick={startChat}>Anza</button>
+            <p className="chat-message animate-slide-in">👋 Karibu! Naitwa Lumina, msaidizi wako.</p>
+            <button className="start-btn animate-fade-in" onClick={startChat}>Anza</button>
           </>
         )}
 
-        {message && <p className="chat-message">{message}</p>}
+        {message && <p className="chat-message animate-slide-in">{message}</p>}
 
-        {step === 1 && message && (
-          <div className="btn-group">
-            <button onClick={() => handleAnswer("ndiyo")}>Ndiyo</button>
-            <button onClick={() => handleAnswer("hapana")}>Hapana</button>
+        {step === 1 && (
+          <div className="name-inputs animate-fade-in">
+            <input id="firstName" placeholder="Jina la kwanza" />
+            <input id="lastName" placeholder="Jina la pili" />
+            <button
+              onClick={() => {
+                const first = (document.getElementById("firstName") as HTMLInputElement).value.trim();
+                const last = (document.getElementById("lastName") as HTMLInputElement).value.trim();
+                if (first && last) handleNameInput(first, last);
+              }}
+            >
+              Tuma
+            </button>
           </div>
         )}
 
-        {step === 2 && message && (
-          <div className="btn-group">
-            <button onClick={() => handleAnswer("ndiyo")}>Ndiyo</button>
-            <button onClick={() => handleAnswer("hapana")}>Hapana</button>
+        {step === 2 && (
+          <div className="btn-group animate-slide-in">
+            <button onClick={() => handleOtpAnswer("ndiyo")}>Ndiyo</button>
+            <button onClick={() => handleOtpAnswer("hapana")}>Hapana</button>
           </div>
         )}
 
         {step === 3 && (
-          <button onClick={handleSuccess}>Bonyeza hapa kuona tangazo la leo</button>
+          <div className="btn-group animate-slide-in">
+            <button onClick={() => handleOtpConfirm("ndiyo")}>Ndiyo</button>
+            <button onClick={() => handleOtpConfirm("hapana")}>Hapana</button>
+          </div>
+        )}
+
+        {step === 4 && whatsappLink && (
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="whatsapp-btn animate-fade-in"
+          >
+            📩 Fungua WhatsApp kutuma OTP
+          </a>
+        )}
+
+        {step === 5 && (
+          <button className="success-btn animate-fade-in" onClick={handleSuccess}>
+            Bonyeza hapa kuona tangazo la leo
+          </button>
         )}
       </div>
     </div>
@@ -121,4 +161,4 @@ Bonyeza hapa kuona tangazo la leo.`
 };
 
 export default ChatBotPage;
-          
+    
