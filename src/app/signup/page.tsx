@@ -1,10 +1,10 @@
-"use client";
+"use client"; // Make sure this is the first line
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import "./signup.css";
 
+// Supabase client
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -68,21 +68,79 @@ const SignupPage: React.FC = () => {
     }
   };
 
+  // Inline CSS styles as JavaScript objects
+  const containerStyle = {
+    padding: '20px',
+    backgroundColor: '#f9fafb',
+    borderRadius: '8px',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+    maxWidth: '500px',
+    margin: '0 auto',
+  };
+
+  const formStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+  };
+
+  const inputStyle = {
+    padding: '10px',
+    fontSize: '14px',
+    border: '1px solid #ddd',
+    borderRadius: '4px',
+  };
+
+  const buttonStyle = {
+    padding: '10px',
+    fontSize: '16px',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  };
+
+  const buttonDisabledStyle = {
+    ...buttonStyle,
+    backgroundColor: '#ddd',
+    cursor: 'not-allowed',
+  };
+
   return (
-    <div className="signup-wrapper">
+    <div style={containerStyle}>
       <h2>📝 Sajili Akaunti Mpya</h2>
-      <form onSubmit={handleSignup}>
+      <form onSubmit={handleSignup} style={formStyle}>
         <label htmlFor="full_name">👤 Jina Kamili:</label>
-        <input type="text" id="full_name" name="full_name" placeholder="Jina kamili" />
+        <input
+          type="text"
+          id="full_name"
+          name="full_name"
+          placeholder="Jina kamili"
+          style={inputStyle}
+        />
 
         <label htmlFor="email">📧 Barua Pepe:</label>
-        <input type="email" id="email" name="email" placeholder="Barua pepe sahihi" />
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Barua pepe sahihi"
+          style={inputStyle}
+        />
 
         <label htmlFor="password">🔑 Nenosiri:</label>
-        <input type="password" id="password" name="password" placeholder="Nenosiri lenye nguvu" />
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Nenosiri lenye nguvu"
+          style={inputStyle}
+        />
 
         <label htmlFor="role">🎯 Nafasi:</label>
-        <select id="role" name="role">
+        <select id="role" name="role" style={inputStyle}>
           <option value="usher">Mhudumu</option>
           <option value="pastor">Mchungaji</option>
           <option value="media">Media</option>
@@ -91,14 +149,22 @@ const SignupPage: React.FC = () => {
         </select>
 
         <label htmlFor="branch">📍 Tawi:</label>
-        <input type="text" id="branch" name="branch" placeholder="Tawi lako (hiari)" />
+        <input
+          type="text"
+          id="branch"
+          name="branch"
+          placeholder="Tawi lako (hiari)"
+          style={inputStyle}
+        />
 
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} style={loading ? buttonDisabledStyle : buttonStyle}>
           {loading ? "⌛ Inasajili..." : "📝 Sajili"}
         </button>
       </form>
 
-      <div className="signup-message">{message}</div>
+      <div className="signup-message" style={{ marginTop: '20px', fontSize: '14px', color: '#d9534f' }}>
+        {message}
+      </div>
     </div>
   );
 };
