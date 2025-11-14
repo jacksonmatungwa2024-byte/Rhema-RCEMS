@@ -60,7 +60,7 @@ export default function ForgotPassword() {
 
     // Step 3: Send Supabase reset link
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://your-app.com/update-password", 
+      redirectTo: "https://kanisatanzania.vercel.app/update-password", 
       // 👆 badilisha URL hii iwe domain yako halisi
     });
 
