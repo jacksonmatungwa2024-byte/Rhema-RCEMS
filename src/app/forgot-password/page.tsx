@@ -23,7 +23,7 @@ export default function ForgotPassword() {
 
     const { data, error } = await supabase
       .from("users")
-      .select("metadata")
+      .select("id, metadata, otp_verified, otp_verified_at")
       .eq("email", email)
       .single();
 
@@ -38,17 +38,27 @@ export default function ForgotPassword() {
     const expiresAt = meta.otp_expires_at ? new Date(meta.otp_expires_at) : null;
 
     if (!storedOtp) return setStatus("❌ Hakuna OTP iliyotumwa na admin.");
-
     if (expiresAt && expiresAt < new Date())
       return setStatus("⌛ Muda wa OTP umeisha, omba OTP mpya kwa admin.");
-
     if (storedOtp !== otp)
       return setStatus("❌ OTP uliyoingiza si sahihi.");
-
     if (resetStatus !== "waiting_approval" && resetStatus !== "approved")
       return setStatus("⚠️ OTP hii haijathibitishwa au imefutwa.");
 
-    // Success — allow password reset
+    // ✅ Success — update otp_verified = true + timestamp
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 
+        otp_verified: true,
+        otp_verified_at: new Date().toISOString()
+      })
+      .eq("id", data.id);
+
+    if (updateError) {
+      setStatus("⚠️ OTP sahihi lakini hatukuweza kusasisha status.");
+      return;
+    }
+
     setStatus("✅ OTP sahihi! Unaelekezwa kwenye ukurasa wa kubadilisha nenosiri...");
     router.push(`/update-password?email=${encodeURIComponent(email)}`);
   };
