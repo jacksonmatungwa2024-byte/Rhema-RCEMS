@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "./login.css";
 
-// Supabase client
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -15,9 +14,11 @@ const LoginPage: React.FC = () => {
   const router = useRouter();
   const [loginMessage, setLoginMessage] = useState("");
   const [settings, setSettings] = useState<{ logo_url: string; branch_name: string } | null>(null);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showPin, setShowPin] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const [debugInfo, setDebugInfo] = useState<any>(null);
 
   // Fetch active settings
@@ -28,6 +29,7 @@ const LoginPage: React.FC = () => {
         .select("logo_url, branch_name")
         .eq("is_active", true)
         .single();
+
       if (!error && data) setSettings(data);
     };
     fetchSettings();
@@ -58,20 +60,20 @@ const LoginPage: React.FC = () => {
       });
 
       if (authError || !authData.user) {
-        setLoginMessage("❌ Auth Error: " + (authError?.message || "User not found or password wrong"));
+        setLoginMessage("❌ Nenosiri au barua pepe si sahihi.");
         setDebugInfo({ authError, authData });
         setLoading(false);
         return;
       }
 
-      // Step 2: Fetch user info by ID
+      // Step 2: Fetch user record
       let { data: userRecord, error: userError } = await supabase
         .from("users")
         .select("*")
         .eq("id", authData.user.id)
         .single();
 
-      // Fallback: try by email
+      // fallback – check by email
       if (userError || !userRecord) {
         const { data: userByEmail, error: emailError } = await supabase
           .from("users")
@@ -80,7 +82,7 @@ const LoginPage: React.FC = () => {
           .single();
 
         if (emailError || !userByEmail) {
-          setLoginMessage("❌ User Table Error: " + (emailError?.message || "User not found in users table"));
+          setLoginMessage("❌ Akaunti haijapatikana.");
           setDebugInfo({ userError, userRecord, emailError, userByEmail });
           setLoading(false);
           return;
@@ -91,44 +93,35 @@ const LoginPage: React.FC = () => {
 
       if (!userRecord.is_active) {
         setLoginMessage("🚫 Akaunti yako imefungwa. Wasiliana na admin.");
-        setDebugInfo({ userRecord });
         setLoading(false);
         return;
       }
 
-      // Step 3: Optional admin PIN check
+      // Admin PIN (optional)
       if (userRecord.role === "admin") {
         const adminPin = userRecord.admin_pin || "";
+
         if (pinInput && pinInput !== adminPin) {
-          setLoginMessage("❌ PIN Error: PIN ya admin si sahihi.");
-          setDebugInfo({ userRecord, pinInput });
+          setLoginMessage("❌ PIN ya admin si sahihi.");
           setLoading(false);
           return;
         }
       }
 
-      // Step 4: Update last_login
+      // Update last login
       await supabase
         .from("users")
-        .update({
-          last_login: new Date().toISOString(),
-        })
+        .update({ last_login: new Date().toISOString() })
         .eq("id", authData.user.id);
 
-      // Step 5: Redirect based on role
-      setLoginMessage("✅ Login Success: Unaelekezwa...");
-      setDebugInfo({ authData, userRecord });
-      setTimeout(() => {
-        if (userRecord.role === "admin") {
-          router.push("/admin");
-        } else {
-          router.push("/home");
-        }
-      }, 1000);
+      setLoginMessage("✅ Inakuelekeza...");
 
+      setTimeout(() => {
+        if (userRecord.role === "admin") router.push("/admin");
+        else router.push("/home");
+      }, 900);
     } catch (err: any) {
-      setLoginMessage("❌ Network/Server Error: " + err.message);
-      setDebugInfo({ err });
+      setLoginMessage("❌ Hitilafu ya mtandao: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -136,75 +129,106 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="login-wrapper">
-      <div className="login-left">
-        <div className="logo-container">
-          {settings?.logo_url ? (
-            <img src={settings.logo_url} alt={settings.branch_name || "Logo"} className="church-logo" />
-          ) : (
-            <img src="/fallback-logo.png" alt="Default Logo" className="church-logo" />
-          )}
-        </div>
 
-        <h2>🔐 {settings?.branch_name && <>- {settings.branch_name}</>}</h2>
+      {/* Left Panel (WhatsApp Web Style) */}
+      <div className="wa-left-panel"></div>
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="email">📧 Barua Pepe:</label>
-          <input type="email" id="email" name="email" placeholder="Andika barua pepe yako" />
+      {/* Right side form area */}
+      <div className="wa-right-panel">
+        <div className="login-bubble">
 
-          <label htmlFor="password">🔑 Nenosiri:</label>
-          <div className="password-wrapper">
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              placeholder="Andika nenosiri lako"
-            />
-            <button type="button" className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? "Hide" : "Show"}
-            </button>
+          {/* Logo */}
+          <div className="logo-container">
+            {settings?.logo_url ? (
+              <img src={settings.logo_url} alt="Logo" className="church-logo" />
+            ) : (
+              <img src="/fallback-logo.png" alt="Logo" className="church-logo" />
+            )}
           </div>
 
-          <label htmlFor="pin">🔢 PIN ya Admin (hiari):</label>
-          <div className="password-wrapper">
-            <input
-              type={showPin ? "text" : "password"}
-              id="pin"
-              name="pin"
-              placeholder="Weka PIN kama admin"
-            />
-            <button type="button" className="toggle-password" onClick={() => setShowPin(!showPin)}>
-              {showPin ? "Hide" : "Show"}
-            </button>
-          </div>
+          {/* Title */}
+          <h2>🔐 Ingia {settings?.branch_name && `- ${settings.branch_name}`}</h2>
 
-          <button type="submit" disabled={loading}>
-            {loading ? "⌛ Inapakia..." : "🚪 Ingia"}
+          {/* FORM */}
+          <form onSubmit={handleSubmit}>
+            {/* Email */}
+            <label htmlFor="email">📧 Barua Pepe:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Andika barua pepe"
+            />
+
+            {/* Password with toggle */}
+            <label htmlFor="password">🔑 Nenosiri:</label>
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                placeholder="Weka nenosiri"
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+
+            {/* Admin PIN */}
+            <label htmlFor="pin">🔢 PIN ya Admin (hiari):</label>
+            <div className="password-wrapper">
+              <input
+                type={showPin ? "text" : "password"}
+                id="pin"
+                name="pin"
+                placeholder="Weka PIN kama we Admin"
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPin(!showPin)}
+              >
+                {showPin ? "Hide" : "Show"}
+              </button>
+            </div>
+
+            <button type="submit" disabled={loading}>
+              {loading ? "⌛ Inapakia..." : "🚪 Ingia"}
+            </button>
+          </form>
+
+          {/* Forgot Password */}
+          <button onClick={() => router.push("/forgot-password")} className="forgot-btn">
+            ❓ Umesahau Nenosiri?
           </button>
-        </form>
 
-        <button onClick={() => router.push("/forgot-password")} className="forgot-btn">
-          ❓ Umesahau Nenosiri?
-        </button>
+          {/* Signup */}
+          <button onClick={() => router.push("/signup")} className="signup-btn">
+            📝 Huna akaunti? Jisajili hapa
+          </button>
 
-        <button onClick={() => router.push("/signup")} className="signup-btn">
-          📝 Huna akaunti? Jisajili hapa
-        </button>
+          {/* Status message */}
+          <div className="login-message">{loginMessage}</div>
 
-        <div className="login-message">{loginMessage}</div>
+          {/* Debug Panel */}
+          {debugInfo && (
+            <div className="debug-panel">
+              <h3>🛠 Debug Info</h3>
+              <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
+            </div>
+          )}
 
-        {/* Debug panel */}
-        {debugInfo && (
-          <div className="debug-panel">
-            <h3>🛠 Debug Info</h3>
-            <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
+          {/* Environment Info */}
+          <div className="env-debug">
+            <h3>🌍 Environment</h3>
+            <p>URL: {process.env.NEXT_PUBLIC_SUPABASE_URL || "Missing"}</p>
+            <p>Anon Key: {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "Loaded" : "Missing"}</p>
           </div>
-        )}
 
-        {/* Env Debug panel */}
-        <div className="env-debug">
-          <h3>🌍 Env Debug</h3>
-          <p>URL: {process.env.NEXT_PUBLIC_SUPABASE_URL || "Missing"}</p>
-          <p>Anon Key: {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "Loaded" : "Missing"}</p>
         </div>
       </div>
     </div>
@@ -212,3 +236,4 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
+    
