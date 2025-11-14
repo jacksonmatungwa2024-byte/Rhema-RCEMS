@@ -7,7 +7,7 @@ import "./login.css";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY
+  process.env.SUPABASE_ANON_KEY!
 );
 
 const LoginPage: React.FC = () => {
