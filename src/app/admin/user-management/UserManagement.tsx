@@ -6,7 +6,7 @@ import { deleteUser } from "./actions/deleteUser";
 import { generateOtp } from "./actions/generateOtp";
 import { approveOtp } from "./actions/approveOtp";
 import UserList from "./UserList";
-
+import "./UserManagement.css";
 export default function UserManagement() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
