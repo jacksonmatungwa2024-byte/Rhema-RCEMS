@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "./ForgotPassword.css";
 
@@ -13,14 +12,14 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [status, setStatus] = useState("");
-  const router = useRouter();
 
-  const verifyOtp = async () => {
+  const verifyOtpAndSendResetLink = async () => {
     if (!email || !otp) {
       setStatus("❌ Tafadhali weka barua pepe na OTP.");
       return;
     }
 
+    // Step 1: Verify OTP from users table
     const { data, error } = await supabase
       .from("users")
       .select("id, metadata, otp_verified, otp_verified_at")
@@ -45,12 +44,12 @@ export default function ForgotPassword() {
     if (resetStatus !== "waiting_approval" && resetStatus !== "approved")
       return setStatus("⚠️ OTP hii haijathibitishwa au imefutwa.");
 
-    // ✅ Success — update otp_verified = true + timestamp
+    // Step 2: Mark OTP verified
     const { error: updateError } = await supabase
       .from("users")
-      .update({ 
+      .update({
         otp_verified: true,
-        otp_verified_at: new Date().toISOString()
+        otp_verified_at: new Date().toISOString(),
       })
       .eq("id", data.id);
 
@@ -59,8 +58,18 @@ export default function ForgotPassword() {
       return;
     }
 
-    setStatus("✅ OTP sahihi! Unaelekezwa kwenye ukurasa wa kubadilisha nenosiri...");
-    router.push(`/update-password?email=${encodeURIComponent(email)}`);
+    // Step 3: Send Supabase reset link
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: "https://your-app.com/update-password", 
+      // 👆 badilisha URL hii iwe domain yako halisi
+    });
+
+    if (resetError) {
+      setStatus("⚠️ OTP sahihi lakini hatukuweza kutuma reset link: " + resetError.message);
+      return;
+    }
+
+    setStatus("✅ OTP sahihi! Link ya kubadilisha nenosiri imetumwa kwa barua pepe yako.");
   };
 
   return (
@@ -80,10 +89,10 @@ export default function ForgotPassword() {
         onChange={(e) => setOtp(e.target.value)}
         className="input-field"
       />
-      <button className="btn btn-verify" onClick={verifyOtp}>
-        ✅ Thibitisha OTP
+      <button className="btn btn-verify" onClick={verifyOtpAndSendResetLink}>
+        ✅ Thibitisha OTP & Tuma Reset Link
       </button>
       {status && <div className="status">{status}</div>}
     </div>
   );
-}
+      }
