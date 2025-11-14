@@ -49,19 +49,19 @@ export default function Dashboard() {
       }
 
       // Fetch user info
-      const { data: userData } = await supabase
+      const { data: userData, error } = await supabase
         .from("users")
         .select("*")
         .eq("email", email)
         .single();
 
-      if (!userData) {
+      if (error || !userData) {
         window.location.href = "/login";
         return;
       }
 
       // 🔹 Single session enforcement
-      if (!userData.current_session || userData.current_session !== accessToken) {
+      if (userData.current_session !== accessToken) {
         alert("Umeingia kwenye kifaa kingine au session imeisha. Tafadhali ingia tena.");
         await supabase.auth.signOut();
         window.location.href = "/login";
@@ -150,4 +150,4 @@ export default function Dashboard() {
       </button>
     </div>
   );
-        }
+}
