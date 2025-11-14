@@ -36,7 +36,7 @@ export default function Dashboard() {
   const [audioPlaying, setAudioPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // ===== Session check + single session enforcement =====
+  // ===== Session check (no single session enforcement) =====
   useEffect(() => {
     const checkSession = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
@@ -60,15 +60,7 @@ export default function Dashboard() {
         return;
       }
 
-      // 🔹 Single session enforcement
-      if (userData.current_session !== accessToken) {
-        alert("Umeingia kwenye kifaa kingine au session imeisha. Tafadhali ingia tena.");
-        await supabase.auth.signOut();
-        window.location.href = "/login";
-        return;
-      }
-
-      // Set state
+      // ✅ No single session enforcement — multiple devices allowed
       setRole(userData.role);
       setFullName(userData.full_name || "");
       setBranch(userData.branch || "");
