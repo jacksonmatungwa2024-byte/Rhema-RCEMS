@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "./ForgotPassword.css";
 
@@ -12,8 +13,9 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [status, setStatus] = useState("");
+  const router = useRouter();
 
-  const verifyOtpAndSendResetLink = async () => {
+  const verifyOtp = async () => {
     if (!email || !otp) {
       setStatus("❌ Tafadhali weka barua pepe na OTP.");
       return;
@@ -58,18 +60,11 @@ export default function ForgotPassword() {
       return;
     }
 
-    // Step 3: Send Supabase reset link
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://kanisatanzania.vercel.app/update-password", 
-      // 👆 badilisha URL hii iwe domain yako halisi
-    });
-
-    if (resetError) {
-      setStatus("⚠️ OTP sahihi lakini hatukuweza kutuma reset link: " + resetError.message);
-      return;
-    }
-
-    setStatus("✅ OTP sahihi! Link ya kubadilisha nenosiri imetumwa kwa barua pepe yako.");
+    // Step 3: Redirect to UpdatePassword page with email param
+    setStatus("✅ OTP sahihi! Unaelekezwa kubadilisha nenosiri...");
+    setTimeout(() => {
+      router.push(`/update-password?email=${encodeURIComponent(email)}`);
+    }, 1500);
   };
 
   return (
@@ -89,10 +84,10 @@ export default function ForgotPassword() {
         onChange={(e) => setOtp(e.target.value)}
         className="input-field"
       />
-      <button className="btn btn-verify" onClick={verifyOtpAndSendResetLink}>
-        ✅ Thibitisha OTP & Tuma Reset Link
+      <button className="btn btn-verify" onClick={verifyOtp}>
+        ✅ Thibitisha OTP
       </button>
       {status && <div className="status">{status}</div>}
     </div>
   );
-      }
+}
