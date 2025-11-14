@@ -13,7 +13,7 @@ const SignupPage: React.FC = () => {
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // 👈 state ya show/hide
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,6 +27,9 @@ const SignupPage: React.FC = () => {
     const fullName = (form.elements.namedItem("full_name") as HTMLInputElement)?.value.trim();
     const role = (form.elements.namedItem("role") as HTMLSelectElement)?.value.trim();
     const branch = (form.elements.namedItem("branch") as HTMLInputElement)?.value.trim();
+    const username = (form.elements.namedItem("username") as HTMLInputElement)?.value.trim();
+    const phone = (form.elements.namedItem("phone") as HTMLInputElement)?.value.trim();
+    const profileUrl = (form.elements.namedItem("profile_url") as HTMLInputElement)?.value.trim();
 
     if (!email || !password || !fullName || !role) {
       setMessage("⚠️ Tafadhali jaza taarifa zote muhimu.");
@@ -35,34 +38,35 @@ const SignupPage: React.FC = () => {
     }
 
     try {
-      // Step 1: Register in Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
       });
 
-      if (authError) {
-        console.error("Auth error:", authError.message);
-        setMessage(`❌ Usajili umeshindikana: ${authError.message}`);
+      if (authError || !authData.user || !authData.session) {
+        console.error("Auth error:", authError?.message);
+        setMessage(`❌ Usajili umeshindikana: ${authError?.message || "Hakuna session."}`);
         setLoading(false);
         return;
       }
 
-      if (!authData.user) {
-        setMessage("❌ Usajili umeshindikana: Hakuna user object iliyopatikana.");
-        setLoading(false);
-        return;
-      }
+      const accessToken = authData.session.access_token;
 
-      // Step 2: Insert into custom users table
       const { error: insertError } = await supabase.from("users").insert({
         email,
         full_name: fullName,
         role,
         branch,
+        username: username || null,
+        phone: phone || null,
+        profile_url: profileUrl || null,
         is_active: true,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+        current_session: accessToken,
+        active_until: null,
+        metadata: {},
       });
 
       if (insertError) {
@@ -90,13 +94,16 @@ const SignupPage: React.FC = () => {
         <label htmlFor="full_name">👤 Jina Kamili:</label>
         <input type="text" id="full_name" name="full_name" placeholder="Jina kamili" />
 
+        <label htmlFor="username">🆔 Jina la Mtumiaji:</label>
+        <input type="text" id="username" name="username" placeholder="Mfano: jdoe" />
+
         <label htmlFor="email">📧 Barua Pepe:</label>
         <input type="email" id="email" name="email" placeholder="Barua pepe sahihi" />
 
         <label htmlFor="password">🔑 Nenosiri:</label>
         <div className="password-field">
           <input
-            type={showPassword ? "text" : "password"} // 👈 toggle
+            type={showPassword ? "text" : "password"}
             id="password"
             name="password"
             placeholder="Nenosiri lenye nguvu"
@@ -109,6 +116,12 @@ const SignupPage: React.FC = () => {
             {showPassword ? "🙈 Ficha" : "👁️ Onyesha"}
           </button>
         </div>
+
+        <label htmlFor="phone">📞 Simu:</label>
+        <input type="text" id="phone" name="phone" placeholder="Namba ya simu (hiari)" />
+
+        <label htmlFor="profile_url">🖼️ Picha ya Profile:</label>
+        <input type="text" id="profile_url" name="profile_url" placeholder="URL ya picha (hiari)" />
 
         <label htmlFor="role">🎯 Nafasi:</label>
         <select id="role" name="role">
@@ -128,76 +141,6 @@ const SignupPage: React.FC = () => {
       </form>
 
       <div className="signup-message">{message}</div>
-
-      <style jsx>{`
-        .signup-wrapper {
-          max-width: 500px;
-          margin: 0 auto;
-          padding: 2rem;
-          background-color: #f9f9f9;
-          border-radius: 8px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-          text-align: center;
-          color: #333;
-        }
-
-        form {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        label {
-          font-size: 1rem;
-          color: #555;
-        }
-
-        input, select {
-          padding: 0.8rem;
-          font-size: 1rem;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          background-color: #fff;
-        }
-
-        .password-field {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .toggle-btn {
-          padding: 0.5rem 1rem;
-          font-size: 0.9rem;
-          background-color: #eee;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          cursor: pointer;
-        }
-
-        button[type="submit"] {
-          padding: 1rem;
-          font-size: 1rem;
-          color: #fff;
-          background-color: #007bff;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-        }
-
-        button[type="submit"]:disabled {
-          background-color: #ccc;
-        }
-
-        .signup-message {
-          margin-top: 1rem;
-          text-align: center;
-          font-weight: bold;
-        }
-      `}</style>
     </div>
   );
 };
