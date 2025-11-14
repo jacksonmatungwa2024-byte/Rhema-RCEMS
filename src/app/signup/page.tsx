@@ -14,17 +14,18 @@ const SignupPage: React.FC = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
-    const form = e.target as HTMLFormElement;
-    const email = (form.email as HTMLInputElement).value.trim().toLowerCase();
-    const password = (form.password as HTMLInputElement).value.trim();
-    const fullName = (form.full_name as HTMLInputElement).value.trim();
-    const role = (form.role as HTMLSelectElement)?.value;  // Fix here
-    const branch = (form.branch as HTMLInputElement).value.trim();
+    const form = e.currentTarget;
+
+    const email = (form.elements.namedItem("email") as HTMLInputElement)?.value.trim().toLowerCase();
+    const password = (form.elements.namedItem("password") as HTMLInputElement)?.value.trim();
+    const fullName = (form.elements.namedItem("full_name") as HTMLInputElement)?.value.trim();
+    const role = (form.elements.namedItem("role") as HTMLSelectElement)?.value.trim();
+    const branch = (form.elements.namedItem("branch") as HTMLInputElement)?.value.trim();
 
     if (!email || !password || !fullName || !role) {
       setMessage("⚠️ Tafadhali jaza taarifa zote muhimu.");
@@ -72,28 +73,13 @@ const SignupPage: React.FC = () => {
       <h2>📝 Sajili Akaunti Mpya</h2>
       <form onSubmit={handleSignup}>
         <label htmlFor="full_name">👤 Jina Kamili:</label>
-        <input
-          type="text"
-          id="full_name"
-          name="full_name"
-          placeholder="Jina kamili"
-        />
+        <input type="text" id="full_name" name="full_name" placeholder="Jina kamili" />
 
         <label htmlFor="email">📧 Barua Pepe:</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="Barua pepe sahihi"
-        />
+        <input type="email" id="email" name="email" placeholder="Barua pepe sahihi" />
 
         <label htmlFor="password">🔑 Nenosiri:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="Nenosiri lenye nguvu"
-        />
+        <input type="password" id="password" name="password" placeholder="Nenosiri lenye nguvu" />
 
         <label htmlFor="role">🎯 Nafasi:</label>
         <select id="role" name="role">
@@ -105,12 +91,7 @@ const SignupPage: React.FC = () => {
         </select>
 
         <label htmlFor="branch">📍 Tawi:</label>
-        <input
-          type="text"
-          id="branch"
-          name="branch"
-          placeholder="Tawi lako (hiari)"
-        />
+        <input type="text" id="branch" name="branch" placeholder="Tawi lako (hiari)" />
 
         <button type="submit" disabled={loading}>
           {loading ? "⌛ Inasajili..." : "📝 Sajili"}
@@ -153,8 +134,7 @@ const SignupPage: React.FC = () => {
           background-color: #fff;
         }
 
-        button {
-          padding: 1rem;
+        button: 1rem;
           font-size: 1rem;
           color: #fff;
           background-color: #007bff;
