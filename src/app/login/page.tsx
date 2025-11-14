@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "./login.css";
 
+// Supabase client
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -17,7 +18,7 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPin, setShowPin] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<any>(null); // debug panel state
+  const [debugInfo, setDebugInfo] = useState<any>(null);
 
   // Fetch active settings
   useEffect(() => {
@@ -58,7 +59,7 @@ const LoginPage: React.FC = () => {
 
       if (authError || !authData.user) {
         setLoginMessage("❌ Auth Error: " + (authError?.message || "User not found or password wrong"));
-        setDebugInfo({ authError, authData }); // show raw info
+        setDebugInfo({ authError, authData });
         setLoading(false);
         return;
       }
@@ -70,7 +71,7 @@ const LoginPage: React.FC = () => {
         .eq("id", authData.user.id)
         .single();
 
-      // Fallback: if not found by ID, try by email
+      // Fallback: try by email
       if (userError || !userRecord) {
         const { data: userByEmail, error: emailError } = await supabase
           .from("users")
@@ -198,6 +199,13 @@ const LoginPage: React.FC = () => {
             <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
           </div>
         )}
+
+        {/* Env Debug panel */}
+        <div className="env-debug">
+          <h3>🌍 Env Debug</h3>
+          <p>URL: {process.env.NEXT_PUBLIC_SUPABASE_URL || "Missing"}</p>
+          <p>Anon Key: {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "Loaded" : "Missing"}</p>
+        </div>
       </div>
     </div>
   );
