@@ -13,6 +13,7 @@ const SignupPage: React.FC = () => {
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // 👈 state ya show/hide
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,14 +41,21 @@ const SignupPage: React.FC = () => {
         password,
       });
 
-      if (authError || !authData.user) {
-        setMessage("❌ Usajili umeshindikana. Jaribu tena.");
+      if (authError) {
+        console.error("Auth error:", authError.message);
+        setMessage(`❌ Usajili umeshindikana: ${authError.message}`);
+        setLoading(false);
+        return;
+      }
+
+      if (!authData.user) {
+        setMessage("❌ Usajili umeshindikana: Hakuna user object iliyopatikana.");
         setLoading(false);
         return;
       }
 
       // Step 2: Insert into custom users table
-      await supabase.from("users").insert({
+      const { error: insertError } = await supabase.from("users").insert({
         email,
         full_name: fullName,
         role,
@@ -57,12 +65,19 @@ const SignupPage: React.FC = () => {
         updated_at: new Date().toISOString(),
       });
 
+      if (insertError) {
+        console.error("Insert error:", insertError.message);
+        setMessage(`❌ Usajili umeshindikana: ${insertError.message}`);
+        setLoading(false);
+        return;
+      }
+
       setMessage("✅ Usajili umefanikiwa! Unaelekezwa...");
       setTimeout(() => router.push("/login"), 1500);
 
-    } catch (err) {
+    } catch (err: any) {
       console.error("Signup error:", err);
-      setMessage("❌ Tatizo la mtandao au seva.");
+      setMessage(`❌ Tatizo la mtandao au seva: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -79,7 +94,21 @@ const SignupPage: React.FC = () => {
         <input type="email" id="email" name="email" placeholder="Barua pepe sahihi" />
 
         <label htmlFor="password">🔑 Nenosiri:</label>
-        <input type="password" id="password" name="password" placeholder="Nenosiri lenye nguvu" />
+        <div className="password-field">
+          <input
+            type={showPassword ? "text" : "password"} // 👈 toggle
+            id="password"
+            name="password"
+            placeholder="Nenosiri lenye nguvu"
+          />
+          <button
+            type="button"
+            className="toggle-btn"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? "🙈 Ficha" : "👁️ Onyesha"}
+          </button>
+        </div>
 
         <label htmlFor="role">🎯 Nafasi:</label>
         <select id="role" name="role">
@@ -134,7 +163,23 @@ const SignupPage: React.FC = () => {
           background-color: #fff;
         }
 
-        button: 1rem;
+        .password-field {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .toggle-btn {
+          padding: 0.5rem 1rem;
+          font-size: 0.9rem;
+          background-color: #eee;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        button[type="submit"] {
+          padding: 1rem;
           font-size: 1rem;
           color: #fff;
           background-color: #007bff;
@@ -143,7 +188,7 @@ const SignupPage: React.FC = () => {
           cursor: pointer;
         }
 
-        button:disabled {
+        button[type="submit"]:disabled {
           background-color: #ccc;
         }
 
@@ -151,15 +196,6 @@ const SignupPage: React.FC = () => {
           margin-top: 1rem;
           text-align: center;
           font-weight: bold;
-          color: #d9534f;
-        }
-
-        .signup-message.success {
-          color: #5bc0de;
-        }
-
-        .signup-message.error {
-          color: #d9534f;
         }
       `}</style>
     </div>
