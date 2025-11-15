@@ -32,14 +32,14 @@ export async function GET(req: Request) {
     // Admin → all tabs, Non-admin → metadata.allowed_tabs
     let allowedTabs: string[] = [];
     if (user.role === "admin") {
-      // Admin gets everything by default
+      // Admin gets all possible tabs
       allowedTabs = [
-        "tabManager", "reactivation", "users", "registration", "data",
-        "matangazo", "storage", "settings", "profile",
-        "home", "usajili", "mafunzo", "reports", "messages", "picha",
-        "muumini", "mahadhurio", "wokovu", "ushuhuda",
-        "dashboard", "bajeti", "summary", "approval", "approved", "rejected",
-        "media", "usage", "finance", "michango", "reports_finance"
+        "tabManager","reactivation","users","registration","data","matangazo",
+        "storage","settings","profile",
+        "home","usajili","mafunzo","reports","messages","picha",
+        "muumini","mahadhurio","wokovu","ushuhuda",
+        "dashboard","bajeti","summary","approval","approved","rejected",
+        "media","usage","finance","michango","reports_finance"
       ];
     } else {
       allowedTabs = user.metadata?.allowed_tabs || [];
@@ -49,4 +49,4 @@ export async function GET(req: Request) {
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
-    }
+}
