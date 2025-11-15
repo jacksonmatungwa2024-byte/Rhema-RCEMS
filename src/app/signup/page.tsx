@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import "./signup.css"; // ✅ IMPORT CSS HERE
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import "./signup.css";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -26,23 +28,13 @@ const SignupPage: React.FC = () => {
     const email = (form.elements.namedItem("email") as HTMLInputElement)?.value
       .trim()
       .toLowerCase();
-
-    const password = (form.elements.namedItem("password") as HTMLInputElement)
-      ?.value.trim();
-
-    const fullName = (form.elements.namedItem("full_name") as HTMLInputElement)
-      ?.value.trim();
-
+    const password = (form.elements.namedItem("password") as HTMLInputElement)?.value.trim();
+    const fullName = (form.elements.namedItem("full_name") as HTMLInputElement)?.value.trim();
     const role = (form.elements.namedItem("role") as HTMLSelectElement)?.value.trim();
-
     const branch = (form.elements.namedItem("branch") as HTMLInputElement)?.value.trim();
-
     const username = (form.elements.namedItem("username") as HTMLInputElement)?.value.trim();
-
     const phone = (form.elements.namedItem("phone") as HTMLInputElement)?.value.trim();
-
-    const profileFile = (form.elements.namedItem("profile_file") as HTMLInputElement)
-      ?.files?.[0];
+    const profileFile = (form.elements.namedItem("profile_file") as HTMLInputElement)?.files?.[0];
 
     if (!email || !password || !fullName || !role || !profileFile) {
       setMessage("⚠️ Tafadhali jaza taarifa zote muhimu na weka picha ya profile.");
@@ -51,19 +43,9 @@ const SignupPage: React.FC = () => {
     }
 
     try {
-      // 1️⃣ Create account in Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (authError || !authData.user || !authData.session) {
-        setMessage(`❌ Usajili umeshindikana: ${authError?.message}`);
-        setLoading(false);
-        return;
-      }
-
-      const accessToken = authData.session.access_token;
+      // 1️⃣ Hash password
+      const saltRounds = 10;
+      const passwordHash = await bcrypt.hash(password, saltRounds);
 
       // 2️⃣ Upload profile picture
       const fileExt = profileFile.name.split(".").pop();
@@ -86,7 +68,11 @@ const SignupPage: React.FC = () => {
 
       const profileUrl = urlData?.publicUrl;
 
-      // 3️⃣ Insert into users table
+      // 3️⃣ Create JWT token
+      const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET!;
+      const token = jwt.sign({ email, role }, jwtSecret, { expiresIn: "6h" });
+
+      // 4️⃣ Insert into users table
       const sixMonthsFromNow = new Date();
       sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
 
@@ -98,11 +84,12 @@ const SignupPage: React.FC = () => {
         username: username || null,
         phone: phone || null,
         profile_url: profileUrl,
+        password_hash: passwordHash,
+        jwt_token: token,
         is_active: true,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         last_login: new Date().toISOString(),
-        current_session: accessToken,
         active_until: sixMonthsFromNow.toISOString(),
         metadata: {},
       });
@@ -112,6 +99,9 @@ const SignupPage: React.FC = () => {
         setLoading(false);
         return;
       }
+
+      // 5️⃣ Save session token
+      localStorage.setItem("session_token", token);
 
       setMessage("✅ Usajili umefanikiwa! Unaelekezwa...");
       setTimeout(() => router.push("/login"), 1500);
@@ -184,4 +174,3 @@ const SignupPage: React.FC = () => {
 };
 
 export default SignupPage;
-        
