@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./PastorPage.css";
 import PastorUsajili from "../components/PastorUsajili";
@@ -14,11 +13,6 @@ import ApprovedSummaries from "../components/ApprovedSummaries";
 import RejectedSummaries from "../components/RejectedSummaries";
 import PastorMatangazo from "../components/PastorMatangazo";
 import UserGallery from "../components/UserGallery";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const defaultAccess: Record<string, string[]> = {
   admin: [
@@ -55,35 +49,34 @@ export default function PastorPage() {
   // Load user & restore last tab
   useEffect(() => {
     const loadUser = async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const email = sessionData?.session?.user?.email;
-
-      if (!email) {
+      const token = localStorage.getItem("session_token");
+      if (!token) {
         window.location.href = "/login";
         return;
       }
 
-      const { data: userData, error: userErr } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", email)
-        .single();
+      const res = await fetch("/api/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
 
-      if (userErr || !userData) {
-        alert("Haiwezekani kupata taarifa zako.");
+      if (data.error) {
+        localStorage.removeItem("session_token");
         window.location.href = "/login";
         return;
       }
 
-      setRole(userData.role);
-      setUsername(userData.username || "");
+      setRole(data.role);
+      setUsername(data.username || "");
 
-      const metadataTabs = userData.metadata?.allowed_tabs;
-      const tabsToUse = Array.isArray(metadataTabs) ? metadataTabs : defaultAccess[userData.role] || [];
+      const metadataTabs = data.allowedTabs;
+      const tabsToUse = Array.isArray(metadataTabs) && metadataTabs.length > 0
+        ? metadataTabs
+        : defaultAccess[data.role] || [];
       setAllowedTabs(tabsToUse);
 
       // Restore last tab for non-admin
-      if (userData.role !== "admin") {
+      if (data.role !== "admin") {
         const lastTab = localStorage.getItem("pastor_active_tab");
         if (lastTab && tabsToUse.includes(lastTab)) setActive(lastTab);
       }
@@ -106,8 +99,8 @@ export default function PastorPage() {
     let timeout: NodeJS.Timeout;
     const resetTimer = () => {
       clearTimeout(timeout);
-      timeout = setTimeout(async () => {
-        await supabase.auth.signOut();
+      timeout = setTimeout(() => {
+        localStorage.removeItem("session_token");
         localStorage.removeItem("pastor_active_tab");
         window.location.href = "/login";
       }, 10 * 60 * 1000);
@@ -123,12 +116,10 @@ export default function PastorPage() {
     };
   }, [role]);
 
-  const handleLogout = async () => {
-    if (role !== "admin") {
-      await supabase.auth.signOut();
-      localStorage.removeItem("pastor_active_tab");
-      window.location.href = "/login";
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("session_token");
+    localStorage.removeItem("pastor_active_tab");
+    window.location.href = "/login";
   };
 
   return (
@@ -189,4 +180,4 @@ export default function PastorPage() {
       <SpeedInsights />
     </div>
   );
-}
+                   }
