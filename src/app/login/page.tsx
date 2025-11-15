@@ -9,7 +9,6 @@ export default function LoginPage() {
   const [loginMessage, setLoginMessage] = useState("");
   const [anonLoaded, setAnonLoaded] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showPin, setShowPin] = useState(false);
 
   // 🔥 Check ENV + anon key status
   useEffect(() => {
@@ -27,13 +26,12 @@ export default function LoginPage() {
     const form = e.target as HTMLFormElement;
     const email = form.email.value.trim().toLowerCase();
     const password = form.password.value.trim();
-    const pin = form.pin.value.trim();
 
     try {
       const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, pin }),
+        body: JSON.stringify({ email, password }), // ⭐ PIN removed
       });
 
       const data = await res.json();
@@ -58,9 +56,9 @@ export default function LoginPage() {
 
   return (
     <div className="login-wrapper">
-      <form className="login-box" onSubmit={handleSubmit}>
-        <h2 className="title">Karibu 👋</h2>
-        <p className="subtitle">Ingia kwenye akaunti yako</p>
+      <form className="login-box slide-in" onSubmit={handleSubmit}>
+        <h2 className="title fade-in">Karibu 👋</h2>
+        <p className="subtitle fade-in-delay">Ingia kwenye akaunti yako</p>
 
         {/* Email */}
         <div className="input-group">
@@ -87,24 +85,8 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* PIN */}
-        <div className="input-group">
-          <label>PIN</label>
-          <div className="password-wrapper">
-            <input
-              type={showPin ? "text" : "password"}
-              name="pin"
-              placeholder="PIN ya siri"
-              required
-            />
-            <span className="toggle" onClick={() => setShowPin((p) => !p)}>
-              {showPin ? "🙈" : "👁️"}
-            </span>
-          </div>
-        </div>
-
         {/* Button */}
-        <button className="login-btn" disabled={loading}>
+        <button className="login-btn bounce" disabled={loading}>
           {loading ? "⏳ Inacheza..." : "Ingia"}
         </button>
 
