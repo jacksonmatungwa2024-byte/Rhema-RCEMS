@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import "./AdminPanel.css";
@@ -17,21 +16,10 @@ import AdminProfile from "../components/AdminProfile";
 import AdminSettings from "../components/AdminSettings";
 import { BucketProvider } from "../components/BucketContext";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-  }
-);
-
 const tabs = [
   { id: "tabManager", label: "🛠️ Tab Manager", component: <AdminTabManager /> },
   { id: "reactivation", label: "🔁 Reactivation", component: <AdminReactivation /> },
-  { id: "users", label: "👥 User Management", link: "/admin/user-management" }, // 🚀 Now opens route
+  { id: "users", label: "👥 User Management", link: "/admin/user-management" },
   { id: "registration", label: "📝 Registration", component: <UserRegistration /> },
   { id: "data", label: "📊 Data Management", component: <AdminDataManagement /> },
   { id: "matangazo", label: "📣 Matangazo", component: <AdminMatangazo /> },
@@ -46,29 +34,36 @@ export default function AdminPanel() {
   const [isMobile, setIsMobile] = useState(false);
   const [user, setUser] = useState<any>(null);
 
-  // 🔒 Load admin session
+  // 🔒 Load admin session using JWT
   useEffect(() => {
     const loadSession = async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const email = sessionData?.session?.user?.email;
-
-      if (!email) {
+      const token = localStorage.getItem("session_token");
+      if (!token) {
         router.push("/login");
         return;
       }
 
-      const { data: userData } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", email)
-        .single();
+      const res = await fetch("/api/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
 
-      if (!userData || userData.role !== "admin") {
+      if (data.error || data.role !== "admin") {
+        localStorage.removeItem("session_token");
         router.push("/login");
         return;
       }
 
-      setUser(userData);
+      setUser(data);
+
+      // 🔹 Auto logout after 30 mins inactivity
+      const timeout = setTimeout(() => {
+        alert("Umeachwa bila shughuli. Tafadhali ingia tena.");
+        localStorage.removeItem("session_token");
+        router.push("/login");
+      }, 30 * 60 * 1000);
+
+      return () => clearTimeout(timeout);
     };
 
     loadSession();
@@ -83,8 +78,8 @@ export default function AdminPanel() {
   }, []);
 
   // 🚪 Logout
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    localStorage.removeItem("session_token");
     router.push("/login");
   };
 
@@ -133,5 +128,4 @@ export default function AdminPanel() {
       </div>
     </BucketProvider>
   );
-    }
-      
+}
