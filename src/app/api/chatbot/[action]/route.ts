@@ -8,9 +8,13 @@ const supabase = createClient(
 
 const ADMIN_WHATSAPP = "+255626280792";
 
-export async function POST(request: NextRequest, context: { params: Promise<{ action: string }> }) {
+/* ---------- POST HANDLER ---------- */
+export async function POST(
+  request: NextRequest,
+  context: { params: Promise<{ action: string }> }
+) {
   try {
-    const { action } = await context.params;   // ✅ lazima u-await
+    const { action } = await context.params;
     const body = await request.json();
 
     switch (action) {
@@ -37,11 +41,30 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ac
         if (!full_name || !email) {
           return NextResponse.json({ error: "Missing user details" }, { status: 400 });
         }
-        const msg = `📩 Nimesahau nenosiri, naomba OTP.%0AJina: ${encodeURIComponent(full_name)}%0AEmail: ${encodeURIComponent(email)}`;
+        const msg = `📩 Nimesahau nenosiri, naomba OTP.%0AJina: ${encodeURIComponent(
+          full_name
+        )}%0AEmail: ${encodeURIComponent(email)}`;
         const link = `https://wa.me/${ADMIN_WHATSAPP.replace("+", "")}?text=${msg}`;
         return NextResponse.json({ whatsappLink: link }, { status: 200 });
       }
 
+      default:
+        return NextResponse.json({ error: "Unknown POST action" }, { status: 400 });
+    }
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
+/* ---------- GET HANDLER ---------- */
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ action: string }> }
+) {
+  try {
+    const { action } = await context.params;
+
+    switch (action) {
       case "announcement": {
         const { data, error } = await supabase
           .from("announcements")
@@ -50,7 +73,10 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ac
           .limit(1)
           .single();
         if (error || !data) {
-          return NextResponse.json({ error: "Hakuna tangazo lililopatikana" }, { status: 404 });
+          return NextResponse.json(
+            { error: "Hakuna tangazo lililopatikana" },
+            { status: 404 }
+          );
         }
         return NextResponse.json({ announcement: data }, { status: 200 });
       }
@@ -63,9 +89,9 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ac
       }
 
       default:
-        return NextResponse.json({ error: "Unknown action" }, { status: 400 });
+        return NextResponse.json({ error: "Unknown GET action" }, { status: 400 });
     }
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
-}
+          }
