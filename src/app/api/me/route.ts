@@ -1,4 +1,3 @@
-// app/api/me/route.ts
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { createClient } from "@supabase/supabase-js";
@@ -29,18 +28,21 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Admin → all tabs, Non-admin → metadata.allowed_tabs
+    // Define all possible panels and tabs
+    const allPanels = ["admin", "usher", "pastor", "media", "finance"];
+    const allTabIds = [
+      "tabManager", "reactivation", "users", "registration", "data", "matangazo",
+      "storage", "settings", "profile",
+      "home", "usajili", "mafunzo", "reports", "messages", "picha",
+      "muumini", "mahadhurio", "wokovu", "ushuhuda",
+      "dashboard", "bajeti", "summary", "approval", "approved", "rejected",
+      "media", "usage", "finance", "michango", "reports_finance"
+    ];
+
+    // Admin gets everything
     let allowedTabs: string[] = [];
     if (user.role === "admin") {
-      // Admin gets all possible tabs
-      allowedTabs = [
-        "tabManager","reactivation","users","registration","data","matangazo",
-        "storage","settings","profile",
-        "home","usajili","mafunzo","reports","messages","picha",
-        "muumini","mahadhurio","wokovu","ushuhuda",
-        "dashboard","bajeti","summary","approval","approved","rejected",
-        "media","usage","finance","michango","reports_finance"
-      ];
+      allowedTabs = [...allPanels, ...allTabIds];
     } else {
       allowedTabs = user.metadata?.allowed_tabs || [];
     }
