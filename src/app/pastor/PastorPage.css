@@ -1,169 +1,129 @@
-/* Root container */
+/* ===== Container ===== */
 .pastor-container {
   display: flex;
-  flex-direction: row;
   min-height: 100vh;
-  font-family: "Inter", "Roboto", Arial, sans-serif;
-  background: #f3f6fb;
-  transition: all 0.3s ease;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f5f5f5;
+  color: #222;
 }
 
-/* Sidebar */
+/* ===== Sidebar ===== */
 .pastor-sidebar {
-  width: 280px;
-  padding: 24px;
-  background: linear-gradient(180deg, #fff, #faf8ff);
-  border-right: 1px solid rgba(15, 23, 42, 0.1);
+  width: 260px;
+  background: #2c3e50;
+  color: #fff;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  transition: all 0.3s ease;
+  padding: 20px;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
 }
 
-/* Logo block */
 .pastor-logo {
   display: flex;
-  gap: 14px;
   align-items: center;
   margin-bottom: 20px;
 }
 
 .pastor-logo-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #6a1b9a, #9c27b0);
+  background: #27ae60;
+  color: #fff;
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  font-weight: 900;
-  font-size: 24px;
-  user-select: none;
+  margin-right: 10px;
 }
 
 .pastor-logo-text {
-  font-weight: 900;
-  color: #3c1363;
   font-size: 18px;
-}
-
-.pastor-username {
-  font-size: 13px;
-  color: #8b7aa3;
   font-weight: 700;
 }
 
-/* Navigation */
+.pastor-username {
+  font-size: 14px;
+  color: #ddd;
+}
+
+/* ===== Navigation ===== */
 .pastor-nav {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  flex-grow: 1;
+  margin-bottom: auto;
 }
 
 .pastor-nav-item {
-  padding: 12px 16px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: 700;
-  font-size: 15px;
-  user-select: none;
-  transition: all 0.3s ease;
-  color: #3b3050;
-  background: transparent;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .pastor-nav-item:hover {
-  background: rgba(106, 27, 154, 0.1);
+  background: rgba(255,255,255,0.15);
+  transform: translateX(4px);
 }
 
 .pastor-nav-item.active {
-  background: linear-gradient(90deg, #6a1b9a, #9c27b0);
+  background: #27ae60;
   color: #fff;
-  box-shadow: 0 4px 12px rgba(106, 27, 154, 0.3);
+  font-weight: bold;
 }
 
-/* Footer buttons */
+/* ===== Footer ===== */
 .pastor-footer {
-  margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
-.pastor-footer button {
-  padding: 12px;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 15px;
+.account-btn,
+.logout-btn {
+  padding: 10px;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-weight: 600;
+  transition: background 0.2s ease;
 }
 
 .account-btn {
-  background: linear-gradient(90deg, #6a1b9a, #9c27b0);
+  background: #2980b9;
   color: #fff;
+}
+
+.account-btn:hover {
+  background: #3498db;
 }
 
 .logout-btn {
-  background: #ef4444;
+  background: #c0392b;
   color: #fff;
 }
 
-/* Main content */
+.logout-btn:hover {
+  background: #e74c3c;
+}
+
+/* ===== Main Content ===== */
 .pastor-main {
   flex: 1;
-  padding: 24px;
+  padding: 30px;
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   overflow-y: auto;
-  overflow-x: hidden;
-  animation: fadeSlide 0.4s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  animation: fadeIn 0.4s ease;
 }
 
-/* Chart container fix */
-.chart-wrapper {
-  width: auto;
-  max-width: auto;
-  overflow-x: auto;
-  padding: 12px;
-  box-sizing: border-box;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.chart-wrapper canvas {
-  max-width: 100% !important;
-  height: auto !important;
-}
-
-/* Table container fix */
-.table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  padding: 12px;
-  box-sizing: border-box;
-}
-
-.table-wrapper table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.95rem;
-}
-
-.table-wrapper th,
-.table-wrapper td {
-  padding: 8px 10px;
-  border: 1px solid #ddd;
-  word-break: break-word;
-  text-align: left;
-}
-
-/* Mobile responsiveness */
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
   .pastor-container {
     flex-direction: column;
@@ -171,111 +131,65 @@
 
   .pastor-sidebar {
     width: 100%;
-    border-right: none;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.1);
-  }
-
-  .pastor-main {
-    border-radius: 0;
-    padding: 16px;
-  }
-
-  .chart-wrapper canvas {
-    width: auto !important;
-    height: auto !important;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    gap: 10px;
   }
 
   .pastor-nav {
     flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
+    gap: 8px;
+    flex: 1;
+    overflow-x: auto;
+    white-space: nowrap;
   }
 
   .pastor-nav-item {
-    flex: 1 1 40%;
+    flex: 0 0 auto;
     text-align: center;
-  }
-}
-/* Animations */
-@keyframes fadeSlide {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .pastor-container {
-    background: #1a1525;
+    padding: 10px;
+    font-size: 14px;
   }
 
-  .pastor-sidebar {
-    background: linear-gradient(180deg, #2a1f3d, #1a1525);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+  .pastor-footer {
+    flex-direction: row;
+    margin-left: auto;
   }
 
-  .pastor-logo-icon {
-    background: linear-gradient(135deg, #ab47bc, #6a1b9a);
-    color: #fff;
-  }
-
-  .pastor-logo-text {
-    color: #f3e5f5;
-  }
-
-  .pastor-username {
-    color: #d1c4e9;
-  }
-
-  .pastor-nav-item {
-    color: #e0d7f5;
-  }
-
-  .pastor-nav-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .pastor-nav-item.active {
-    background: linear-gradient(90deg, #ab47bc, #6a1b9a);
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(171, 71, 188, 0.3);
-  }
-
-  .account-btn {
-    background: linear-gradient(90deg, #ab47bc, #6a1b9a);
-    color: #fff;
-  }
-
+  .account-btn,
   .logout-btn {
-    background: #e53935;
-    color: #fff;
+    font-size: 14px;
+    padding: 8px;
   }
 
   .pastor-main {
-    background: #2a1f3d;
-    color: #ffffff;
-    box-shadow: none;
+    padding: 20px;
+  }
+}
+
+/* ===== Dark Mode ===== */
+@media (prefers-color-scheme: dark) {
+  .pastor-container {
+    background: #121212;
+    color: #f1f1f1;
   }
 
-  .table-wrapper table {
-    background: #3b2a4d;
-    color: #ffffff;
+  .pastor-sidebar {
+    background: #1e1e1e;
+    box-shadow: 2px 0 8px rgba(255,255,255,0.1);
   }
 
-  .table-wrapper th {
-    background-color: #6a1b9a;
-    color: #ffffff;
+  .pastor-nav-item {
+    color: #ddd;
   }
 
-  .table-wrapper td {
-    border-color: #7e57c2;
+  .pastor-nav-item.active {
+    background: #27ae60;
+    color: #000;
   }
 
-  .chart-wrapper {
-    background: #2a1f3d;
+  .pastor-main {
+    background: #202020;
   }
 }
