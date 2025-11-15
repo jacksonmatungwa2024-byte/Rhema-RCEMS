@@ -46,6 +46,131 @@ const LoginPage: React.FC = () => {
     const passwordInput = (form.password as HTMLInputElement).value.trim();
     const pinInput = (form.pin as HTMLInputElement).value.trim();
 
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: emailInput || null,
+          password: passwordInput || null,
+          pin: pinInput || null,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.error) {
+        setLoginMessage(`❌ ${data.error}`);
+      } else {
+        localStorage.setItem("session_token", data.token);
+        setLoginMessage("✅ Inakuelekeza...");
+
+        setTimeout(() => {
+          if (data.role === "admin" && data.loginMode === "pin") {
+            // Ask admin choice
+            const choice = confirm("Umeingia kwa PIN. Unataka kwenda Admin au Home?");
+            if (choice) router.push("/admin");
+            else router.push("/home");
+          } else {
+            router.push("/home");
+          }
+        }, 900);
+      }
+    } catch (err: any) {
+      setLoginMessage("❌ Hitilafu ya mtandao: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="login-wrapper">
+      <div className="wa-right-panel">
+        <div className="login-bubble">
+          <div className="logo-container">
+            {settings?.logo_url ? (
+              <img src={settings.logo_url} alt="Logo" className="church-logo" />
+            ) : (
+              <img src="/fallback-logo.png" alt="Logo" className="church-logo" />
+            )}
+          </div>
+
+          <h2>🔐 Ingia {settings?.branch_name && `- ${settings.branch_name}`}</h2>
+
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="email">📧 Barua Pepe:</label>
+            <input type="email" id="email" name="email" placeholder="Andika barua pepe" />
+
+            <label htmlFor="password">🔑 Nenosiri:</label>
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                placeholder="Weka nenosiri"
+              />
+              <button type="button" onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+
+            <label htmlFor="pin">🔢 PIN ya Admin:</label>
+            <div className="password-wrapper">
+              <input
+                type={showPin ? "text" : "password"}
+                id="pin"
+                name="pin"
+                placeholder="Weka PIN kama we Admin"
+              />
+              <button type="button" onClick={() => setShowPin(!showPin)}>
+                {showPin ? "Hide" : "Show"}
+              </button>
+            </div>
+
+            <button type="submit" disabled={loading}>
+              {loading ? "⌛ Inapakia..." : "🚪 Ingia"}
+            </button>
+          </form>
+
+          <button onClick={() => router.push("/chatbot")} className="forgot-btn">
+            ❓ Umesahau Nenosiri?
+          </button>
+
+          <button onClick={() => router.push("/signup")} className="signup-btn">
+            📝 Huna akaunti? Jisajili hapa
+          </button>
+
+          <div className="login-message">{loginMessage}</div>
+
+          {debugInfo && (
+            <div className="debug-panel">
+              <h3>🛠 Debug Info</h3>
+              <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
+            </div>
+          )}
+
+          <div className="env-debug">
+            <h3>🌍 Environment</h3>
+            <p>URL: {process.env.NEXT_PUBLIC_SUPABASE_URL || "Missing"}</p>
+            <p>Anon Key: {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "Loaded" : "Missing"}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LoginPage;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setLoginMessage("");
+    setDebugInfo(null);
+
+    const form = e.target as HTMLFormElement;
+    const emailInput = (form.email as HTMLInputElement).value.trim().toLowerCase();
+    const passwordInput = (form.password as HTMLInputElement).value.trim();
+    const pinInput = (form.pin as HTMLInputElement).value.trim();
+
     if (!emailInput || !passwordInput) {
       setLoginMessage("⚠️ Tafadhali jaza taarifa zote.");
       setLoading(false);
