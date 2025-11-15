@@ -122,29 +122,34 @@ main {
     width: 100%;
     flex-direction: row;
     align-items: center;
-    overflow-x: auto;
+    overflow-x: auto;       /* ruhusu scroll kwa nav */
+    white-space: nowrap;    /* zuia tabs kukunjika */
+    gap: 8px;
   }
 
   nav h2 {
     font-size: 18px;
     margin-right: 10px;
+    flex: 0 0 auto;
   }
 
   .tab-buttons {
     flex-direction: row;
     gap: 8px;
     flex: 1;
-    overflow-x: auto;
+    overflow-x: auto;       /* ruhusu scroll kwa tabs */
+    white-space: nowrap;    /* zuia tabs kukunjika */
   }
 
   .tab-buttons button {
-    flex: 1;
+    flex: 0 0 auto;         /* kila button ibaki size yake */
     text-align: center;
     padding: 10px;
     font-size: 14px;
   }
 
   .logout-btn {
+    flex: 0 0 auto;         /* logout ibaki size yake */
     margin-left: auto;
     margin-top: 0;
     padding: 10px;
@@ -201,4 +206,18 @@ main {
   .admin-loading {
     color: #25D366;
   }
+}
+
+/* ===== Scroll Hint for Mobile ===== */
+.tab-buttons::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tab-buttons::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.3);
+  border-radius: 4px;
+}
+
+.tab-buttons::-webkit-scrollbar-track {
+  background: transparent;
 }
