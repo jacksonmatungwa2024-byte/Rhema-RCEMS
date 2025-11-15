@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // ⚠️ service role key
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 const ADMIN_WHATSAPP = "+255626280792";
@@ -11,10 +11,10 @@ const ADMIN_WHATSAPP = "+255626280792";
 /* ---------- POST HANDLER ---------- */
 export async function POST(
   request: NextRequest,
-  context: { params: Promise<{ action: string }> }
+  context: { params: { action: string } }   // ✅ object, not Promise
 ) {
   try {
-    const { action } = await context.params;
+    const { action } = context.params;      // ✅ no await
     const body = await request.json();
 
     switch (action) {
@@ -59,10 +59,10 @@ export async function POST(
 /* ---------- GET HANDLER ---------- */
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ action: string }> }
+  context: { params: { action: string } }   // ✅ object, not Promise
 ) {
   try {
-    const { action } = await context.params;
+    const { action } = context.params;      // ✅ no await
 
     switch (action) {
       case "announcement": {
@@ -94,4 +94,4 @@ export async function GET(
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
-          }
+}
