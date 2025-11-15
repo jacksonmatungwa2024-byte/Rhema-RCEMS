@@ -18,10 +18,10 @@ export async function GET(req: Request) {
     const token = authHeader.replace("Bearer ", "");
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
 
-    // Fetch user info
+    // Fetch user info including metadata
     const { data: user, error } = await supabase
       .from("users")
-      .select("email, role, full_name, branch, profile_url, last_login")
+      .select("id, email, role, full_name, branch, profile_url, last_login, metadata")
       .eq("email", decoded.email)
       .single();
 
@@ -29,19 +29,24 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Role-based access map
-    const accessMap: Record<string, string[]> = {
-      admin: ["adminTab", "usherTab", "pastorTab", "mediaTab", "financeTab"],
-      usher: ["usherTab"],
-      pastor: ["pastorTab"],
-      media: ["mediaTab"],
-      finance: ["financeTab"],
-    };
-
-    const allowedTabs = accessMap[user.role] || [];
+    // Admin → all tabs, Non-admin → metadata.allowed_tabs
+    let allowedTabs: string[] = [];
+    if (user.role === "admin") {
+      // Admin gets everything by default
+      allowedTabs = [
+        "tabManager", "reactivation", "users", "registration", "data",
+        "matangazo", "storage", "settings", "profile",
+        "home", "usajili", "mafunzo", "reports", "messages", "picha",
+        "muumini", "mahadhurio", "wokovu", "ushuhuda",
+        "dashboard", "bajeti", "summary", "approval", "approved", "rejected",
+        "media", "usage", "finance", "michango", "reports_finance"
+      ];
+    } else {
+      allowedTabs = user.metadata?.allowed_tabs || [];
+    }
 
     return NextResponse.json({ ...user, allowedTabs }, { status: 200 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
-}
+    }
