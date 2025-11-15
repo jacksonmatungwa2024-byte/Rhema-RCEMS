@@ -29,11 +29,10 @@ const allTabs = [
 
 export default function AdminPanel() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("tabManager");
+  const [activeTab, setActiveTab] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
   const [allowedTabs, setAllowedTabs] = useState<typeof allTabs>([]);
 
-  // 🔒 Load session via JWT
   useEffect(() => {
     const loadSession = async () => {
       const token = localStorage.getItem("session_token");
@@ -56,10 +55,8 @@ export default function AdminPanel() {
       setUser(data);
 
       if (data.role === "admin") {
-        // Admin → all tabs
-        setAllowedTabs(allTabs);
+        setAllowedTabs(allTabs); // admin anaona zote
       } else {
-        // Non-admin → filter tabs from metadata.allowed_tabs
         const userTabs = data.allowedTabs || [];
         const filtered = allTabs.filter(tab => userTabs.includes(tab.id));
         setAllowedTabs(filtered);
@@ -78,13 +75,11 @@ export default function AdminPanel() {
     loadSession();
   }, [router]);
 
-  // 🚪 Logout
   const handleLogout = () => {
     localStorage.removeItem("session_token");
     router.push("/login");
   };
 
-  // 🧭 Handle tab switching
   const handleTabChange = (tabId: string, link?: string) => {
     setActiveTab(tabId);
     if (link) router.push(link);
@@ -123,10 +118,16 @@ export default function AdminPanel() {
           </button>
         </nav>
 
-        <main>{currentTab?.component}</main>
+        <main>
+          {currentTab?.component || (
+            <div className="default-message">
+              <p>🧭 Tafadhali chagua tab ya kuingia.</p>
+            </div>
+          )}
+        </main>
 
         <SpeedInsights />
       </div>
     </BucketProvider>
   );
-}
+      }
