@@ -10,34 +10,8 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { email, password, pin } = body;
+    const { email, password, pin } = await req.json();
 
-    // Admin login with PIN only
-    if (pin) {
-      const { data: adminUser, error: adminError } = await supabase
-        .from("users")
-        .select("*")
-        .eq("role", "admin")
-        .single();
-
-      if (adminError || !adminUser) {
-        return NextResponse.json({ error: "Admin haijapatikana." }, { status: 400 });
-      }
-
-      const validPin = await bcrypt.compare(pin, adminUser.admin_pin_hash);
-      if (!validPin) {
-        return NextResponse.json({ error: "PIN ya admin si sahihi." }, { status: 401 });
-      }
-
-      const token = jwt.sign({ email: adminUser.email, role: "admin", loginMode: "pin" }, process.env.JWT_SECRET!, {
-        expiresIn: "6h",
-      });
-
-      return NextResponse.json({ token, role: "admin", loginMode: "pin" }, { status: 200 });
-    }
-
-    // Normal user login with email + password
     const { data: user, error } = await supabase
       .from("users")
       .select("*")
@@ -45,11 +19,11 @@ export async function POST(req: Request) {
       .single();
 
     if (error || !user) {
-      return NextResponse.json({ error: "Akaunti haijapatikana." }, { status: 400 });
+      return NextResponse.json({ error: "Akaunti haikupatikana." }, { status: 400 });
     }
 
     if (!user.is_active) {
-      return NextResponse.json({ error: "Akaunti yako imefungwa. Wasiliana na admin." }, { status: 403 });
+      return NextResponse.json({ error: "Akaunti imefungwa." }, { status: 403 });
     }
 
     const validPassword = await bcrypt.compare(password, user.password_hash);
@@ -57,11 +31,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Nenosiri si sahihi." }, { status: 401 });
     }
 
-    const token = jwt.sign({ email: user.email, role: user.role, loginMode: "normal" }, process.env.JWT_SECRET!, {
-      expiresIn: "6h",
-    });
+    if (user.role === "admin" && pin) {
+      const validPin = await bcrypt.compare(pin, user.admin_pin_hash);
+      if (!validPin) {
+        return NextResponse.json({ error: "PIN ya admin si sahihi." }, { status: 401 });
+      }
+    }
 
-    return NextResponse.json({ token, role: user.role, loginMode: "normal" }, { status: 200 });
+    const token = jwt.sign(
+      { email: user.email, role: user.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: "6h" }
+    );
+
+    await supabase.from("users").update({ last_login: new Date().toISOString() }).eq("id", user.id);
+
+    return NextResponse.json({ token, role: user.role, loginMode: pin ? "pin" : "normal" }, { status: 200 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
