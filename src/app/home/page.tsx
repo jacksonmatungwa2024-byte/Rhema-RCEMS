@@ -23,7 +23,7 @@ export default function Dashboard() {
   const [audioPlaying, setAudioPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // ===== Session check using JWT =====
+  // 🔒 Session check using JWT
   useEffect(() => {
     const checkSession = async () => {
       const token = localStorage.getItem("session_token");
@@ -94,7 +94,7 @@ export default function Dashboard() {
       {lastLogin && <div className="info-block">🕒 Ilipoingia mwisho: {lastLogin}</div>}
       {profileUrl && <img src={profileUrl} alt="Profile" className="profile-img" />}
 
-      {/* Audio Theme */}
+      {/* 🔊 Audio Theme */}
       <button onClick={handleAudioPlay}>
         🔊 {audioPlaying ? "Inapigwa..." : "Play Theme"}
       </button>
@@ -102,31 +102,31 @@ export default function Dashboard() {
         <source src="/ana.mp3" type="audio/mp3" />
       </audio>
 
-      {/* Status Indicator */}
+      {/* 🟢 Status Indicator */}
       <div className={`status-indicator ${statusLight}`}>
         {statusText}
       </div>
 
-      {/* Panel Links (role-based from API) */}
+      {/* 🧭 Panel Links */}
       <div className="panel-links">
-        {allowedTabs.includes("adminTab") && (
-          <div onClick={() => handleClick("adminTab", "/admin")}>Admin Panel</div>
+        {allowedTabs.includes("admin") && (
+          <div onClick={() => handleClick("admin", "/admin")}>Admin Panel</div>
         )}
-        {allowedTabs.includes("usherTab") && (
-          <div onClick={() => handleClick("usherTab", "/usher")}>Usher Panel</div>
+        {allowedTabs.includes("usher") && (
+          <div onClick={() => handleClick("usher", "/usher")}>Usher Panel</div>
         )}
-        {allowedTabs.includes("pastorTab") && (
-          <div onClick={() => handleClick("pastorTab", "/pastor")}>Pastor Panel</div>
+        {allowedTabs.includes("pastor") && (
+          <div onClick={() => handleClick("pastor", "/pastor")}>Pastor Panel</div>
         )}
-        {allowedTabs.includes("mediaTab") && (
-          <div onClick={() => handleClick("mediaTab", "/media")}>Media Team</div>
+        {allowedTabs.includes("media") && (
+          <div onClick={() => handleClick("media", "/media")}>Media Team</div>
         )}
-        {allowedTabs.includes("financeTab") && (
-          <div onClick={() => handleClick("financeTab", "/finance")}>Finance</div>
+        {allowedTabs.includes("finance") && (
+          <div onClick={() => handleClick("finance", "/finance")}>Finance</div>
         )}
       </div>
 
-      {/* Logout */}
+      {/* 🚪 Logout */}
       <button onClick={handleLogout} className="logout-btn">
         🚪 Logout
       </button>
