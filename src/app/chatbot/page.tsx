@@ -26,9 +26,10 @@ export default function ChatBotPage() {
     pushMessage(text,"bot");
   };
 
-  useEffect(() => { botReply("👋 Karibu! Tafadhali andika jina lako la kwanza na la pili."); }, []);
+  useEffect(() => { botReply("👋 Karibu! Naitwa Lumina chatbot msaidizi wako wa kukuhudumia tafadhali naomba ushirikiano wako sana😊🙏♥️
+                             Tafadhali andika jina lako la kwanza kisha jaza na  la pili, kama ulivyojisajili awali kwenye Usajili 🤗"); }, []);
 
-  // verify name via API
+  // verify name via API (POST)
   const handleNameVerify = async () => {
     if (!firstName.trim() || !lastName.trim()) {
       botReply("❌ Tafadhali jaza jina la kwanza na la pili.");
@@ -67,14 +68,14 @@ export default function ChatBotPage() {
         router.push(`/update-password?email=${encodeURIComponent(user?.email||"")}`);
         break;
       case "announcement": {
-        const res = await fetch("/api/chatbot/announcement",{method:"POST"});
+        const res = await fetch("/api/chatbot/announcement"); // ✅ GET
         const result = await res.json();
         if(result.error){ botReply("❌ Hakuna tangazo kwa sasa."); return; }
         botReply(`📣 Tangazo: ${result.announcement.title}\n${result.announcement.content}`);
         break;
       }
       case "help": {
-        const res = await fetch("/api/chatbot/help",{method:"POST"});
+        const res = await fetch("/api/chatbot/help"); // ✅ GET
         const result = await res.json();
         if(result.error){ botReply("❌ Hakuna msaada kwa sasa."); return; }
         botReply(`☎️ Msaada: ${result.contact}`);
@@ -128,4 +129,4 @@ export default function ChatBotPage() {
       </div>
     </div>
   );
-      }
+}
