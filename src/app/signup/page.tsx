@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import "./signup.css";
 
 const supabase = createClient(
@@ -24,10 +22,7 @@ const SignupPage: React.FC = () => {
     setMessage("");
 
     const form = e.currentTarget;
-
-    const email = (form.elements.namedItem("email") as HTMLInputElement)?.value
-      .trim()
-      .toLowerCase();
+    const email = (form.elements.namedItem("email") as HTMLInputElement)?.value.trim().toLowerCase();
     const password = (form.elements.namedItem("password") as HTMLInputElement)?.value.trim();
     const fullName = (form.elements.namedItem("full_name") as HTMLInputElement)?.value.trim();
     const role = (form.elements.namedItem("role") as HTMLSelectElement)?.value.trim();
@@ -43,11 +38,7 @@ const SignupPage: React.FC = () => {
     }
 
     try {
-      // 1️⃣ Hash password
-      const saltRounds = 10;
-      const passwordHash = await bcrypt.hash(password, saltRounds);
-
-      // 2️⃣ Upload profile picture
+      // Upload profile picture
       const fileExt = profileFile.name.split(".").pop();
       const fileName = `${Date.now()}-${email}.${fileExt}`;
       const filePath = `profile-pictures/${fileName}`;
@@ -68,44 +59,30 @@ const SignupPage: React.FC = () => {
 
       const profileUrl = urlData?.publicUrl;
 
-      // 3️⃣ Create JWT token
-      const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET!;
-      const token = jwt.sign({ email, role }, jwtSecret, { expiresIn: "6h" });
-
-      // 4️⃣ Insert into users table
-      const sixMonthsFromNow = new Date();
-      sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
-
-      const { error: insertError } = await supabase.from("users").insert({
-        email,
-        full_name: fullName,
-        role,
-        branch,
-        username: username || null,
-        phone: phone || null,
-        profile_url: profileUrl,
-        password_hash: passwordHash,
-        jwt_token: token,
-        is_active: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        last_login: new Date().toISOString(),
-        active_until: sixMonthsFromNow.toISOString(),
-        metadata: {},
+      // Call API route
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password,
+          fullName,
+          role,
+          branch,
+          username,
+          phone,
+          profileUrl,
+        }),
       });
 
-      if (insertError) {
-        setMessage(`❌ Usajili haukufanikiwa: ${insertError.message}`);
-        setLoading(false);
-        return;
+      const data = await res.json();
+      if (data.error) {
+        setMessage(`❌ Usajili haukufanikiwa: ${data.error}`);
+      } else {
+        localStorage.setItem("session_token", data.token);
+        setMessage("✅ Usajili umefanikiwa! Unaelekezwa...");
+        setTimeout(() => router.push("/login"), 1500);
       }
-
-      // 5️⃣ Save session token
-      localStorage.setItem("session_token", token);
-
-      setMessage("✅ Usajili umefanikiwa! Unaelekezwa...");
-      setTimeout(() => router.push("/login"), 1500);
-
     } catch (err: any) {
       setMessage(`❌ Tatizo: ${err.message}`);
     } finally {
@@ -116,8 +93,8 @@ const SignupPage: React.FC = () => {
   return (
     <div className="signup-wrapper">
       <h2>📝 Sajili Akaunti Mpya</h2>
-
-      <form onSubmit={handleSignup}>
+      
+        <form onSubmit={handleSignup}>
         <label>👤 Jina Kamili:</label>
         <input type="text" id="full_name" name="full_name" required />
 
