@@ -5,12 +5,21 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // ✅ service role key
 );
 
 export async function POST(req: Request) {
   try {
-    const { email, password, role } = await req.json();
+    const {
+      email,
+      password,
+      full_name,
+      role,
+      branch,
+      username,
+      phone,
+      profileUrl,
+    } = await req.json();
 
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
@@ -25,7 +34,12 @@ export async function POST(req: Request) {
       .insert({
         email,
         password_hash: passwordHash,
+        full_name,       // ✅ sasa haiko null
         role: role || "user",
+        branch,
+        username,
+        phone,
+        profile_url: profileUrl,
         is_active: true,
         active_until: activeUntil.toISOString(),
       })
