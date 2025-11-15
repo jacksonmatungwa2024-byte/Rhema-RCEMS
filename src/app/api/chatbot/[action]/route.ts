@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -8,15 +8,17 @@ const supabase = createClient(
 
 const ADMIN_WHATSAPP = "+255626280792";
 
-export async function POST(req: Request, { params }: { params: { action: string } }) {
+export async function POST(request: NextRequest, context: { params: Promise<{ action: string }> }) {
   try {
-    const body = await req.json();
-    const { action } = params;
+    const { action } = await context.params;   // ✅ lazima u-await
+    const body = await request.json();
 
     switch (action) {
       case "name-verify": {
         const { firstName, lastName } = body;
-        if (!firstName || !lastName) return NextResponse.json({ error: "Missing names" }, { status: 400 });
+        if (!firstName || !lastName) {
+          return NextResponse.json({ error: "Missing names" }, { status: 400 });
+        }
         const full = `${firstName} ${lastName}`.trim();
         const { data, error } = await supabase
           .from("users")
@@ -24,13 +26,17 @@ export async function POST(req: Request, { params }: { params: { action: string 
           .ilike("full_name", full)
           .limit(1)
           .single();
-        if (error || !data) return NextResponse.json({ error: "User not found" }, { status: 404 });
+        if (error || !data) {
+          return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
         return NextResponse.json({ user: data }, { status: 200 });
       }
 
       case "request-otp": {
         const { full_name, email } = body;
-        if (!full_name || !email) return NextResponse.json({ error: "Missing user details" }, { status: 400 });
+        if (!full_name || !email) {
+          return NextResponse.json({ error: "Missing user details" }, { status: 400 });
+        }
         const msg = `📩 Nimesahau nenosiri, naomba OTP.%0AJina: ${encodeURIComponent(full_name)}%0AEmail: ${encodeURIComponent(email)}`;
         const link = `https://wa.me/${ADMIN_WHATSAPP.replace("+", "")}?text=${msg}`;
         return NextResponse.json({ whatsappLink: link }, { status: 200 });
@@ -43,12 +49,17 @@ export async function POST(req: Request, { params }: { params: { action: string 
           .order("created_at", { ascending: false })
           .limit(1)
           .single();
-        if (error || !data) return NextResponse.json({ error: "Hakuna tangazo lililopatikana" }, { status: 404 });
+        if (error || !data) {
+          return NextResponse.json({ error: "Hakuna tangazo lililopatikana" }, { status: 404 });
+        }
         return NextResponse.json({ announcement: data }, { status: 200 });
       }
 
       case "help": {
-        return NextResponse.json({ contact: ADMIN_WHATSAPP, message: "Wasiliana na admin kupitia WhatsApp" }, { status: 200 });
+        return NextResponse.json(
+          { contact: ADMIN_WHATSAPP, message: "Wasiliana na admin kupitia WhatsApp" },
+          { status: 200 }
+        );
       }
 
       default:
