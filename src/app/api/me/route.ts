@@ -39,11 +39,21 @@ export async function GET(req: Request) {
       "media", "usage", "finance", "michango", "reports_finance"
     ];
 
-    // Admin gets everything
     let allowedTabs: string[] = [];
+
     if (user.role === "admin") {
+      // Admin gets everything
       allowedTabs = [...allPanels, ...allTabIds];
+    } else if (user.role === "usher") {
+      allowedTabs = ["usher", ...(user.metadata?.allowed_tabs || [])];
+    } else if (user.role === "pastor") {
+      allowedTabs = ["pastor", ...(user.metadata?.allowed_tabs || [])];
+    } else if (user.role === "media") {
+      allowedTabs = ["media", ...(user.metadata?.allowed_tabs || [])];
+    } else if (user.role === "finance") {
+      allowedTabs = ["finance", ...(user.metadata?.allowed_tabs || [])];
     } else {
+      // fallback
       allowedTabs = user.metadata?.allowed_tabs || [];
     }
 
