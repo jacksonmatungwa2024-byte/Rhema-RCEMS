@@ -1,237 +1,141 @@
-/* Home.module.css - Optimized tabbed mobile & desktop UI */
-
-/* =========================
-   Root Variables
-   ========================= */
-:root {
-  --dark-bg-start: #0d1321;
-  --dark-bg-end: #1a1f36;
-  --dark-card: #0e182e;
-  --dark-accent: #3b82f6;
-  --dark-accent-hover: #1e2b4d;
-  --dark-text: #ffffff;
-  --dark-subtext: #cbd5e1;
-  --dark-muted: #94a3b8;
-  --dark-danger: #ef4444;
-  --dark-danger-hover: #f87171;
-
-  --light-bg: #f0f2f5;
-  --light-card: #ffffff;
-  --light-accent: #1877f2;
-  --light-accent-hover: #145dbf;
-  --light-text: #050505;
-  --light-subtext: #6b7280;
-  --light-muted: #94a3b8;
-  --light-danger: #ef4444;
-  --light-danger-hover: #f87171;
-
-  --radius: 16px;
-}
-
-/* =========================
-   Container & Layout
-   ========================= */
+/* ===== Container ===== */
 .container {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(180deg, var(--dark-bg-start) 0%, var(--dark-bg-end) 100%);
-  color: var(--dark-text);
-  font-family: "Helvetica Neue", Arial, sans-serif;
-  overflow: hidden;
+  background: #ece5dd; /* WhatsApp-like background */
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #222;
 }
 
-body[data-theme="light"] .container {
-  background: var(--light-bg);
-  color: var(--light-text);
-}
-
-/* =========================
-   Sidebar
-   ========================= */
+/* ===== Sidebar ===== */
 .sidebar {
-  width: 80px;
-  background-color: #111b2e;
+  width: 220px;
+  background: #075e54;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 12px 4px;
-  border-right: 1px solid #1a1f36;
-  transition: all 0.3s;
-}
-
-body[data-theme="light"] .sidebar {
-  background-color: var(--light-card);
-  border-right: 1px solid #ddd;
+  padding: 20px 10px;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
 }
 
 .tabBtn {
-  background: none;
+  background: transparent;
   border: none;
-  color: var(--dark-subtext);
-  font-size: 1.2rem;
-  margin: 10px 0;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px;
+  margin: 6px 0;
+  text-align: left;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .tabBtn:hover {
-  color: var(--dark-accent);
+  background: rgba(255,255,255,0.15);
+  transform: translateX(4px);
 }
 
 .active {
-  color: var(--dark-accent);
+  background: #128c7e;
 }
 
-body[data-theme="light"] .tabBtn {
-  color: var(--light-subtext);
-}
-
-body[data-theme="light"] .tabBtn:hover,
-body[data-theme="light"] .active {
-  color: var(--light-accent);
-}
-
+/* Logout button */
 .logoutBtn {
   margin-top: auto;
-  background-color: var(--dark-danger);
+  background: #d32f2f;
+  color: #fff;
   border: none;
-  padding: 6px 10px;
-  border-radius: var(--radius);
+  padding: 12px;
+  border-radius: 8px;
   cursor: pointer;
-  color: white;
-  font-weight: 600;
-  transition: background 0.2s, transform 0.2s;
+  font-weight: bold;
+  transition: background 0.2s ease;
 }
 
 .logoutBtn:hover {
-  background-color: var(--dark-danger-hover);
-  transform: translateY(-2px);
+  background: #b71c1c;
 }
 
-body[data-theme="light"] .logoutBtn {
-  background-color: var(--light-danger);
-}
-
-body[data-theme="light"] .logoutBtn:hover {
-  background-color: var(--light-danger-hover);
-}
-
-/* =========================
-   Main Content Area
-   ========================= */
+/* ===== Main Content ===== */
 .main {
   flex: 1;
-  padding: 16px;
+  padding: 30px;
+  background: #f5f5f5;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  animation: fadeIn 0.4s ease;
 }
 
-/* Home Section */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Titles ===== */
 .homeTitle {
-  font-size: 1.6rem;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.subText {
-  font-size: 0.9rem;
-  color: var(--dark-muted);
-  margin-bottom: 4px;
-}
-
-body[data-theme="light"] .subText {
-  color: var(--light-muted);
-}
-
-.sectionTitle {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.sectionText {
-  font-size: 0.95rem;
-  color: var(--dark-subtext);
+  font-size: 24px;
+  font-weight: 700;
+  color: #128c7e;
   margin-bottom: 10px;
 }
 
-body[data-theme="light"] .sectionText {
-  color: var(--light-subtext);
+.subText {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 6px;
 }
 
-/* =========================
-   Sub-tabs
-   ========================= */
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #075e54;
+  margin-bottom: 10px;
+}
+
+.sectionText {
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 15px;
+}
+
+/* ===== Sub Tabs ===== */
 .subTabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-  transition: all 0.3s;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .subBtn {
   flex: 1;
-  background-color: var(--dark-card);
-  color: var(--dark-subtext);
+  background: #34b7f1;
   border: none;
-  padding: 8px 12px;
-  border-radius: 14px;
-  font-size: 0.9rem;
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .subBtn:hover {
-  background-color: var(--dark-accent-hover);
-  color: #fff;
+  background: #239bd1;
+  transform: translateY(-2px);
 }
 
 .subActive {
-  background-color: var(--dark-accent);
-  color: #fff;
+  background: #128c7e;
 }
 
-body[data-theme="light"] .subBtn {
-  background-color: var(--light-card);
-  color: var(--light-subtext);
-}
-
-body[data-theme="light"] .subBtn:hover {
-  background-color: var(--light-accent-hover);
-  color: #fff;
-}
-
-body[data-theme="light"] .subActive {
-  background-color: var(--light-accent);
-  color: #fff;
-}
-
-/* =========================
-   Section Content Cards
-   ========================= */
+/* ===== Section Content ===== */
 .sectionContent {
-  background-color: var(--dark-card);
-  padding: 12px;
-  border-radius: var(--radius);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-body[data-theme="light"] .sectionContent {
-  background-color: var(--light-card);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* =========================
-   Responsive for Mobile
-   ========================= */
-@media (max-width: 480px) {
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
   .container {
     flex-direction: column;
   }
@@ -239,189 +143,69 @@ body[data-theme="light"] .sectionContent {
   .sidebar {
     width: 100%;
     flex-direction: row;
-    justify-content: space-around;
-    padding: 8px 0;
-    border-right: none;
-    border-bottom: 1px solid #1a1f36;
+    overflow-x: auto;
   }
 
-  body[data-theme="light"] .sidebar {
-    border-bottom: 1px solid #ddd;
+  .tabBtn {
+    flex: 1;
+    text-align: center;
+    margin: 0 4px;
+  }
+
+  .logoutBtn {
+    flex: 1;
+    margin: 10px 4px;
   }
 
   .main {
-    padding: 12px;
-  }
-
-  .subTabs {
-    flex-direction: column;
+    padding: 20px;
   }
 }
 
-/* =========================
-   Animations for Tabs & Content
-   ========================= */
-.fade-enter {
-  opacity: 0;
-  transform: translateY(10px);
-}
+/* ===== Dark Mode Auto Detect ===== */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: #121212;
+    color: #f1f1f1;
+  }
 
-.fade-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 300ms ease, transform 300ms ease;
-}
+  .sidebar {
+    background: #1e1e1e;
+    box-shadow: 2px 0 8px rgba(255,255,255,0.1);
+  }
 
-.fade-exit {
-  opacity: 1;
-}
+  .tabBtn {
+    color: #ddd;
+  }
 
-.fade-exit-active {
-  opacity: 0;
-  transition: opacity 200ms ease;
-}
+  .tabBtn:hover {
+    background: rgba(255,255,255,0.1);
+  }
 
-/* Optional: Smooth hover for sub-tabs */
-.subBtn {
-  transition: background 0.3s, color 0.3s, transform 0.2s;
-}
+  .active {
+    background: #25D366;
+    color: #000;
+  }
 
-.subBtn:hover {
-  transform: translateY(-2px);
-}
+  .logoutBtn {
+    background: #d32f2f;
+    color: #fff;
+  }
 
+  .main {
+    background: #181818;
+  }
 
-/* =========================
-   Notification Badges & Counters
-   ========================= */
+  .sectionContent {
+    background: #1e1e1e;
+    box-shadow: 0 4px 12px rgba(255,255,255,0.08);
+  }
 
-/* Badge wrapper */
-.badge {
-  position: relative;
-  display: inline-block;
-}
+  .homeTitle {
+    color: #25D366;
+  }
 
-/* Red circle for unread notifications */
-.badge::after {
-  content: attr(data-count);
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: var(--dark-danger);
-  color: white;
-  font-size: 0.7rem;
-  font-weight: bold;
-  padding: 2px 6px;
-  border-radius: 50%;
-  min-width: 18px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  animation: pulseBadge 1.5s infinite;
-}
-
-body[data-theme="light"] .badge::after {
-  background: var(--light-danger);
-  color: #fff;
-}
-
-/* Pulse animation for badges */
-@keyframes pulseBadge {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-
-/* =========================
-   Live Counter inside tab buttons
-   ========================= */
-.tabBtn .counter {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: var(--dark-accent);
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 12px;
-  min-width: 16px;
-  text-align: center;
-  animation: bounceCounter 1.5s infinite alternate;
-}
-
-body[data-theme="light"] .tabBtn .counter {
-  background: var(--light-accent);
-  color: #fff;
-}
-
-/* Bounce animation for counters */
-@keyframes bounceCounter {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-  100% { transform: translateY(0); }
-}
-
-/* =========================
-   Animated badge on sub-tabs
-   ========================= */
-.subBtn .subBadge {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: var(--dark-danger);
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 50%;
-  min-width: 16px;
-  text-align: center;
-  animation: pulseBadge 1.5s infinite;
-}
-
-body[data-theme="light"] .subBtn .subBadge {
-  background: var(--light-danger);
-  color: #fff;
-}
-
-/* =========================
-   Optional: Small notification dot
-   ========================= */
-.notification-dot {
-  width: 10px;
-  height: 10px;
-  background-color: var(--dark-accent);
-  border-radius: 50%;
-  display: inline-block;
-  margin-left: 6px;
-  animation: pulseBadge 1.5s infinite;
-}
-
-body[data-theme="light"] .notification-dot {
-  background-color: var(--light-accent);
-}
-
-/* =========================
-   Smooth hover & focus for interactive tabs
-   ========================= */
-.tabBtn, .subBtn {
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.tabBtn:hover, .subBtn:hover {
-  transform: translateY(-2px);
-}
-
-/* =========================
-   Responsive adjustments for badges
-   ========================= */
-@media (max-width: 480px) {
-  .tabBtn .counter, .subBtn .subBadge {
-    top: -4px;
-    right: -4px;
-    font-size: 0.6rem;
-    padding: 1px 4px;
-    min-width: 14px;
+  .sectionTitle {
+    color: #25D366;
   }
 }
