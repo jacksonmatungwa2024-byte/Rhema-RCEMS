@@ -1,81 +1,50 @@
-:root {
-  --light-bg: #f0f2f5;
-  --light-card: #ffffff;
-  --light-text: #050505;
-
-  --dark-bg: #0a174e;
-  --dark-card: #1c1c1c;
-  --dark-text: #ffffff;
-
-  --facebook-blue: #1877f2;
-  --hover-blue: #d8dadf;
-  --logout-red: #f02849;
-  --radius: 12px;
-}
-
-/* Wrapper */
+/* ===== Wrapper ===== */
 .home-wrapper {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
-  background-color: var(--light-bg);
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: var(--light-text);
+  background: #ece5dd; /* WhatsApp-like background */
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-body[data-theme="dark"] .home-wrapper {
-  background-color: var(--dark-bg);
-  color: var(--dark-text);
-}
-
-/* Layout */
+/* ===== Layout ===== */
 .home-layout {
   display: flex;
-  flex-direction: row;
-  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  min-height: 90vh;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  overflow: hidden;
 }
 
-/* Sidebar */
+/* ===== Sidebar ===== */
 .sidebar {
-  background-color: var(--light-card);
-  width: 250px;
-  min-width: 200px;
-  padding: 20px;
-  border-right: 1px solid #ccd0d5;
+  width: 240px;
+  background: #075e54;
+  color: #fff;
   display: flex;
   flex-direction: column;
+  padding: 20px;
 }
 
-body[data-theme="dark"] .sidebar {
-  background-color: var(--dark-card);
-  border-right: 1px solid #2c3e70;
-}
-
-/* Sidebar Title */
 .sidebar-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: var(--facebook-blue);
-  margin-bottom: 12px;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #25D366;
 }
 
-body[data-theme="dark"] .sidebar-title {
-  color: var(--dark-text);
-  text-shadow: 0 0 10px var(--facebook-blue);
-}
-
-/* Sidebar User */
 .sidebar-user {
-  font-size: 0.9rem;
+  font-size: 14px;
   margin-bottom: 20px;
-  color: var(--light-text);
+  color: #ddd;
 }
 
-body[data-theme="dark"] .sidebar-user {
-  color: var(--dark-text);
-}
-
-/* Tabs */
+/* ===== Tabs ===== */
 .sidebar-tabs {
   display: flex;
   flex-direction: column;
@@ -84,88 +53,74 @@ body[data-theme="dark"] .sidebar-user {
 }
 
 .tab-btn {
-  padding: 10px 14px;
-  border-radius: 20px;
+  background: transparent;
   border: none;
-  background: #e4e6eb;
-  color: var(--light-text);
-  font-weight: 500;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.2s;
-}
-
-.tab-btn.active {
-  background-color: var(--facebook-blue);
   color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px;
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .tab-btn:hover {
-  background-color: var(--hover-blue);
+  background: rgba(255,255,255,0.15);
+  transform: translateX(4px);
 }
 
-body[data-theme="dark"] .tab-btn {
-  background-color: #2c3e70;
-  color: var(--dark-text);
+.tab-btn.active {
+  background: #128c7e;
 }
 
-body[data-theme="dark"] .tab-btn:hover {
-  background-color: #3b4f8a;
-}
-
-body[data-theme="dark"] .tab-btn.active {
-  background-color: var(--facebook-blue);
-  color: #fff;
-}
-
-/* Logout Button */
+/* ===== Logout Button ===== */
 .logout-btn {
   margin-top: 20px;
-  padding: 10px 14px;
-  border-radius: 25px;
+  background: #d32f2f;
+  color: #fff;
   border: none;
-  background-color: #e4e6eb;
-  font-weight: 500;
+  padding: 12px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s;
+  font-weight: bold;
+  transition: background 0.2s ease;
 }
 
 .logout-btn.hover,
 .logout-btn:hover {
-  background-color: var(--logout-red);
-  color: #fff;
+  background: #b71c1c;
 }
 
-body[data-theme="dark"] .logout-btn {
-  background-color: #2c3e70;
-  color: var(--dark-text);
-}
-
-body[data-theme="dark"] .logout-btn:hover {
-  background-color: var(--logout-red);
-  color: #fff;
-}
-
-/* Main Content */
+/* ===== Main Content ===== */
 .main-content {
   flex: 1;
-  padding: 16px;
+  padding: 30px;
+  background: #f5f5f5;
   overflow-y: auto;
+  animation: fadeIn 0.4s ease;
 }
 
-/* Loading Text */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Loading State ===== */
+.home-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
 .loading-text {
-  text-align: center;
-  margin-top: 50px;
-  font-size: 1.1rem;
-  color: var(--light-text);
+  font-size: 18px;
+  color: #128c7e;
+  font-weight: 600;
 }
 
-body[data-theme="dark"] .loading-text {
-  color: var(--dark-text);
-}
-
-/* Mobile Responsive */
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
   .home-layout {
     flex-direction: column;
@@ -173,33 +128,85 @@ body[data-theme="dark"] .loading-text {
 
   .sidebar {
     width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #ccd0d5;
     flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding: 10px;
+    align-items: center;
+    overflow-x: auto;
   }
 
-  body[data-theme="dark"] .sidebar {
-    border-bottom: 1px solid #2c3e70;
+  .sidebar-title {
+    font-size: 18px;
+    margin-right: 10px;
   }
 
   .sidebar-tabs {
     flex-direction: row;
-    flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
+    flex: 1;
+    overflow-x: auto;
   }
 
   .tab-btn {
-    flex: 1 1 45%;
+    flex: 1;
     text-align: center;
-    padding: 8px;
-    font-size: 0.9rem;
+    padding: 10px;
+    font-size: 14px;
   }
 
   .logout-btn {
-    flex: 1 1 100%;
-    margin-top: 10px;
+    margin-left: auto;
+    margin-top: 0;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .main-content {
+    padding: 20px;
   }
 }
+
+/* ===== Dark Mode Auto Detect ===== */
+@media (prefers-color-scheme: dark) {
+  .home-wrapper {
+    background: #121212;
+    color: #f1f1f1;
+  }
+
+  .home-layout {
+    background: #181818;
+    box-shadow: 0 6px 20px rgba(255,255,255,0.1);
+  }
+
+  .sidebar {
+    background: #1e1e1e;
+  }
+
+  .sidebar-title {
+    color: #25D366;
+  }
+
+  .sidebar-user {
+    color: #aaa;
+  }
+
+  .tab-btn {
+    color: #ddd;
+  }
+
+  .tab-btn.active {
+    background: #25D366;
+    color: #000;
+  }
+
+  .logout-btn {
+    background: #d32f2f;
+    color: #fff;
+  }
+
+  .main-content {
+    background: #202020;
+  }
+
+  .loading-text {
+    color: #25D366;
+  }
+  }
