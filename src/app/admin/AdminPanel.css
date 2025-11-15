@@ -7,9 +7,9 @@
   color: #222;
 }
 
-/* ===== Navigation Sidebar ===== */
+/* ===== Sidebar / Nav ===== */
 nav {
-  width: 240px;
+  width: 260px;
   background: #075e54;
   color: #fff;
   display: flex;
@@ -21,7 +21,7 @@ nav {
 nav h2 {
   font-size: 22px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   color: #25D366;
 }
 
@@ -100,6 +100,16 @@ main {
   min-height: 100vh;
   font-size: 18px;
   color: #128c7e;
+  font-weight: 600;
+}
+
+/* ===== Default Message ===== */
+.default-message {
+  font-size: 18px;
+  font-weight: 600;
+  color: #555;
+  text-align: center;
+  margin-top: 40px;
 }
 
 /* ===== Responsive ===== */
@@ -146,7 +156,7 @@ main {
   }
 }
 
-/* ===== Dark Mode Auto Detect ===== */
+/* ===== Dark Mode ===== */
 @media (prefers-color-scheme: dark) {
   .admin-panel-container {
     background: #121212;
@@ -170,10 +180,6 @@ main {
     color: #ddd;
   }
 
-  .tab-buttons button:hover {
-    background: rgba(255,255,255,0.1);
-  }
-
   .tab-buttons button[aria-current="page"] {
     background: #25D366;
     color: #000;
@@ -185,10 +191,14 @@ main {
   }
 
   main {
-    background: #181818;
+    background: #202020;
+  }
+
+  .default-message {
+    color: #ccc;
   }
 
   .admin-loading {
     color: #25D366;
   }
-  }
+}
