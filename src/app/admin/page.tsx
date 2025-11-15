@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -31,8 +30,8 @@ const tabs = [
 export default function AdminPanel() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("tabManager");
-  const [isMobile, setIsMobile] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [allowedTabs, setAllowedTabs] = useState<typeof tabs>([]);
 
   // 🔒 Load admin session using JWT
   useEffect(() => {
@@ -55,6 +54,8 @@ export default function AdminPanel() {
       }
 
       setUser(data);
+      // 🔹 Admin gets all tabs
+      setAllowedTabs(tabs);
 
       // 🔹 Auto logout after 30 mins inactivity
       const timeout = setTimeout(() => {
@@ -68,14 +69,6 @@ export default function AdminPanel() {
 
     loadSession();
   }, [router]);
-
-  // 📱 Handle responsiveness
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   // 🚪 Logout
   const handleLogout = () => {
@@ -96,7 +89,7 @@ export default function AdminPanel() {
       </div>
     );
 
-  const currentTab = tabs.find((tab) => tab.id === activeTab);
+  const currentTab = allowedTabs.find((tab) => tab.id === activeTab);
 
   return (
     <BucketProvider>
@@ -106,7 +99,7 @@ export default function AdminPanel() {
           <p>👤 {user.full_name}</p>
 
           <div className="tab-buttons">
-            {tabs.map((tab) => (
+            {allowedTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id, tab.link)}
