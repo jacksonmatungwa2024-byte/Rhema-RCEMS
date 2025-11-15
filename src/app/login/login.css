@@ -1,7 +1,7 @@
 /* MAIN WRAPPER */
 .login-wrapper {
   min-height: 100vh;
-  background: #ece5dd; /* WhatsApp background */
+  background: #ece5dd; /* default light background */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,28 +19,24 @@
   animation: fadeIn .4s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 /* TITLES */
 .login-box h2 {
   text-align: center;
   font-size: 26px;
   margin-bottom: 5px;
-  color: #075e54;
+  color: #075e54; /* WhatsApp green */
+  font-weight: 700;
 }
 
 .login-box p {
   text-align: center;
   margin-bottom: 20px;
-  color: #444;
+  color: #333; /* darker for visibility */
 }
 
 /* LABELS */
 label {
-  font-weight: bold;
+  font-weight: 600;
   color: #075e54;
   margin-top: 12px;
   display: block;
@@ -56,11 +52,17 @@ input {
   outline: none;
   font-size: 15px;
   background: #f7f7f7;
-  transition: border 0.2s;
+  color: #222;
+  transition: border 0.2s, background 0.2s;
+}
+
+input::placeholder {
+  color: #888;
 }
 
 input:focus {
   border: 1px solid #25D366;
+  background: #fff;
 }
 
 /* PASSWORD + PIN ICON WRAPPER */
@@ -80,6 +82,7 @@ input:focus {
   cursor: pointer;
   font-size: 18px;
   user-select: none;
+  color: #075e54;
 }
 
 /* MAIN LOGIN BUTTON */
@@ -104,6 +107,7 @@ button:hover {
 /* SIGNUP BUTTON */
 button[type="button"] {
   background: #34b7f1;
+  color: #fff;
 }
 
 button[type="button"]:hover {
@@ -113,6 +117,7 @@ button[type="button"]:hover {
 /* CHATBOT BUTTON */
 .help-btn {
   background: #25D366;
+  color: #fff;
 }
 
 .help-btn:hover {
@@ -129,6 +134,27 @@ button[type="button"]:hover {
   font-size: 15px;
 }
 
+.status.error {
+  background: rgba(255,20,20,0.15);
+  color: #d32f2f;
+}
+
+.status.success {
+  background: rgba(0,255,120,0.15);
+  color: #2e7d32;
+}
+
+/* ENV box */
+.env-box {
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.05);
+  font-size: 0.85rem;
+  color: #333;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .login-box {
@@ -139,116 +165,61 @@ button[type="button"]:hover {
   }
 }
 
-/* Fade animations */
-.fade-in { animation: fade-in 1s ease; }
-.fade-in-delay { animation: fade-in 1.4s ease; }
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* Inputs */
-.input-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 16px;
-  animation: fade-in 1.2s ease;
-}
-.input-group label {
-  color: #9eb8d1;
-  margin-bottom: 6px;
-  font-size: 0.9rem;
-}
-.input-group input {
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.06);
-  color: #fff;
-  outline: none;
-  transition: 0.25s;
-}
-.input-group input:focus {
-  border-color: #00eaff;
-  box-shadow: 0 0 12px rgba(0,255,255,0.25);
-}
-
-/* Password wrapper */
-.password-wrapper {
-  position: relative;
-}
-.toggle {
-  position: absolute;
-  right: 12px;
-  top: 11px;
-  cursor: pointer;
-  user-select: none;
-}
-
-/* Button */
-.login-btn {
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  background: linear-gradient(135deg, #00eaff, #0088ff);
-  color: #00111e;
-  font-weight: 700;
-  margin-top: 5px;
-  transition: 0.2s;
-}
-.login-btn:hover {
-  transform: translateY(-3px);
-}
-.login-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Button bounce animation */
-.bounce {
-  animation: bounceIn 0.9s ease;
-}
-@keyframes bounceIn {
-  0% { transform: scale(0.6); opacity: 0; }
-  60% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); }
-}
-
-/* Status messages */
-.status {
-  text-align: center;
-  margin-top: 14px;
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: 600;
-}
-.status.error {
-  background: rgba(255,20,20,0.15);
-  color: #ff6b6b;
-}
-.status.success {
-  background: rgba(0,255,120,0.15);
-  color: #51ff9c;
-}
-
-/* ENV box */
-.env-box {
-  margin-top: 20px;
-  padding: 12px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.05);
-  font-size: 0.85rem;
-  color: #8bb4d7;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-
-/* Mobile */
-@media (max-width: 600px) {
-  .login-box {
-    padding: 22px;
-    border-radius: 16px;
+/* 🌙 DARK MODE AUTO-DETECT */
+@media (prefers-color-scheme: dark) {
+  .login-wrapper {
+    background: #121212;
   }
-   }
+
+  .login-box {
+    background: #1e1e1e;
+    color: #f1f1f1;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  }
+
+  .login-box h2 {
+    color: #25D366; /* WhatsApp green accent */
+  }
+
+  .login-box p {
+    color: #ccc;
+  }
+
+  label {
+    color: #25D366;
+  }
+
+  input {
+    background: #2a2a2a;
+    color: #f1f1f1;
+    border: 1px solid #444;
+  }
+
+  input::placeholder {
+    color: #aaa;
+  }
+
+  .password-wrapper span {
+    color: #25D366;
+  }
+
+  button {
+    background: #25D366;
+    color: #000;
+  }
+
+  button:hover {
+    background: #1ebe5b;
+  }
+
+  button[type="button"] {
+    background: #34b7f1;
+    color: #fff;
+  }
+
+  .env-box {
+    background: rgba(255,255,255,0.08);
+    color: #ddd;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+    }
