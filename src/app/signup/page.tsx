@@ -59,14 +59,14 @@ const SignupPage: React.FC = () => {
 
       const profileUrl = urlData?.publicUrl;
 
-      // Call API route
+      // ✅ Call API route with snake_case keys
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
           password,
-          fullName,
+          full_name: fullName, // ✅ snake_case
           role,
           branch,
           username,
@@ -81,7 +81,7 @@ const SignupPage: React.FC = () => {
       } else {
         localStorage.setItem("session_token", data.token);
         setMessage("✅ Usajili umefanikiwa! Unaelekezwa...");
-        setTimeout(() => router.push("/login"), 1500);
+        setTimeout(() => router.push("/home"), 1500); // ✅ direct to home
       }
     } catch (err: any) {
       setMessage(`❌ Tatizo: ${err.message}`);
@@ -94,7 +94,7 @@ const SignupPage: React.FC = () => {
     <div className="signup-wrapper">
       <h2>📝 Sajili Akaunti Mpya</h2>
       
-        <form onSubmit={handleSignup}>
+      <form onSubmit={handleSignup}>
         <label>👤 Jina Kamili:</label>
         <input type="text" id="full_name" name="full_name" required />
 
