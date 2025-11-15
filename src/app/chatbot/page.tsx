@@ -26,8 +26,18 @@ export default function ChatBotPage() {
     pushMessage(text,"bot");
   };
 
-  useEffect(() => { botReply("👋 Karibu! Naitwa Lumina chatbot msaidizi wako wa kukuhudumia tafadhali naomba ushirikiano wako sana😊🙏♥️
-                             Tafadhali andika jina lako la kwanza kisha jaza na  la pili, kama ulivyojisajili awali kwenye Usajili 🤗"); }, []);
+  // welcome message
+  useEffect(() => { 
+    botReply(`👋 Karibu! Naitwa Lumina chatbot msaidizi wako wa kukuhudumia, tafadhali naomba ushirikiano wako sana 😊🙏♥️
+Tafadhali andika jina lako la kwanza kisha jaza na la pili, kama ulivyojisajili awali kwenye Usajili 🤗`); 
+  }, []);
+
+  // auto-scroll
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, typing]);
 
   // verify name via API (POST)
   const handleNameVerify = async () => {
@@ -36,51 +46,59 @@ export default function ChatBotPage() {
       return;
     }
 
-    const res = await fetch("/api/chatbot/name-verify", {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ firstName, lastName })
-    });
-    const result = await res.json();
-    if(result.error){ botReply("❌ Hatukupata jina hilo."); return; }
-    setUser(result.user);
-    botReply(`✅ Karibu ${result.user.full_name}!`);
-    setBranch("menu");
-    botReply("📋 Huduma: 1) OTP  2) Update  3) Tangazo  4) Msaada");
+    try {
+      const res = await fetch("/api/chatbot/name-verify", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({ firstName, lastName })
+      });
+      const result = await res.json();
+      if(result.error){ botReply("❌ Hatukupata jina hilo."); return; }
+      setUser(result.user);
+      botReply(`✅ Karibu ${result.user.full_name}!`);
+      setBranch("menu");
+      botReply(`📋 ${result.user.full_name}, chagua huduma: 1) OTP  2) Update  3) Tangazo  4) Msaada`);
+    } catch {
+      botReply("⚠️ Tatizo la mtandao, jaribu tena.");
+    }
   };
 
   const handleBranch = async (choice:string) => {
-    switch(choice){
-      case "otp": {
-        const res = await fetch("/api/chatbot/request-otp", {
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({ full_name:user?.full_name, email:user?.email })
-        });
-        const result = await res.json();
-        if(result.error){ botReply("❌ Tatizo: "+result.error); return; }
-        setBranch("otp");
-        botReply("📩 Bonyeza kitufe kuomba OTP kwa admin.");
-        pushMessage(result.whatsappLink,"bot");
-        break;
+    try {
+      switch(choice){
+        case "otp": {
+          const res = await fetch("/api/chatbot/request-otp", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({ full_name:user?.full_name, email:user?.email })
+          });
+          const result = await res.json();
+          if(result.error){ botReply("❌ Tatizo: "+result.error); return; }
+          setBranch("otp");
+          botReply("📩 Bonyeza kitufe kuomba OTP kwa admin.");
+          pushMessage(result.whatsappLink,"bot");
+          break;
+        }
+        case "update":
+          router.push(`/update-password?email=${encodeURIComponent(user?.email||"")}`);
+          break;
+        case "announcement": {
+          const res = await fetch("/api/chatbot/announcement"); // ✅ GET
+          const result = await res.json();
+          if(result.error){ botReply("❌ Hakuna tangazo kwa sasa."); return; }
+          botReply(`📣 Tangazo: ${result.announcement.title}\n${result.announcement.content}`);
+          break;
+        }
+        case "help": {
+          const res = await fetch("/api/chatbot/help"); // ✅ GET
+          const result = await res.json();
+          if(result.error){ botReply("❌ Hakuna msaada kwa sasa."); return; }
+          botReply(`☎️ Msaada: ${result.contact}`);
+          break;
+        }
       }
-      case "update":
-        router.push(`/update-password?email=${encodeURIComponent(user?.email||"")}`);
-        break;
-      case "announcement": {
-        const res = await fetch("/api/chatbot/announcement"); // ✅ GET
-        const result = await res.json();
-        if(result.error){ botReply("❌ Hakuna tangazo kwa sasa."); return; }
-        botReply(`📣 Tangazo: ${result.announcement.title}\n${result.announcement.content}`);
-        break;
-      }
-      case "help": {
-        const res = await fetch("/api/chatbot/help"); // ✅ GET
-        const result = await res.json();
-        if(result.error){ botReply("❌ Hakuna msaada kwa sasa."); return; }
-        botReply(`☎️ Msaada: ${result.contact}`);
-        break;
-      }
+    } catch {
+      botReply("⚠️ Tatizo la mtandao, jaribu tena.");
     }
   };
 
@@ -89,7 +107,11 @@ export default function ChatBotPage() {
       <div className="chatbox">
         <div className="messages" ref={scrollRef}>
           {messages.map(m=><div key={m.id} className={`bubble ${m.author}`}>{m.text}</div>)}
-          {typing && <div className="bubble bot typing">...</div>}
+          {typing && (
+            <div className="bubble bot typing">
+              <div className="dots"><span></span><span></span><span></span></div>
+            </div>
+          )}
         </div>
 
         <div className="controls">
