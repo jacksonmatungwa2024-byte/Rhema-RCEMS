@@ -12,6 +12,8 @@ export default function ChatBotPage() {
   const [typing, setTyping] = useState(false);
   const [user, setUser] = useState<{ full_name: string; email: string } | null>(null);
   const [branch, setBranch] = useState<"welcome"|"menu"|"otp">("welcome");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   const pushMessage = (text: string, author: "bot"|"user"="bot") =>
@@ -24,14 +26,19 @@ export default function ChatBotPage() {
     pushMessage(text,"bot");
   };
 
-  useEffect(() => { botReply("👋 Karibu! Tafadhali andika jina lako."); }, []);
+  useEffect(() => { botReply("👋 Karibu! Tafadhali andika jina lako la kwanza na la pili."); }, []);
 
   // verify name via API
   const handleNameVerify = async () => {
+    if (!firstName.trim() || !lastName.trim()) {
+      botReply("❌ Tafadhali jaza jina la kwanza na la pili.");
+      return;
+    }
+
     const res = await fetch("/api/chatbot/name-verify", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ firstName:"Jackson", lastName:"Matungwa" }) // mfano
+      body:JSON.stringify({ firstName, lastName })
     });
     const result = await res.json();
     if(result.error){ botReply("❌ Hatukupata jina hilo."); return; }
@@ -85,7 +92,24 @@ export default function ChatBotPage() {
         </div>
 
         <div className="controls">
-          {branch==="welcome" && <button onClick={handleNameVerify}>Thibitisha Jina</button>}
+          {branch==="welcome" && (
+            <div className="name-row">
+              <input
+                type="text"
+                placeholder="Jina la kwanza"
+                value={firstName}
+                onChange={(e)=>setFirstName(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Jina la pili"
+                value={lastName}
+                onChange={(e)=>setLastName(e.target.value)}
+              />
+              <button onClick={handleNameVerify}>Thibitisha Jina</button>
+            </div>
+          )}
+
           {branch==="menu" && (
             <div className="btn-group">
               <button onClick={()=>handleBranch("otp")}>📩 OTP</button>
@@ -94,6 +118,7 @@ export default function ChatBotPage() {
               <button onClick={()=>handleBranch("help")}>☎️ Msaada</button>
             </div>
           )}
+
           {branch==="otp" && (
             <a href={messages.find(m=>m.text.startsWith("https://wa.me"))?.text} target="_blank" className="whatsapp-btn">
               Fungua WhatsApp
@@ -103,4 +128,4 @@ export default function ChatBotPage() {
       </div>
     </div>
   );
-              }
+      }
