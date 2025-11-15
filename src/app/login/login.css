@@ -1,77 +1,142 @@
-/* ======= Full WhatsApp Inspired Login Design ======= */
+/* MAIN WRAPPER */
 .login-wrapper {
   min-height: 100vh;
+  background: #ece5dd; /* WhatsApp background */
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 22px;
-  background: radial-gradient(circle at 20% 20%, #002233, #000814 70%);
-  position: relative;
-  overflow: hidden;
+  padding: 20px;
 }
 
-/* Floating glowing background */
-.login-wrapper::before,
-.login-wrapper::after {
-  content: "";
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.14;
-  animation: float 9s infinite ease-in-out;
-}
-.login-wrapper::before {
-  background: #00eaff;
-  top: 10%;
-  left: 8%;
-}
-.login-wrapper::after {
-  background: #0084ff;
-  bottom: 10%;
-  right: 8%;
-}
-@keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-35px); }
-  100% { transform: translateY(0); }
-}
-
-/* Login Box */
+/* LOGIN BOX */
 .login-box {
   width: 100%;
-  max-width: 420px;
-  padding: 28px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.04);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-  animation: fade-in 0.8s ease;
+  max-width: 380px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: fadeIn .4s ease;
 }
 
-/* Slide-in animation */
-.slide-in {
-  animation: slideIn 0.9s cubic-bezier(.25,.46,.45,.94);
-}
-@keyframes slideIn {
-  from { transform: translateY(40px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Titles */
-.title {
-  color: #fff;
+/* TITLES */
+.login-box h2 {
   text-align: center;
-  font-size: 1.6rem;
-  font-weight: 700;
-  margin-bottom: 4px;
+  font-size: 26px;
+  margin-bottom: 5px;
+  color: #075e54;
 }
-.subtitle {
+
+.login-box p {
   text-align: center;
-  color: #cfd9e6;
   margin-bottom: 20px;
+  color: #444;
+}
+
+/* LABELS */
+label {
+  font-weight: bold;
+  color: #075e54;
+  margin-top: 12px;
+  display: block;
+}
+
+/* INPUTS */
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  outline: none;
+  font-size: 15px;
+  background: #f7f7f7;
+  transition: border 0.2s;
+}
+
+input:focus {
+  border: 1px solid #25D366;
+}
+
+/* PASSWORD + PIN ICON WRAPPER */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  padding-right: 45px;
+}
+
+.password-wrapper span {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  user-select: none;
+}
+
+/* MAIN LOGIN BUTTON */
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 16px;
+  background: #128c7e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #0f7a6e;
+}
+
+/* SIGNUP BUTTON */
+button[type="button"] {
+  background: #34b7f1;
+}
+
+button[type="button"]:hover {
+  background: #239bd1;
+}
+
+/* CHATBOT BUTTON */
+.help-btn {
+  background: #25D366;
+}
+
+.help-btn:hover {
+  background: #1ebe5b;
+}
+
+/* LOGIN STATUS */
+.status {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 15px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 20px;
+  }
+  .login-box h2 {
+    font-size: 22px;
+  }
 }
 
 /* Fade animations */
