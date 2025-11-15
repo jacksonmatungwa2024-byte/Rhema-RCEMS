@@ -1,19 +1,10 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import "./MediaDashboard.css";
 import MediaPanel from "../components/MediaPanel";
 import StoragePanel from "../components/StoragePanel";
 import UsagePanel from "../components/UsagePanel";
 import MediaProfile from "../components/MediaProfile";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  {
-    auth: { persistSession: true, autoRefreshToken: true },
-  }
-);
 
 interface TabBase { key: string; label: string; }
 interface TabWithComponent<P = {}> extends TabBase { component: React.ComponentType<P>; }
@@ -33,45 +24,59 @@ export default function MediaDashboard() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [hovered, setHovered] = useState(false);
 
-  // Load user & permissions
+  // Load user & permissions via JWT
   useEffect(() => {
     const fetchUserTabs = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
-
-      if (error || !user) {
+      const token = localStorage.getItem("session_token");
+      if (!token) {
         window.location.href = "/login";
         return;
       }
 
-      const email = user.email;
-      const { data: userData, error: userErr } = await supabase
-        .from("users")
-        .select("id, role, metadata")
-        .eq("email", email)
-        .single();
+      const res = await fetch("/api/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
 
-      if (userErr || !userData) {
-        alert("Haiwezekani kupata metadata ya mtumiaji.");
+      if (data.error) {
+        localStorage.removeItem("session_token");
         window.location.href = "/login";
         return;
       }
 
-      setUserId(userData.id);
-      setUserRole(userData.role);
+      setUserId(data.id);
+      setUserRole(data.role);
 
-      const { role, metadata } = userData;
-
-      if (role === "admin") {
+      if (data.role === "admin") {
         setAllowedTabs(allTabs.map((t) => t.key));
         setActiveTab("media");
       } else {
-        const tabs = metadata?.allowed_tabs;
+        const tabs = data.allowedTabs;
         setAllowedTabs(Array.isArray(tabs) ? tabs : ["media", "profile", "usage"]);
         const lastTab = localStorage.getItem("media_active_tab") as string;
         setActiveTab(lastTab && tabs?.includes(lastTab) ? lastTab : (tabs?.[0] || "media"));
       }
 
       setLoading(false);
+
+      // 🔹 Auto logout after 10 mins inactivity
+      let timeout: NodeJS.Timeout;
+      const resetTimer = () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          alert("Umeachwa bila shughuli. Tafadhali ingia tena.");
+          handleLogout();
+        }, 10 * 60 * 1000);
+      };
+
+      const events = ["mousemove", "keydown", "scroll", "click"];
+      events.forEach((e) => window.addEventListener(e, resetTimer));
+      resetTimer();
+
+      return () => {
+        clearTimeout(timeout);
+        events.forEach((e) => window.removeEventListener(e, resetTimer));
+      };
     };
 
     fetchUserTabs();
@@ -84,32 +89,8 @@ export default function MediaDashboard() {
     }
   }, [activeTab, userRole]);
 
-  // ✅ Auto logout for non-admin after 10 minutes inactivity
-  useEffect(() => {
-    if (userRole === "admin") return;
-
-    let timeout: NodeJS.Timeout;
-    const resetTimer = () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        supabase.auth.signOut();
-        localStorage.removeItem("media_active_tab");
-        window.location.href = "/login";
-      }, 10 * 60 * 1000); // 10 minutes
-    };
-
-    const events = ["mousemove", "keydown", "scroll", "click"];
-    events.forEach((e) => window.addEventListener(e, resetTimer));
-    resetTimer();
-
-    return () => {
-      clearTimeout(timeout);
-      events.forEach((e) => window.removeEventListener(e, resetTimer));
-    };
-  }, [userRole]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    localStorage.removeItem("session_token");
     localStorage.removeItem("media_active_tab");
     window.location.href = "/login";
   };
@@ -159,4 +140,4 @@ export default function MediaDashboard() {
       </main>
     </div>
   );
-}
+                }
