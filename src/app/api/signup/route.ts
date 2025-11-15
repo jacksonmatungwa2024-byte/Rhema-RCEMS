@@ -10,44 +10,41 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { email, password, fullName, role, branch, username, phone, profileUrl } = body;
+    const { email, password, role } = await req.json();
 
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Sign JWT (server-side)
-    const token = jwt.sign({ email, role }, process.env.JWT_SECRET!, { expiresIn: "6h" });
+    // Default active_until (6 months)
+    const activeUntil = new Date();
+    activeUntil.setMonth(activeUntil.getMonth() + 6);
 
-    // Calculate active_until (6 months from now)
-    const sixMonthsFromNow = new Date();
-    sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
-
-    // Insert into users table
-    const { error } = await supabase.from("users").insert({
-      email,
-      full_name: fullName,
-      role,
-      branch,
-      username,
-      phone,
-      profile_url: profileUrl,
-      password_hash: passwordHash,
-      jwt_token: token,
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      last_login: new Date().toISOString(),
-      active_until: sixMonthsFromNow.toISOString(), // ✅ 6 months expiry
-      metadata: {},
-    });
+    // Insert user
+    const { data, error } = await supabase
+      .from("users")
+      .insert({
+        email,
+        password_hash: passwordHash,
+        role: role || "user",
+        is_active: true,
+        active_until: activeUntil.toISOString(),
+      })
+      .select()
+      .single();
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json({ token }, { status: 200 });
+    // Sign JWT
+    const token = jwt.sign(
+      { email: data.email, role: data.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: "6h" }
+    );
+
+    return NextResponse.json({ token, role: data.role }, { status: 200 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
-      }
+}
