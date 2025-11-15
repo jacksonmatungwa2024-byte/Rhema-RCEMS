@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import SajiliMuumini from "../components/SajiliMuumini";
 import SajiliMahadhurio from "../components/SajiliMahadhurio";
@@ -23,50 +22,39 @@ export type TabType =
   | "profile"
   | "picha";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-  }
-);
-
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>("home");
   const [usajiliSub, setUsajiliSub] = useState<
     "muumini" | "mahadhurio" | "wokovu" | "ushuhuda"
   >("muumini");
   const [user, setUser] = useState<any>(null);
+  const [allowedTabs, setAllowedTabs] = useState<TabType[]>([]);
 
-  // Load user and restore last active tab/subtab
+  // Load user from JWT + /api/me
   useEffect(() => {
     const loadUser = async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const email = sessionData?.session?.user?.email;
-
-      if (!email) {
+      const token = localStorage.getItem("session_token");
+      if (!token) {
         window.location.href = "/login";
         return;
       }
 
-      const { data: userData, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", email)
-        .single();
+      const res = await fetch("/api/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
 
-      if (error || !userData || !["admin", "usher"].includes(userData.role)) {
+      if (data.error) {
+        localStorage.removeItem("session_token");
         window.location.href = "/login";
         return;
       }
 
-      setUser(userData);
+      setUser(data);
+      setAllowedTabs(data.allowedTabs || []);
 
-      // Restore last active tab/subtab from localStorage for non-admin
-      if (userData.role !== "admin") {
+      // Restore last active tab/subtab for non-admin
+      if (data.role !== "admin") {
         const lastTab = localStorage.getItem("home_active_tab") as TabType;
         const lastSub = localStorage.getItem("home_usajili_sub") as
           | "muumini"
@@ -74,17 +62,28 @@ export default function Home() {
           | "wokovu"
           | "ushuhuda";
 
-        if (lastTab && ["home","usajili","mafunzo","reports","messages","profile","picha"].includes(lastTab))
+        if (lastTab && (data.allowedTabs || []).includes(lastTab)) {
           setActiveTab(lastTab);
-        if (lastSub && ["muumini","mahadhurio","wokovu","ushuhuda"].includes(lastSub))
+        }
+        if (lastSub && ["muumini","mahadhurio","wokovu","ushuhuda"].includes(lastSub)) {
           setUsajiliSub(lastSub);
+        }
       }
+
+      // 🔹 Auto logout after 30 mins inactivity
+      const timeout = setTimeout(() => {
+        alert("Umeachwa bila shughuli. Tafadhali ingia tena.");
+        localStorage.removeItem("session_token");
+        window.location.href = "/login";
+      }, 30 * 60 * 1000);
+
+      return () => clearTimeout(timeout);
     };
 
     loadUser();
   }, []);
 
-  // Save active tab and subtab to localStorage for non-admin
+  // Save active tab/subtab for non-admin
   useEffect(() => {
     if (user?.role !== "admin") {
       localStorage.setItem("home_active_tab", activeTab);
@@ -93,19 +92,12 @@ export default function Home() {
   }, [activeTab, usajiliSub, user]);
 
   const { role, full_name, branch } = user || {};
-  const allowedTabs: Record<string, TabType[]> = {
-    admin: ["home","usajili","mafunzo","reports","messages","profile","picha"],
-    usher: ["home","usajili","reports","profile","picha"],
-  };
-  const visibleTabs = allowedTabs[role] || [];
 
-  const handleLogout = async () => {
-    if (role !== "admin") {
-      await supabase.auth.signOut();
-      localStorage.removeItem("home_active_tab");
-      localStorage.removeItem("home_usajili_sub");
-      window.location.href = "/login";
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("session_token");
+    localStorage.removeItem("home_active_tab");
+    localStorage.removeItem("home_usajili_sub");
+    window.location.href = "/login";
   };
 
   if (!user) return null;
@@ -114,7 +106,7 @@ export default function Home() {
     <div className={styles.container}>
       {/* Sidebar */}
       <aside className={styles.sidebar}>
-        {visibleTabs.includes("home") && (
+        {allowedTabs.includes("home") && (
           <button
             className={`${styles.tabBtn} ${activeTab === "home" ? styles.active : ""}`}
             onClick={() => setActiveTab("home")}
@@ -123,7 +115,7 @@ export default function Home() {
           </button>
         )}
 
-        {visibleTabs.includes("usajili") && (
+        {allowedTabs.includes("usajili") && (
           <button
             className={`${styles.tabBtn} ${activeTab === "usajili" ? styles.active : ""}`}
             onClick={() => setActiveTab("usajili")}
@@ -132,7 +124,7 @@ export default function Home() {
           </button>
         )}
 
-        {visibleTabs.includes("mafunzo") && (
+        {allowedTabs.includes("mafunzo") && (
           <button
             className={`${styles.tabBtn} ${activeTab === "mafunzo" ? styles.active : ""}`}
             onClick={() => setActiveTab("mafunzo")}
@@ -141,7 +133,7 @@ export default function Home() {
           </button>
         )}
 
-        {visibleTabs.includes("reports") && (
+        {allowedTabs.includes("reports") && (
           <button
             className={`${styles.tabBtn} ${activeTab === "reports" ? styles.active : ""}`}
             onClick={() => setActiveTab("reports")}
@@ -150,7 +142,7 @@ export default function Home() {
           </button>
         )}
 
-        {visibleTabs.includes("picha") && (
+        {allowedTabs.includes("picha") && (
           <button
             className={`${styles.tabBtn} ${activeTab === "picha" ? styles.active : ""}`}
             onClick={() => setActiveTab("picha")}
@@ -159,7 +151,7 @@ export default function Home() {
           </button>
         )}
 
-        {visibleTabs.includes("profile") && (
+        {allowedTabs.includes("profile") && (
           <button
             className={`${styles.tabBtn} ${activeTab === "profile" ? styles.active : ""}`}
             onClick={() => setActiveTab("profile")}
@@ -168,11 +160,9 @@ export default function Home() {
           </button>
         )}
 
-        {role !== "admin" && (
-          <button onClick={handleLogout} className={styles.logoutBtn}>
-            🚪 Toka / Logout
-          </button>
-        )}
+        <button onClick={handleLogout} className={styles.logoutBtn}>
+          🚪 Toka / Logout
+        </button>
       </aside>
 
       {/* Main Content */}
@@ -182,7 +172,7 @@ export default function Home() {
             <h2 className={styles.homeTitle}>
               Karibu {role === "admin" ? "Admin" : "Mhudumu"} {full_name}
             </h2>
-            <p className={styles.subText}>Tawi: {branch || "—"}</p>
+            <p className={styles.subText}>📍 Tawi: {branch || "—"}</p>
             <p className={styles.subText}>
               Chagua kipengele upande wa kushoto ili kuendelea.
             </p>
@@ -239,4 +229,4 @@ export default function Home() {
       <SpeedInsights />
     </div>
   );
-}
+            }
