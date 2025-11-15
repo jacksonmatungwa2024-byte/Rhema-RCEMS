@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { email, password, pin } = body;
 
-    // If admin is logging in with PIN only
+    // Admin login with PIN only
     if (pin) {
       const { data: adminUser, error: adminError } = await supabase
         .from("users")
@@ -30,11 +30,11 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "PIN ya admin si sahihi." }, { status: 401 });
       }
 
-      const token = jwt.sign({ email: adminUser.email, role: "admin" }, process.env.JWT_SECRET!, {
+      const token = jwt.sign({ email: adminUser.email, role: "admin", loginMode: "pin" }, process.env.JWT_SECRET!, {
         expiresIn: "6h",
       });
 
-      return NextResponse.json({ token, role: "admin" }, { status: 200 });
+      return NextResponse.json({ token, role: "admin", loginMode: "pin" }, { status: 200 });
     }
 
     // Normal user login with email + password
@@ -57,12 +57,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Nenosiri si sahihi." }, { status: 401 });
     }
 
-    const token = jwt.sign({ email: user.email, role: user.role }, process.env.JWT_SECRET!, {
+    const token = jwt.sign({ email: user.email, role: user.role, loginMode: "normal" }, process.env.JWT_SECRET!, {
       expiresIn: "6h",
     });
 
-    return NextResponse.json({ token, role: user.role }, { status: 200 });
+    return NextResponse.json({ token, role: user.role, loginMode: "normal" }, { status: 200 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
-        }
+}
