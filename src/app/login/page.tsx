@@ -1,113 +1,54 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
-import "./login.css";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 export default function LoginPage() {
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false);
   const [loginMessage, setLoginMessage] = useState("");
-  const [settings, setSettings] = useState<{ logo_url: string; branch_name: string } | null>(null);
-
+  const [anonLoaded, setAnonLoaded] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showPin, setShowPin] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const [debugInfo, setDebugInfo] = useState<any>(null);
-
-  // Fetch settings
+  // 🔥 Check ENV + anon key status
   useEffect(() => {
-    const fetchSettings = async () => {
-      const { data } = await supabase
-        .from("settings")
-        .select("logo_url, branch_name")
-        .eq("is_active", true)
-        .single();
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-      if (data) setSettings(data);
-    };
-    fetchSettings();
+    if (url && anon) setAnonLoaded(true);
   }, []);
 
-  // Handle login
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setLoginMessage("");
-    setDebugInfo(null);
 
     const form = e.target as HTMLFormElement;
     const email = form.email.value.trim().toLowerCase();
     const password = form.password.value.trim();
     const pin = form.pin.value.trim();
 
-    if (!email || !password) {
-      setLoginMessage("⚠️ Tafadhali jaza taarifa zote.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      // ✓ Authenticate
-      const { data: authData, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, pin }),
       });
 
-      if (error || !authData.user) {
-        setLoginMessage("❌ Barua pepe au nenosiri si sahihi.");
-        setDebugInfo({ error, authData });
-        setLoading(false);
-        return;
+      const data = await res.json();
+
+      if (data.error) {
+        setLoginMessage(`❌ ${data.error}`);
+      } else {
+        localStorage.setItem("session_token", data.token);
+        setLoginMessage("✅ Inakuelekeza...");
+
+        setTimeout(() => {
+          if (data.role === "admin") router.push("/admin");
+          else router.push("/home");
+        }, 900);
       }
-
-      // ✓ Fetch user record
-      const { data: user } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", authData.user.id)
-        .single();
-
-      if (!user) {
-        setLoginMessage("❌ Akaunti haikupatikana.");
-        setLoading(false);
-        return;
-      }
-
-      if (!user.is_active) {
-        setLoginMessage("🚫 Akaunti yako imefungwa. Wasiliana na admin.");
-        setLoading(false);
-        return;
-      }
-
-      // ✓ Check admin PIN
-      if (user.role === "admin") {
-        if (pin && pin !== user.admin_pin) {
-          setLoginMessage("❌ PIN ya admin si sahihi.");
-          setLoading(false);
-          return;
-        }
-      }
-
-      // ✓ Update last login
-      await supabase
-        .from("users")
-        .update({ last_login: new Date().toISOString() })
-        .eq("id", user.id);
-
-      setLoginMessage("✅ Inakuelekeza...");
-
-      setTimeout(() => {
-        if (user.role === "admin") router.push("/admin");
-        else router.push("/home");
-      }, 900);
     } catch (err: any) {
       setLoginMessage("❌ Hitilafu ya mtandao: " + err.message);
     } finally {
@@ -117,69 +58,74 @@ export default function LoginPage() {
 
   return (
     <div className="login-wrapper">
+      <form className="login-box" onSubmit={handleSubmit}>
+        <h2 className="title">Karibu 👋</h2>
+        <p className="subtitle">Ingia kwenye akaunti yako</p>
 
-      <div className="wa-left-panel"></div>
-
-      <div className="wa-right-panel">
-        <div className="login-bubble">
-
-          {/* Logo */}
-          <div className="logo-container">
-            {settings?.logo_url ? (
-              <img src={settings.logo_url} alt="Logo" className="church-logo" />
-            ) : (
-              <img src="/fallback-logo.png" alt="Logo" className="church-logo" />
-            )}
-          </div>
-
-          <h2>🔐 Ingia {settings?.branch_name && `- ${settings.branch_name}`}</h2>
-
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="email">📧 Barua Pepe:</label>
-            <input type="email" id="email" name="email" placeholder="Weka barua pepe" />
-
-            <label htmlFor="password">🔑 Nenosiri:</label>
-            <div className="password-wrapper">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                placeholder="Weka nenosiri"
-              />
-              <button type="button" onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? "Hide" : "Show"}
-              </button>
-            </div>
-
-            <label htmlFor="pin">🔢 PIN ya Admin (hiari):</label>
-            <div className="password-wrapper">
-              <input
-                type={showPin ? "text" : "password"}
-                id="pin"
-                name="pin"
-                placeholder="PIN ya admin"
-              />
-              <button type="button" onClick={() => setShowPin(!showPin)}>
-                {showPin ? "Hide" : "Show"}
-              </button>
-            </div>
-
-            <button type="submit" disabled={loading}>
-              {loading ? "⌛ Inapakia..." : "🚪 Ingia"}
-            </button>
-          </form>
-
-          <button onClick={() => router.push("/chatbot")} className="forgot-btn">
-            ❓ Umesahau Nenosiri?
-          </button>
-
-          <button onClick={() => router.push("/signup")} className="signup-btn">
-            📝 Huna akaunti? Jisajili hapa
-          </button>
-
-          <div className="login-message">{loginMessage}</div>
+        {/* Email */}
+        <div className="input-group">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="Weka email" required />
         </div>
-      </div>
+
+        {/* Password */}
+        <div className="input-group">
+          <label>Nenosiri</label>
+          <div className="password-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Weka nenosiri"
+              required
+            />
+            <span
+              className="toggle"
+              onClick={() => setShowPassword((p) => !p)}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </span>
+          </div>
+        </div>
+
+        {/* PIN */}
+        <div className="input-group">
+          <label>PIN</label>
+          <div className="password-wrapper">
+            <input
+              type={showPin ? "text" : "password"}
+              name="pin"
+              placeholder="PIN ya siri"
+              required
+            />
+            <span className="toggle" onClick={() => setShowPin((p) => !p)}>
+              {showPin ? "🙈" : "👁️"}
+            </span>
+          </div>
+        </div>
+
+        {/* Button */}
+        <button className="login-btn" disabled={loading}>
+          {loading ? "⏳ Inacheza..." : "Ingia"}
+        </button>
+
+        {/* Status */}
+        {loginMessage && (
+          <div
+            className={`status ${
+              loginMessage.startsWith("❌") ? "error" : "success"
+            }`}
+          >
+            {loginMessage}
+          </div>
+        )}
+
+        {/* ENV INFO */}
+        <div className="env-box">
+          <p>🌐 ENV Status:</p>
+          <p>URL: {process.env.NEXT_PUBLIC_SUPABASE_URL ? "Loaded ✔" : "❌ Missing"}</p>
+          <p>Anon: {anonLoaded ? "Loaded ✔" : "❌ Missing"}</p>
+        </div>
+      </form>
     </div>
   );
 }
