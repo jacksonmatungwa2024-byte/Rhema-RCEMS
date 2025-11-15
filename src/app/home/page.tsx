@@ -1,21 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { createClient } from "@supabase/supabase-js";
 import "./Dashboard.css";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-const accessMap: Record<string, string[]> = {
-  admin: ["adminTab", "usherTab", "pastorTab", "mediaTab", "financeTab"],
-  usher: ["usherTab"],
-  pastor: ["pastorTab"],
-  media: ["mediaTab"],
-  finance: ["financeTab"],
-};
 
 const roleLabels: Record<string, string> = {
   admin: "Admin",
@@ -31,46 +17,43 @@ export default function Dashboard() {
   const [branch, setBranch] = useState("");
   const [profileUrl, setProfileUrl] = useState("");
   const [lastLogin, setLastLogin] = useState("");
+  const [allowedTabs, setAllowedTabs] = useState<string[]>([]);
   const [statusLight, setStatusLight] = useState<"green" | "red" | "grey">("grey");
   const [statusText, setStatusText] = useState("⏳ Tafadhali chagua paneli.");
   const [audioPlaying, setAudioPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // ===== Session check (no single session enforcement) =====
+  // ===== Session check using JWT =====
   useEffect(() => {
     const checkSession = async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData?.session?.access_token;
-      const email = sessionData?.session?.user?.email;
-
-      if (!email || !accessToken) {
+      const token = localStorage.getItem("session_token");
+      if (!token) {
         window.location.href = "/login";
         return;
       }
 
-      // Fetch user info
-      const { data: userData, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", email)
-        .single();
+      const res = await fetch("/api/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
 
-      if (error || !userData) {
+      if (data.error) {
+        localStorage.removeItem("session_token");
         window.location.href = "/login";
         return;
       }
 
-      // ✅ No single session enforcement — multiple devices allowed
-      setRole(userData.role);
-      setFullName(userData.full_name || "");
-      setBranch(userData.branch || "");
-      setProfileUrl(userData.profile_url || "");
-      setLastLogin(userData.last_login ? new Date(userData.last_login).toLocaleString() : "");
+      setRole(data.role);
+      setFullName(data.full_name || "");
+      setBranch(data.branch || "");
+      setProfileUrl(data.profile_url || "");
+      setLastLogin(data.last_login ? new Date(data.last_login).toLocaleString() : "");
+      setAllowedTabs(data.allowedTabs || []);
 
       // 🔹 Auto logout after 30 mins inactivity
-      const timeout = setTimeout(async () => {
+      const timeout = setTimeout(() => {
         alert("Umeachwa bila shughuli. Tafadhali ingia tena.");
-        await supabase.auth.signOut();
+        localStorage.removeItem("session_token");
         window.location.href = "/login";
       }, 30 * 60 * 1000);
 
@@ -78,21 +61,10 @@ export default function Dashboard() {
     };
 
     checkSession();
-
-    // 🔹 Listen for auth state changes
-    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_OUT" || !session) {
-        window.location.href = "/login";
-      }
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
   }, []);
 
   const handleClick = (tabId: string, page: string) => {
-    if (!accessMap[role]?.includes(tabId)) {
+    if (!allowedTabs.includes(tabId)) {
       setStatusLight("red");
       setStatusText("🚫 Huna ruhusa ya kuingia sehemu hii.");
       return;
@@ -109,8 +81,8 @@ export default function Dashboard() {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    localStorage.removeItem("session_token");
     window.location.href = "/login";
   };
 
@@ -120,26 +92,44 @@ export default function Dashboard() {
       <h2>Karibu {roleLabels[role] || ""} {fullName}</h2>
       {branch && <div className="info-block">📍 Tawi: {branch}</div>}
       {lastLogin && <div className="info-block">🕒 Ilipoingia mwisho: {lastLogin}</div>}
-      {profileUrl && <img src={profileUrl} alt="Profile" />}
+      {profileUrl && <img src={profileUrl} alt="Profile" className="profile-img" />}
+
+      {/* Audio Theme */}
       <button onClick={handleAudioPlay}>
         🔊 {audioPlaying ? "Inapigwa..." : "Play Theme"}
       </button>
       <audio ref={audioRef} loop>
         <source src="/ana.mp3" type="audio/mp3" />
       </audio>
+
+      {/* Status Indicator */}
       <div className={`status-indicator ${statusLight}`}>
         {statusText}
       </div>
+
+      {/* Panel Links (role-based from API) */}
       <div className="panel-links">
-        <div onClick={() => handleClick("adminTab", "/admin")}>Admin Panel</div>
-        <div onClick={() => handleClick("usherTab", "/usher")}>Usher Panel</div>
-        <div onClick={() => handleClick("pastorTab", "/pastor")}>Pastor Panel</div>
-        <div onClick={() => handleClick("mediaTab", "/media")}>Media Team</div>
-        <div onClick={() => handleClick("financeTab", "/finance")}>Finance</div>
+        {allowedTabs.includes("adminTab") && (
+          <div onClick={() => handleClick("adminTab", "/admin")}>Admin Panel</div>
+        )}
+        {allowedTabs.includes("usherTab") && (
+          <div onClick={() => handleClick("usherTab", "/usher")}>Usher Panel</div>
+        )}
+        {allowedTabs.includes("pastorTab") && (
+          <div onClick={() => handleClick("pastorTab", "/pastor")}>Pastor Panel</div>
+        )}
+        {allowedTabs.includes("mediaTab") && (
+          <div onClick={() => handleClick("mediaTab", "/media")}>Media Team</div>
+        )}
+        {allowedTabs.includes("financeTab") && (
+          <div onClick={() => handleClick("financeTab", "/finance")}>Finance</div>
+        )}
       </div>
+
+      {/* Logout */}
       <button onClick={handleLogout} className="logout-btn">
         🚪 Logout
       </button>
     </div>
   );
-}
+        }
