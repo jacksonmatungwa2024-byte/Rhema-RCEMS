@@ -1,41 +1,40 @@
 "use client";
+
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import "./UpdatePassword.css";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 export default function UpdatePassword() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const emailParam = searchParams.get("email") || ""; // email passed from ForgotPassword
+  const emailParam = searchParams.get("email") || "";
   const [email] = useState(emailParam);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState("");
 
-  // Step: update password via RPC
   const updatePassword = async () => {
     if (!password || password.length < 6) {
       setStatus("❌ Nenosiri lazima liwe angalau herufi 6.");
       return;
     }
 
-    // ✅ Call RPC function
-    const { error } = await supabase.rpc("reset_password_with_otp", {
-      user_email: email,
-      new_password: password,
-    });
+    try {
+      const res = await fetch("/api/update-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, new_password: password }),
+      });
 
-    if (error) {
-      setStatus("❌ Tatizo katika kubadilisha nenosiri: " + error.message);
-    } else {
-      setStatus("✅ Nenosiri limebadilishwa kikamilifu!");
-      setTimeout(() => router.push("/login"), 1500);
+      const data = await res.json();
+      if (data.error) {
+        setStatus("❌ Tatizo: " + data.error);
+      } else {
+        setStatus("✅ Nenosiri limebadilishwa kikamilifu!");
+        setTimeout(() => router.push("/login"), 1500);
+      }
+    } catch (err: any) {
+      setStatus("❌ Hitilafu: " + err.message);
     }
   };
 
@@ -66,4 +65,4 @@ export default function UpdatePassword() {
       {status && <div className="status">{status}</div>}
     </div>
   );
-      }
+}
