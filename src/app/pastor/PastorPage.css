@@ -79,6 +79,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 20px;
 }
 
 .account-btn,
@@ -126,23 +127,27 @@
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .pastor-container {
-    flex-direction: column;
+    flex-direction: column; /* mobile: stack vertically */
   }
 
   .pastor-sidebar {
     width: 100%;
-    flex-direction: row;
-    align-items: center;
-    overflow-x: auto;
-    gap: 10px;
+    flex-direction: column; /* keep logo, nav, footer stacked */
+    align-items: stretch;
+    padding: 15px;
+  }
+
+  .pastor-logo {
+    justify-content: flex-start;
+    margin-bottom: 15px;
   }
 
   .pastor-nav {
-    flex-direction: row;
+    flex-direction: row; /* nav items horizontal scroll */
     gap: 8px;
-    flex: 1;
     overflow-x: auto;
     white-space: nowrap;
+    margin-bottom: 15px;
   }
 
   .pastor-nav-item {
@@ -153,8 +158,9 @@
   }
 
   .pastor-footer {
-    flex-direction: row;
-    margin-left: auto;
+    flex-direction: row; /* account + logout side by side */
+    justify-content: flex-end;
+    gap: 10px;
   }
 
   .account-btn,
