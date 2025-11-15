@@ -361,7 +361,7 @@ export default LoginPage;
       </div>
     </div>
   );
-};
+
 
 export default LoginPage;
     
