@@ -1,24 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import "./Finance.css";
 import FinancePanel from "../components/FinancePanel";
 import Michango from "../components/Michango";
 import FinanceReports from "../components/FinanceReports";
 import FinanceProfile from "../components/FinanceProfile";
 import FinanceGallery from "../components/FinanceGallery";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-  }
-);
 
 const allTabs = [
   { key: "finance", label: "💰 Mapato & Matumizi", component: <FinancePanel /> },
@@ -35,91 +23,45 @@ export default function FinancePage() {
   const [hovered, setHovered] = useState(false);
   const [user, setUser] = useState<any>(null);
 
-  // Logout for non-admin
-  const handleLogout = async () => {
-    if (user?.role !== "admin") {
-      await supabase.auth.signOut();
-      localStorage.removeItem("finance_active_tab");
-      window.location.href = "/login";
-    }
+  // 🚪 Logout
+  const handleLogout = () => {
+    localStorage.removeItem("session_token");
+    localStorage.removeItem("finance_active_tab");
+    window.location.href = "/login";
   };
 
-  // Auto logout only for non-admin
-  useEffect(() => {
-    if (!user || user.role === "admin") return;
-
-    let timeout: NodeJS.Timeout;
-    const resetTimer = () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(async () => {
-        await supabase.auth.signOut();
-        localStorage.removeItem("finance_active_tab");
-        window.location.href = "/login";
-      }, 10 * 60 * 1000);
-    };
-
-    const events = ["mousemove", "keydown", "scroll", "click"];
-    events.forEach((event) => window.addEventListener(event, resetTimer));
-    resetTimer();
-
-    return () => {
-      clearTimeout(timeout);
-      events.forEach((event) => window.removeEventListener(event, resetTimer));
-    };
-  }, [user]);
-
-  // Check login session
+  // 🔒 Check login session via JWT
   useEffect(() => {
     const checkSession = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data?.user) {
-        window.location.href = "/login";
-        return;
-      }
-      setUser(data.user);
-    };
-    checkSession();
-  }, []);
-
-  // Fetch allowed tabs and restore last active tab
-  useEffect(() => {
-    const fetchUserTabs = async () => {
-      if (!user) return;
-
-      const { id, email } = user;
-      let { data: userData, error: userErr } = await supabase
-        .from("users")
-        .select("role, username, email, metadata")
-        .eq("id", id)
-        .single();
-
-      if (userErr || !userData) {
-        const fallback = await supabase
-          .from("users")
-          .select("role, username, email, metadata")
-          .eq("email", email)
-          .single();
-        userData = fallback.data;
-      }
-
-      if (!userData) {
-        alert("Haiwezekani kupata taarifa zako. Tafadhali jaribu tena.");
+      const token = localStorage.getItem("session_token");
+      if (!token) {
         window.location.href = "/login";
         return;
       }
 
-      const { role, metadata } = userData;
+      const res = await fetch("/api/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+
+      if (data.error) {
+        localStorage.removeItem("session_token");
+        window.location.href = "/login";
+        return;
+      }
+
+      setUser(data);
 
       // Determine allowed tabs
-      if (role === "admin") {
+      if (data.role === "admin") {
         setAllowedTabs(allTabs.map((t) => t.key));
       } else {
-        const tabs = metadata?.allowed_tabs;
+        const tabs = data.allowedTabs;
         setAllowedTabs(Array.isArray(tabs) ? tabs : ["finance", "profile"]);
       }
 
-      // Restore last active tab from localStorage for non-admin
-      if (role !== "admin") {
+      // Restore last active tab for non-admin
+      if (data.role !== "admin") {
         const savedTab = localStorage.getItem("finance_active_tab");
         if (savedTab && allTabs.some((t) => t.key === savedTab)) {
           setActiveTab(savedTab);
@@ -131,12 +73,31 @@ export default function FinancePage() {
       }
 
       setLoading(false);
+
+      // 🔹 Auto logout after 10 mins inactivity
+      let timeout: NodeJS.Timeout;
+      const resetTimer = () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          alert("Umeachwa bila shughuli. Tafadhali ingia tena.");
+          handleLogout();
+        }, 10 * 60 * 1000);
+      };
+
+      const events = ["mousemove", "keydown", "scroll", "click"];
+      events.forEach((event) => window.addEventListener(event, resetTimer));
+      resetTimer();
+
+      return () => {
+        clearTimeout(timeout);
+        events.forEach((event) => window.removeEventListener(event, resetTimer));
+      };
     };
 
-    fetchUserTabs();
-  }, [user]);
+    checkSession();
+  }, []);
 
-  // Save active tab on change for non-admin users
+  // 💾 Save active tab for non-admin
   useEffect(() => {
     if (user?.role !== "admin") {
       localStorage.setItem("finance_active_tab", activeTab);
@@ -173,17 +134,15 @@ export default function FinancePage() {
               ))}
           </div>
 
-          {/* Only show logout for non-admin */}
-          {user?.role !== "admin" && (
-            <button
-              onClick={handleLogout}
-              onMouseEnter={() => setHovered(true)}
-              onMouseLeave={() => setHovered(false)}
-              className={`logout-btn ${hovered ? "hover" : ""}`}
-            >
-              🚪 Toka / Logout
-            </button>
-          )}
+          {/* Logout always available */}
+          <button
+            onClick={handleLogout}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            className={`logout-btn ${hovered ? "hover" : ""}`}
+          >
+            🚪 Toka / Logout
+          </button>
         </nav>
 
         {/* Main content */}
@@ -197,4 +156,4 @@ export default function FinancePage() {
       </div>
     </div>
   );
-}
+      }
