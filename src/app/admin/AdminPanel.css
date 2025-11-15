@@ -1,113 +1,194 @@
+/* ===== Container ===== */
 .admin-panel-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 32px 20px;
-  font-family: "Segoe UI", Roboto, sans-serif;
-  background: linear-gradient(to bottom, #0d47a1, #2196f3);
-  color: #ffffff;
-  animation: fadeSlideIn 0.6s ease forwards;
-  opacity: 0;
-  transform: translateY(20px);
-  box-sizing: border-box;
+  display: flex;
+  min-height: 100vh;
+  background: #f5f5f5;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #222;
 }
 
-@keyframes fadeSlideIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ===== Navigation Sidebar ===== */
+nav {
+  width: 240px;
+  background: #075e54;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
 }
 
-.admin-panel-container nav {
-  margin-bottom: 24px;
-  text-align: center;
-}
-
-.admin-panel-container nav h2 {
-  font-size: 2rem;
-  font-weight: 900;
-  margin-bottom: 8px;
-}
-
-.admin-panel-container nav p {
-  font-size: 1rem;
-  margin-bottom: 16px;
-  color: #bbdefb;
-}
-
-.admin-panel-container nav button {
-  margin: 6px;
-  padding: 10px 16px;
-  background: #1565c0;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
+nav h2 {
+  font-size: 22px;
   font-weight: 700;
+  margin-bottom: 8px;
+  color: #25D366;
+}
+
+nav p {
+  font-size: 14px;
+  margin-bottom: 20px;
+  color: #ddd;
+}
+
+/* ===== Tab Buttons ===== */
+.tab-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: auto;
+}
+
+.tab-buttons button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px;
+  text-align: left;
+  border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.admin-panel-container nav button:hover {
-  background: #0d47a1;
-  transform: scale(1.05);
+.tab-buttons button:hover {
+  background: rgba(255,255,255,0.15);
+  transform: translateX(4px);
 }
 
-.admin-panel-container main {
-  animation: slideIn 0.5s ease forwards;
-  opacity: 0;
-  transform: translateX(-30px);
+.tab-buttons button[aria-current="page"] {
+  background: #128c7e;
 }
 
-@keyframes slideIn {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+/* ===== Logout Button ===== */
+.logout-btn {
+  margin-top: 20px;
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  .admin-panel-container {
-    background: linear-gradient(to bottom, #0a192f, #1565c0);
-    color: #ffffff;
-  }
-
-  .admin-panel-container nav p {
-    color: #e3f2fd;
-  }
-
-  .admin-panel-container nav button {
-    background: #1e88e5;
-    color: #ffffff;
-  }
-
-  .admin-panel-container nav button:hover {
-    background: #42a5f5;
-  }
-
-  .admin-panel-container main {
-    background: #102840;
-    color: #ffffff;
-  }
+.logout-btn:hover {
+  background: #b71c1c;
 }
 
+/* ===== Main Content ===== */
+main {
+  flex: 1;
+  padding: 30px;
+  background: #fff;
+  overflow-y: auto;
+  animation: fadeIn 0.4s ease;
+}
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Loading State ===== */
+.admin-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 18px;
+  color: #128c7e;
+}
+
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
   .admin-panel-container {
-    padding: 20px 12px;
+    flex-direction: column;
   }
 
-  .admin-panel-container nav h2 {
-    font-size: 1.5rem;
-  }
-
-  .admin-panel-container nav p {
-    font-size: 0.95rem;
-  }
-
-  .admin-panel-container nav button {
+  nav {
     width: 100%;
-    max-width: 300px;
-    display: block;
-    margin: 8px auto;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+  }
+
+  nav h2 {
+    font-size: 18px;
+    margin-right: 10px;
+  }
+
+  .tab-buttons {
+    flex-direction: row;
+    gap: 8px;
+    flex: 1;
+    overflow-x: auto;
+  }
+
+  .tab-buttons button {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .logout-btn {
+    margin-left: auto;
+    margin-top: 0;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  main {
+    padding: 20px;
   }
 }
+
+/* ===== Dark Mode Auto Detect ===== */
+@media (prefers-color-scheme: dark) {
+  .admin-panel-container {
+    background: #121212;
+    color: #f1f1f1;
+  }
+
+  nav {
+    background: #1e1e1e;
+    box-shadow: 2px 0 8px rgba(255,255,255,0.1);
+  }
+
+  nav h2 {
+    color: #25D366;
+  }
+
+  nav p {
+    color: #aaa;
+  }
+
+  .tab-buttons button {
+    color: #ddd;
+  }
+
+  .tab-buttons button:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
+  .tab-buttons button[aria-current="page"] {
+    background: #25D366;
+    color: #000;
+  }
+
+  .logout-btn {
+    background: #d32f2f;
+    color: #fff;
+  }
+
+  main {
+    background: #181818;
+  }
+
+  .admin-loading {
+    color: #25D366;
+  }
+  }
