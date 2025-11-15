@@ -15,7 +15,7 @@ import AdminProfile from "../components/AdminProfile";
 import AdminSettings from "../components/AdminSettings";
 import { BucketProvider } from "../components/BucketContext";
 
-const tabs = [
+const allTabs = [
   { id: "tabManager", label: "🛠️ Tab Manager", component: <AdminTabManager /> },
   { id: "reactivation", label: "🔁 Reactivation", component: <AdminReactivation /> },
   { id: "users", label: "👥 User Management", link: "/admin/user-management" },
@@ -31,9 +31,9 @@ export default function AdminPanel() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("tabManager");
   const [user, setUser] = useState<any>(null);
-  const [allowedTabs, setAllowedTabs] = useState<typeof tabs>([]);
+  const [allowedTabs, setAllowedTabs] = useState<typeof allTabs>([]);
 
-  // 🔒 Load admin session using JWT
+  // 🔒 Load session via JWT
   useEffect(() => {
     const loadSession = async () => {
       const token = localStorage.getItem("session_token");
@@ -47,17 +47,25 @@ export default function AdminPanel() {
       });
       const data = await res.json();
 
-      if (data.error || data.role !== "admin") {
+      if (data.error) {
         localStorage.removeItem("session_token");
         router.push("/login");
         return;
       }
 
       setUser(data);
-      // 🔹 Admin gets all tabs
-      setAllowedTabs(tabs);
 
-      // 🔹 Auto logout after 30 mins inactivity
+      if (data.role === "admin") {
+        // Admin → all tabs
+        setAllowedTabs(allTabs);
+      } else {
+        // Non-admin → filter tabs from metadata.allowed_tabs
+        const userTabs = data.allowedTabs || [];
+        const filtered = allTabs.filter(tab => userTabs.includes(tab.id));
+        setAllowedTabs(filtered);
+      }
+
+      // Auto logout after 30 mins inactivity
       const timeout = setTimeout(() => {
         alert("Umeachwa bila shughuli. Tafadhali ingia tena.");
         localStorage.removeItem("session_token");
