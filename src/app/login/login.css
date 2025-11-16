@@ -1,7 +1,7 @@
 /* 🌈 MAIN WRAPPER WITH ANIMATED GRADIENT */
 .login-wrapper {
   min-height: 100vh;
-  background: linear-gradient(-45deg, #FF7F32, #1E3A8A, #0284C7, #F4F4F4); /* Orange, Dark Blue, Blue, Light Grey */
+  background: linear-gradient(-45deg, #FF7F32, #1E3A8A, #0284C7, #F4F4F4);
   background-size: 400% 400%;
   animation: gradientBG 12s ease infinite;
   display: flex;
@@ -54,29 +54,16 @@
   text-align: center;
   font-size: 26px;
   margin-bottom: 5px;
-  color: #1E3A8A; /* Dark Blue */
+  color: #1E3A8A;
   font-weight: 700;
   animation: pulseText 3s infinite;
 }
 
-/* WELCOME MESSAGE */
-.welcome-message {
+.login-box p {
   text-align: center;
-  margin-bottom: 20px;
-  animation: fadeIn 1.2s ease;
-}
-
-.welcome-message h1 {
-  font-size: 22px;
-  color: #0284C7; /* Blue */
-  animation: pulseText 4s infinite;
-}
-
-.welcome-message blockquote {
-  font-size: 0.9rem;
-  color: #444;
-  margin-top: 10px;
-  font-style: italic;
+  color: #0284C7;
+  font-size: 14px;
+  margin-bottom: 15px;
 }
 
 /* LABELS */
@@ -106,10 +93,10 @@ input::placeholder {
 }
 
 input:focus {
-  border: 1px solid #FF7F32; /* Orange */
+  border: 1px solid #FF7F32;
   background: #fff;
   transform: scale(1.02);
-  box-shadow: 0 0 8px rgba(255, 127, 50, 0.4); /* Orange glow */
+  box-shadow: 0 0 8px rgba(255, 127, 50, 0.4);
 }
 
 /* PASSWORD + PIN ICON WRAPPER */
@@ -137,12 +124,12 @@ input:focus {
   transform: rotate(20deg) scale(1.2);
 }
 
-/* MAIN LOGIN BUTTON */
+/* MAIN BUTTONS */
 button {
   width: 100%;
   padding: 12px;
   margin-top: 16px;
-  background: linear-gradient(90deg, #0284C7, #FF7F32); /* Blue to Orange gradient */
+  background: linear-gradient(90deg, #0284C7, #FF7F32);
   color: white;
   border: none;
   border-radius: 8px;
@@ -161,11 +148,19 @@ button:hover {
 /* CHATBOT BUTTON */
 .help-btn {
   background: linear-gradient(90deg, #FF7F32, #0284C7);
-  color: #fff;
 }
 
 .help-btn:hover {
   background: linear-gradient(90deg, #1E3A8A, #FF7F32);
+}
+
+/* LOGIN STATUS MESSAGE */
+.status {
+  margin-top: 15px;
+  text-align: center;
+  font-weight: 600;
+  color: #1E3A8A;
+  animation: fadeIn 0.4s ease;
 }
 
 /* FOOTER */
@@ -215,19 +210,15 @@ button:hover {
   50% { color: #FF7F32; text-shadow: 0 0 15px #0284C7; }
 }
 
-/* Dark Mode Styles (auto-detected by user preference) */
+/* DARK MODE */
 @media (prefers-color-scheme: dark) {
   .login-wrapper {
-    background: linear-gradient(-45deg, #1E3A8A, #0284C7, #FF7F32, #111); /* Dark Blue, Blue, Orange, Dark Grey */
+    background: linear-gradient(-45deg, #1E3A8A, #0284C7, #FF7F32, #111);
   }
 
   .login-box {
     background: rgba(0, 0, 0, 0.85);
-    color: #f4f4f4;
-  }
-
-  .login-box h2 {
-    color: #FF7F32; /* Orange */
+    color: #eee;
   }
 
   input {
@@ -239,69 +230,17 @@ button:hover {
   input:focus {
     border: 1px solid #FF7F32;
     background: #444;
-    box-shadow: 0 0 8px rgba(255, 127, 50, 0.6); /* Orange glow */
-  }
-
-  button {
-    background: linear-gradient(90deg, #0284C7, #FF7F32); /* Blue to Orange */
-    color: white;
   }
 
   .system-footer {
-    color: #bbb;
-    animation: glowText 3s infinite;
+    color: #ccc;
   }
 }
 
-/* Light Mode Styles (auto-detected by user preference) */
-@media (prefers-color-scheme: light) {
-  .login-wrapper {
-    background: linear-gradient(-45deg, #FF7F32, #1E3A8A, #0284C7, #F4F4F4); /* Light and bright colors */
-  }
-
-  .login-box {
-    background: rgba(255, 255, 255, 0.95);
-    color: #222;
-  }
-
-  .login-box h2 {
-    color: #1E3A8A;
-  }
-
-  input {
-    background: #f7f7f7;
-    color: #222;
-    border: 1px solid #bbb;
-  }
-
-  input:focus {
-    border: 1px solid #FF7F32;
-    background: #fff;
-    box-shadow: 0 0 8px rgba(255, 127, 50, 0.4); /* Orange glow */
-  }
-
-  button {
-    background: linear-gradient(90deg, #0284C7, #FF7F32); /* Blue to Orange */
-    color: white;
-  }
-
-  .system-footer {
-    color: #444;
-  }
-}
-
-/* Responsive Design for Smaller Screens */
+/* SMALL SCREENS */
 @media (max-width: 480px) {
   .login-box {
-    padding: 20px;
-  }
-
-  .login-box h2 {
-    font-size: 22px;
-  }
-
-  .login-wrapper {
-    padding: 10px;
+    padding: 18px;
   }
 
   input, button {
