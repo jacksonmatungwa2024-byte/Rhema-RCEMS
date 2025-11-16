@@ -1,189 +1,178 @@
-/* ===========================
-   GLOBAL WRAPPER
-=========================== */
+/* === MAIN WRAPPER === */
 .chatbot-wrapper {
   width: 100%;
-  height: 100vh;
-  background: linear-gradient(135deg, #121212, #1e1e1e);
+  min-height: 100vh;
+  background: #f3f4f6;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 10px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-/* ===========================
-   CHATBOX CONTAINER
-=========================== */
+/* === CHATBOX === */
 .chatbox {
   width: 100%;
-  max-width: 480px;
-  height: 95vh;
-  background: #ffffff10;
-  backdrop-filter: blur(18px);
-  border-radius: 18px;
-  padding: 0;
-  border: 1px solid #ffffff30;
-  box-shadow: 0 4px 20px #00000040;
+  max-width: 450px;
+  height: 85vh;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.12);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-/* ===========================
-   MESSAGES AREA
-=========================== */
+/* === MESSAGE LIST === */
 .messages {
   flex: 1;
-  padding: 12px;
+  padding: 15px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  scrollbar-width: thin;
-  scrollbar-color: #555 #222;
+  gap: 12px;
 }
 
-/* ===========================
-   BUBBLES
-=========================== */
+/* Scrollbar style */
+.messages::-webkit-scrollbar {
+  width: 6px;
+}
+.messages::-webkit-scrollbar-thumb {
+  background: #c7c7c7;
+  border-radius: 10px;
+}
+
+/* === CHAT BUBBLES === */
 .bubble {
   max-width: 80%;
-  padding: 10px 14px;
-  font-size: 15px;
-  line-height: 1.4;
-  border-radius: 14px;
-  word-wrap: break-word;
-  animation: fadeIn 0.2s ease-in-out;
+  padding: 12px 15px;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  line-height: 1.4rem;
+  white-space: pre-line;
 }
 
-.bubble.bot {
-  background: #2b2d42;
-  color: #fff;
-  align-self: flex-start;
-}
-
+/* USER messages */
 .bubble.user {
-  background: #00b894;
-  color: white;
   align-self: flex-end;
+  background: #4f46e5;
+  color: white;
+  border-bottom-right-radius: 4px;
 }
 
-/* ⏳ Typing Animation */
+/* BOT messages */
+.bubble.bot {
+  align-self: flex-start;
+  background: #e5e7eb;
+  color: #111;
+  border-bottom-left-radius: 4px;
+}
+
+/* === TYPING ANIMATION === */
 .typing .dots {
   display: flex;
-  gap: 5px;
+  gap: 6px;
 }
 
 .typing span {
   width: 8px;
   height: 8px;
-  background: #fff;
+  background: #555;
   border-radius: 50%;
-  display: inline-block;
-  animation: bounce 1s infinite;
+  display: block;
+  animation: blink 1.3s infinite;
 }
 
-.typing span:nth-child(2) { animation-delay: 0.2s; }
-.typing span:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); opacity: 0.4; }
-  50% { transform: translateY(-6px); opacity: 1; }
+.typing span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typing span:nth-child(3) {
+  animation-delay: 0.4s;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes blink {
+  0%, 80% { opacity: 0.2; }
+  50% { opacity: 1; }
 }
 
-/* ===========================
-   CONTROLS SECTION
-=========================== */
+/* === INPUT CONTROLS === */
 .controls {
   padding: 12px;
-  background: #ffffff12;
-  backdrop-filter: blur(14px);
-  border-top: 1px solid #ffffff25;
+  border-top: 1px solid #e5e7eb;
+  background: white;
+}
+
+/* === INPUT ROW (WELCOME MODE) === */
+.name-row {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-/* ===========================
-   NAME INPUT ROW
-=========================== */
-.name-row {
-  display: flex;
-  gap: 8px;
-}
-
 .name-row input {
-  flex: 1;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #777;
-  background: #ffffff20;
-  color: #fff;
-  outline: none;
-  font-size: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  font-size: 1rem;
 }
 
 .name-row button {
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: #6c5ce7;
+  padding: 12px;
+  background: #4f46e5;
   border: none;
   color: white;
-  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 12px;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .name-row button:hover {
-  background: #4834d4;
+  background: #4338ca;
 }
 
-/* ===========================
-   MENU BUTTONS
-=========================== */
+/* === MENU BUTTONS === */
 .btn-group {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 }
 
 .btn-group button {
-  padding: 12px;
-  border-radius: 12px;
-  background: #6c5ce7;
-  border: none;
-  color: white;
-  font-weight: 600;
+  padding: 14px;
+  background: #f1f5f9;
+  border: 1px solid #e5e7eb;
+  font-size: 1rem;
+  border-radius: 14px;
   cursor: pointer;
-  font-size: 15px;
-  transition: 0.25s;
+  transition: 0.2s;
 }
 
 .btn-group button:hover {
-  background: #4834d4;
+  background: #e2e8f0;
 }
 
-/* ===========================
-   WHATSAPP BUTTON
-=========================== */
+/* === WHATSAPP BUTTON === */
 .whatsapp-btn {
   display: block;
+  width: 100%;
   text-align: center;
-  padding: 12px;
+  padding: 14px;
   background: #25D366;
   color: white;
-  border-radius: 12px;
-  font-weight: bold;
   text-decoration: none;
-  font-size: 16px;
-  transition: 0.25s;
+  border-radius: 14px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: 0.2s;
 }
 
 .whatsapp-btn:hover {
-  background: #1ebd58;
+  background: #1ebe5b;
+}
+
+/* RESPONSIVE */
+@media (max-width: 500px) {
+  .chatbox {
+    height: 90vh;
   }
+}
