@@ -14,7 +14,7 @@
   overflow: hidden;
 }
 
-/* VIDEO BACKGROUND */
+/* VIDEO BACKGROUND WITH BLUR */
 .videoBackground {
   position: fixed;
   top: 0;
@@ -23,8 +23,9 @@
   height: 100%;
   object-fit: cover;
   z-index: -1;
-  opacity: 1;
-  transition: opacity 1s ease;
+  filter: blur(8px) brightness(0.7);
+  opacity: 0.8;
+  transition: opacity 1s ease, filter 1s ease;
 }
 
 .fadeOut {
@@ -35,9 +36,9 @@
 .glowText {
   font-size: 32px;
   font-weight: 700;
-  color: #1E3A8A;
+  color: #fff;
   text-align: center;
-  text-shadow: 0 0 5px #FF7F32, 0 0 10px #0284C7;
+  text-shadow: 0 0 10px #FF7F32, 0 0 15px #0284C7;
   animation: glowText 3s infinite;
 }
 
@@ -49,7 +50,7 @@
 .subText {
   margin-top: 12px;
   font-size: 18px;
-  color: #0284C7;
+  color: #fff;
   text-align: center;
 }
 
@@ -85,14 +86,15 @@
   border: none;
   font-size: 16px;
   font-weight: bold;
-  background: linear-gradient(90deg, #0284C7, #FF7F32);
+  background: rgba(255,127,50,0.9);
   color: #fff;
   cursor: pointer;
   transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
 }
 
 .glowButton:hover {
-  background: linear-gradient(90deg, #1E3A8A, #FF7F32);
+  background: rgba(255,127,50,1);
   transform: translateY(-2px) scale(1.05);
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
@@ -102,12 +104,12 @@
   margin-top: 40px;
   text-align: center;
   font-size: 0.85rem;
-  color: #444;
+  color: #fff;
   animation: fadeIn 1s ease forwards;
 }
 
 .footer b {
-  color: #1E3A8A;
+  color: #FF7F32;
 }
 
 .legacy {
@@ -128,7 +130,7 @@
 .loaderText {
   margin-top: 20px;
   font-size: 20px;
-  color: #1E3A8A;
+  color: #fff;
   font-weight: 600;
   animation: pulseText 3s infinite;
 }
@@ -166,7 +168,7 @@
 }
 
 @keyframes pulseText {
-  0%,100% { color: #1E3A8A; }
+  0%,100% { color: #fff; }
   50% { color: #FF7F32; }
 }
 
@@ -176,8 +178,8 @@
 }
 
 @keyframes glowText {
-  0%,100% { text-shadow: 0 0 5px #FF7F32, 0 0 10px #0284C7; }
-  50% { text-shadow: 0 0 15px #FF7F32, 0 0 25px #0284C7; }
+  0%,100% { text-shadow: 0 0 10px #FF7F32, 0 0 15px #0284C7; }
+  50% { text-shadow: 0 0 20px #FF7F32, 0 0 25px #0284C7; }
 }
 
 /* DARK MODE */
@@ -187,11 +189,11 @@
   }
 
   .glowText, .footer, .loaderText {
-    color: #eee;
+    color: #fff;
   }
 
   .glowButton {
-    background: linear-gradient(90deg, #1E3A8A, #FF7F32);
+    background: rgba(255,127,50,0.9);
     color: #fff;
   }
 }
@@ -210,5 +212,4 @@
     padding: 10px 15px;
     font-size: 14px;
   }
-  }
-    
+    }
