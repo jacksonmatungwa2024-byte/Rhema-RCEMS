@@ -1,22 +1,50 @@
-/* MAIN WRAPPER */
+/* 🌈 MAIN WRAPPER WITH ANIMATED GRADIENT */
 .login-wrapper {
   min-height: 100vh;
-  background: #ece5dd; /* default light background */
+  background: linear-gradient(-45deg, #25D366, #34b7f1, #128c7e, #ece5dd);
+  background-size: 400% 400%;
+  animation: gradientBG 12s ease infinite;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Floating decorative circles */
+.login-wrapper::before,
+.login-wrapper::after {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  animation: float 8s ease-in-out infinite;
+}
+
+.login-wrapper::before {
+  top: 10%;
+  left: 15%;
+}
+
+.login-wrapper::after {
+  bottom: 15%;
+  right: 10%;
+  animation-delay: 4s;
 }
 
 /* LOGIN BOX */
 .login-box {
   width: 100%;
   max-width: 380px;
-  background: #ffffff;
+  background: rgba(255,255,255,0.95);
   padding: 25px;
   border-radius: 14px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  animation: fadeIn .4s ease;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  animation: fadeInUp 0.8s ease;
+  backdrop-filter: blur(8px);
 }
 
 /* TITLES */
@@ -24,14 +52,35 @@
   text-align: center;
   font-size: 26px;
   margin-bottom: 5px;
-  color: #075e54; /* WhatsApp green */
+  color: #075e54;
   font-weight: 700;
+  animation: pulseText 3s infinite;
 }
 
 .login-box p {
   text-align: center;
   margin-bottom: 20px;
-  color: #333; /* darker for visibility */
+  color: #333;
+}
+
+/* WELCOME MESSAGE */
+.welcome-message {
+  text-align: center;
+  margin-bottom: 20px;
+  animation: fadeIn 1.2s ease;
+}
+
+.welcome-message h1 {
+  font-size: 22px;
+  color: #128c7e;
+  animation: pulseText 4s infinite;
+}
+
+.welcome-message blockquote {
+  font-size: 0.9rem;
+  color: #444;
+  margin-top: 10px;
+  font-style: italic;
 }
 
 /* LABELS */
@@ -53,7 +102,7 @@ input {
   font-size: 15px;
   background: #f7f7f7;
   color: #222;
-  transition: border 0.2s, background 0.2s;
+  transition: all 0.3s ease;
 }
 
 input::placeholder {
@@ -63,6 +112,8 @@ input::placeholder {
 input:focus {
   border: 1px solid #25D366;
   background: #fff;
+  transform: scale(1.02);
+  box-shadow: 0 0 8px rgba(37, 211, 102, 0.4);
 }
 
 /* PASSWORD + PIN ICON WRAPPER */
@@ -83,6 +134,11 @@ input:focus {
   font-size: 18px;
   user-select: none;
   color: #075e54;
+  transition: transform 0.3s ease;
+}
+
+.password-wrapper span:hover {
+  transform: rotate(20deg) scale(1.2);
 }
 
 /* MAIN LOGIN BUTTON */
@@ -90,38 +146,40 @@ button {
   width: 100%;
   padding: 12px;
   margin-top: 16px;
-  background: #128c7e;
+  background: linear-gradient(90deg, #128c7e, #25D366);
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.3s ease;
 }
 
 button:hover {
-  background: #0f7a6e;
+  background: linear-gradient(90deg, #0f7a6e, #1ebe5b);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 /* SIGNUP BUTTON */
 button[type="button"] {
-  background: #34b7f1;
+  background: linear-gradient(90deg, #34b7f1, #239bd1);
   color: #fff;
 }
 
 button[type="button"]:hover {
-  background: #239bd1;
+  background: linear-gradient(90deg, #239bd1, #128c7e);
 }
 
 /* CHATBOT BUTTON */
 .help-btn {
-  background: #25D366;
+  background: linear-gradient(90deg, #25D366, #128c7e);
   color: #fff;
 }
 
 .help-btn:hover {
-  background: #1ebe5b;
+  background: linear-gradient(90deg, #1ebe5b, #0f7a6e);
 }
 
 /* LOGIN STATUS */
@@ -132,27 +190,54 @@ button[type="button"]:hover {
   font-weight: bold;
   text-align: center;
   font-size: 15px;
+  animation: fadeIn 0.6s ease;
 }
 
-.status.error {
-  background: rgba(255,20,20,0.15);
-  color: #d32f2f;
-}
-
-.status.success {
-  background: rgba(0,255,120,0.15);
-  color: #2e7d32;
-}
-
-/* ENV box */
-.env-box {
-  margin-top: 20px;
-  padding: 12px;
-  border-radius: 10px;
-  background: rgba(0,0,0,0.05);
+/* FOOTER */
+.system-footer {
+  text-align: center;
   font-size: 0.85rem;
-  color: #333;
-  border: 1px solid rgba(0,0,0,0.08);
+  color: #444;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+  animation: glowText 3s infinite;
+}
+
+.system-footer strong {
+  color: #003366;
+}
+
+/* Animations */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulseText {
+  0%, 100% { color: #075e54; }
+  50% { color: #25D366; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-20px) translateX(10px); }
+}
+
+@keyframes glowText {
+  0%, 100% { color: #444; text-shadow: 0 0 5px #25D366; }
+  50% { color: #25D366; text-shadow: 0 0 15px #34b7f1; }
 }
 
 /* Responsive */
@@ -163,63 +248,4 @@ button[type="button"]:hover {
   .login-box h2 {
     font-size: 22px;
   }
-}
-
-/* 🌙 DARK MODE AUTO-DETECT */
-@media (prefers-color-scheme: dark) {
-  .login-wrapper {
-    background: #121212;
-  }
-
-  .login-box {
-    background: #1e1e1e;
-    color: #f1f1f1;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-  }
-
-  .login-box h2 {
-    color: #25D366; /* WhatsApp green accent */
-  }
-
-  .login-box p {
-    color: #ccc;
-  }
-
-  label {
-    color: #25D366;
-  }
-
-  input {
-    background: #2a2a2a;
-    color: #f1f1f1;
-    border: 1px solid #444;
-  }
-
-  input::placeholder {
-    color: #aaa;
-  }
-
-  .password-wrapper span {
-    color: #25D366;
-  }
-
-  button {
-    background: #25D366;
-    color: #000;
-  }
-
-  button:hover {
-    background: #1ebe5b;
-  }
-
-  button[type="button"] {
-    background: #34b7f1;
-    color: #fff;
-  }
-
-  .env-box {
-    background: rgba(255,255,255,0.08);
-    color: #ddd;
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-    }
+                              }
