@@ -11,10 +11,10 @@ const ADMIN_WHATSAPP = "+255626280792";
 /* ---------- POST HANDLER ---------- */
 export async function POST(
   request: NextRequest,
-  context: { params: { action: string } }   // ✅ object, not Promise
+  context: { params: Promise<{ action: string }> }   // 🔥 Fixed: Awaited Promise params
 ) {
   try {
-    const { action } = context.params;     // ✅ no await
+    const { action } = await context.params;     // 🔥 Fixed: Await the Promise
     const body = await request.json();
 
     switch (action) {
@@ -59,10 +59,10 @@ export async function POST(
 /* ---------- GET HANDLER ---------- */
 export async function GET(
   request: NextRequest,
-  context: { params: { action: string } }   // ✅ object, not Promise
+  context: { params: Promise<{ action: string }> }   // 🔥 Fixed: Awaited Promise params
 ) {
   try {
-    const { action } = context.params;     // ✅ no await
+    const { action } = await context.params;     // 🔥 Fixed: Await the Promise
 
     switch (action) {
       case "announcement": {
@@ -94,4 +94,5 @@ export async function GET(
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
-                                    }
+}
+  
