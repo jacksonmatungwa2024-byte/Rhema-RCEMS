@@ -65,7 +65,7 @@ export default function WelcomePage() {
         {/* Glowing Cross */}
         <div className={styles.glowCross}></div>
 
-        <p className={styles.loaderText}>Lumina Outreach System</p>
+        <p className={styles.loaderText}>Lumina Church Management System</p>
 
         {/* Intro Tone */}
         <audio ref={introRef}>
@@ -99,10 +99,10 @@ export default function WelcomePage() {
       {showOptions && !playing && (
         <div className={styles.buttonGroup}>
           <button className={styles.glowButton} onClick={handleVideo}>
-            ▶️ Sikiliza Video
+            ▶️ Sikiliza Video kwenda login
           </button>
           <button className={styles.glowButton} onClick={handleTheme}>
-            🔊 Sikiliza Lumina
+            🔊 Sikiliza audio kwenda login
           </button>
         </div>
       )}
@@ -118,7 +118,7 @@ export default function WelcomePage() {
         <br />
         <b>Kitengo cha Usimamizi wa Rasilimali na Utawala – Tanga Quarters</b>
         <br />
-        <span className={styles.legacy}>© Lumina RCEMS Legacy</span>
+        <span className={styles.legacy}>© Lumina  Legacy</span>
       </footer>
     </div>
   );
