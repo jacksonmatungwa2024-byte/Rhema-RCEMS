@@ -1,167 +1,231 @@
-/* Wrapper */
+/* 🌈 FULL WRAPPER WITH ANIMATED GRADIENT */
 .signup-wrapper {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: linear-gradient(to bottom right, #f7fafc, #edf2f7);
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-}
-
-/* Title */
-.signup-wrapper h2 {
-  text-align: center;
-  color: #2d3748;
-  margin-bottom: 1.5rem;
-  font-size: 1.6rem;
-  font-weight: bold;
-}
-
-/* Form layout */
-.signup-wrapper form {
+  min-height: 100vh;
+  background: linear-gradient(-45deg, #FF7F32, #1E3A8A, #0284C7, #F4F4F4);
+  background-size: 400% 400%;
+  animation: gradientBG 12s ease infinite;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 30px 20px;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.5s ease;
 }
 
-/* Labels */
-.signup-wrapper label {
-  font-weight: 600;
-  color: #4a5568;
-  margin-bottom: 0.3rem;
-  display: block;
+/* Animated floating circles */
+.signup-wrapper::before,
+.signup-wrapper::after {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  animation: float 8s ease-in-out infinite;
 }
 
-/* Inputs & Selects */
-.signup-wrapper input,
-.signup-wrapper select {
-  padding: 0.8rem;
-  font-size: 1rem;
-  border: 1px solid #cbd5e0;
-  border-radius: 8px;
-  background-color: #fff;
-  color: #1a202c; /* ✅ maandishi yako yanaonekana vizuri */
-  transition: border 0.2s ease, box-shadow 0.2s ease;
+.signup-wrapper::before {
+  top: 10%;
+  left: 10%;
+}
+.signup-wrapper::after {
+  bottom: 10%;
+  right: 10%;
+  animation-delay: 3s;
+}
+
+/* TITLE */
+.signup-wrapper h2 {
+  font-size: 28px;
+  color: #1E3A8A;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 20px;
+  animation: pulseText 3s infinite;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+}
+
+/* FORM CONTAINER */
+form {
   width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  animation: fadeInUp 0.8s ease;
+  backdrop-filter: blur(8px);
 }
 
-.signup-wrapper input::placeholder {
-  color: #a0aec0; /* ✅ placeholder tofauti na maandishi */
+/* LABELS */
+label {
+  display: block;
+  margin-top: 14px;
+  font-weight: 600;
+  color: #1E3A8A;
 }
 
-.signup-wrapper input:focus,
-.signup-wrapper select:focus {
-  border-color: #3182ce;
-  box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.3);
+/* INPUT FIELDS */
+input,
+select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background: #f7f7f7;
   outline: none;
+  font-size: 15px;
+  color: #222;
+  transition: all 0.3s ease;
 }
 
-/* Password field */
+input:focus,
+select:focus {
+  background: #fff;
+  border: 1px solid #FF7F32;
+  transform: scale(1.02);
+  box-shadow: 0 0 8px rgba(255, 127, 50, 0.4);
+}
+
+/* PASSWORD FIELD WITH TOGGLE BUTTON */
 .password-field {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+}
+
+.password-field input {
+  padding-right: 48px;
 }
 
 .toggle-btn {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.9rem;
-  background-color: #edf2f7;
-  border: 1px solid #cbd5e0;
-  border-radius: 6px;
+  position: absolute;
+  right: 8px;
+  padding: 6px 10px;
+  border: none;
+  background: none;
   cursor: pointer;
-  transition: background 0.2s ease;
+  font-size: 18px;
+  color: #1E3A8A;
+  transition: transform 0.3s ease;
 }
 
 .toggle-btn:hover {
-  background-color: #e2e8f0;
+  transform: rotate(20deg) scale(1.1);
 }
 
-/* Submit button */
-.signup-wrapper button[type="submit"] {
-  padding: 1rem;
-  font-size: 1rem;
-  font-weight: bold;
-  color: #fff;
-  background-color: #2b6cb0;
+/* MAIN BUTTON */
+button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  background: linear-gradient(90deg, #0284C7, #FF7F32);
+  color: white;
   border: none;
   border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.signup-wrapper button[type="submit"]:hover {
-  background-color: #2c5282;
-}
-
-.signup-wrapper button[type="submit"]:disabled {
-  background-color: #a0aec0;
-  cursor: not-allowed;
-}
-
-/* Message */
-.signup-message {
-  margin-top: 1rem;
-  text-align: center;
+  font-size: 16px;
   font-weight: bold;
-  color: #e53e3e;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.signup-message.success {
-  color: #38a169;
+button[type="submit"]:hover {
+  background: linear-gradient(90deg, #1E3A8A, #FF7F32);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* 🖼️ Profile picture preview */
-.preview-image {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 50%;
-  margin-top: 0.5rem;
-  border: 2px solid #cbd5e0;
-  display: block;
+/* SIGNUP STATUS MESSAGE */
+.signup-message {
+  margin-top: 20px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  color: #1E3A8A;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 10px 14px;
+  border-radius: 8px;
+  animation: fadeIn 0.4s ease;
 }
 
-/* 📱 Mobile support */
-@media (max-width: 480px) {
+/*------------------------*/
+/*      ANIMATIONS        */
+/*------------------------*/
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulseText {
+  0%, 100% { color: #1E3A8A; }
+  50% { color: #FF7F32; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-18px); }
+}
+
+/*------------------------*/
+/*      DARK MODE         */
+/*------------------------*/
+@media (prefers-color-scheme: dark) {
   .signup-wrapper {
-    padding: 1rem;
-    margin: 1rem;
+    background: linear-gradient(-45deg, #1E3A8A, #0284C7, #FF7F32, #111);
   }
 
-  .signup-wrapper h2 {
-    font-size: 1.3rem;
+  form {
+    background: rgba(0, 0, 0, 0.85);
+    color: #eee;
   }
 
-  .signup-wrapper input,
-  .signup-wrapper select,
-  .signup-wrapper button {
-    font-size: 0.95rem;
+  input,
+  select {
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+  }
+
+  .signup-message {
+    background: rgba(0, 0, 0, 0.5);
+    color: #FF7F32;
   }
 
   .toggle-btn {
-    font-size: 0.85rem;
+    color: #FF7F32;
   }
 }
 
-/* 🖥️ Desktop enhancements */
-@media (min-width: 768px) {
-  .signup-wrapper form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem 2rem;
+/*------------------------*/
+/*  MOBILE RESPONSIVE     */
+/*------------------------*/
+@media (max-width: 480px) {
+  form {
+    padding: 18px;
   }
 
-  .signup-wrapper form label,
-  .signup-wrapper form input,
-  .signup-wrapper form select,
-  .password-field {
-    grid-column: span 2;
+  input,
+  select,
+  button {
+    font-size: 14px;
+    padding: 10px;
   }
-
-  .signup-wrapper button[type="submit"] {
-    grid-column: span 2;
-    justify-self: center;
-    width: 50%;
-  }
-}
+        }
+                                
