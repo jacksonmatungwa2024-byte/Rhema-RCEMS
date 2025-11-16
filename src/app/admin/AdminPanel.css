@@ -1,223 +1,184 @@
-/* ===== Container ===== */
+/* 🌈 MAIN WRAPPER WITH ANIMATED GRADIENT */
 .admin-panel-container {
-  display: flex;
   min-height: 100vh;
-  background: #f5f5f5;
-  font-family: "Segoe UI", Arial, sans-serif;
-  color: #222;
+  background: linear-gradient(-45deg, #FF7F32, #1E3A8A, #0284C7, #F4F4F4);
+  background-size: 400% 400%;
+  animation: gradientBG 12s ease infinite;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.5s ease;
+  gap: 20px;
 }
 
-/* ===== Sidebar / Nav ===== */
-nav {
+/* Floating decorative circles */
+.admin-panel-container::before,
+.admin-panel-container::after {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  animation: float 8s ease-in-out infinite;
+}
+
+.admin-panel-container::before {
+  top: 5%;
+  left: 10%;
+}
+
+.admin-panel-container::after {
+  bottom: 10%;
+  right: 5%;
+  animation-delay: 4s;
+}
+
+/* NAV / SIDEBAR */
+.admin-panel-container nav {
   width: 260px;
-  background: #075e54;
-  color: #fff;
+  background: rgba(255,255,255,0.95);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  align-items: center;
+  gap: 15px;
+  backdrop-filter: blur(8px);
+  animation: fadeInUp 0.8s ease;
 }
 
-nav h2 {
+.admin-panel-container nav h2 {
   font-size: 22px;
   font-weight: 700;
-  margin-bottom: 10px;
-  color: #25D366;
+  color: #1E3A8A;
+  animation: pulseText 3s infinite;
 }
 
-nav p {
+.admin-panel-container nav p {
   font-size: 14px;
-  margin-bottom: 20px;
-  color: #ddd;
+  color: #0284C7;
 }
 
-/* ===== Tab Buttons ===== */
 .tab-buttons {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: auto;
+  width: 100%;
+  gap: 8px;
 }
 
 .tab-buttons button {
-  background: transparent;
-  border: none;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 12px;
-  text-align: left;
+  padding: 10px;
   border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.tab-buttons button:hover {
-  background: rgba(255,255,255,0.15);
-  transform: translateX(4px);
-}
-
-.tab-buttons button[aria-current="page"] {
-  background: #128c7e;
-}
-
-/* ===== Logout Button ===== */
-.logout-btn {
-  margin-top: 20px;
-  background: #d32f2f;
-  color: #fff;
   border: none;
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
   font-weight: bold;
-  transition: background 0.2s ease;
+  background: linear-gradient(90deg, #0284C7, #FF7F32);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-buttons button:hover,
+.tab-buttons button[aria-current="page"] {
+  background: linear-gradient(90deg, #1E3A8A, #FF7F32);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* LOGOUT BUTTON */
+.logout-btn {
+  margin-top: auto;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  background: linear-gradient(90deg, #FF7F32, #0284C7);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .logout-btn:hover {
-  background: #b71c1c;
+  background: linear-gradient(90deg, #1E3A8A, #FF7F32);
+  transform: translateY(-2px);
 }
 
-/* ===== Main Content ===== */
-main {
+/* MAIN / CONTENT AREA */
+.admin-panel-container main {
   flex: 1;
-  padding: 30px;
-  background: #fff;
-  overflow-y: auto;
-  animation: fadeIn 0.4s ease;
+  background: rgba(255,255,255,0.95);
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  backdrop-filter: blur(8px);
+  min-height: 600px;
+  animation: fadeInUp 0.8s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+.default-message {
+  font-size: 16px;
+  color: #1E3A8A;
+  text-align: center;
+}
+
+/* ANIMATIONS */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== Loading State ===== */
-.admin-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  font-size: 18px;
-  color: #128c7e;
-  font-weight: 600;
+@keyframes pulseText {
+  0%, 100% { color: #1E3A8A; }
+  50% { color: #FF7F32; }
 }
 
-/* ===== Default Message ===== */
-.default-message {
-  font-size: 18px;
-  font-weight: 600;
-  color: #555;
-  text-align: center;
-  margin-top: 40px;
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-20px) translateX(10px); }
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
-  .admin-panel-container {
-    flex-direction: column;
-  }
-
-  nav {
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    overflow-x: auto;       /* ruhusu scroll kwa nav */
-    white-space: nowrap;    /* zuia tabs kukunjika */
-    gap: 8px;
-  }
-
-  nav h2 {
-    font-size: 18px;
-    margin-right: 10px;
-    flex: 0 0 auto;
-  }
-
-  .tab-buttons {
-    flex-direction: row;
-    gap: 8px;
-    flex: 1;
-    overflow-x: auto;       /* ruhusu scroll kwa tabs */
-    white-space: nowrap;    /* zuia tabs kukunjika */
-  }
-
-  .tab-buttons button {
-    flex: 0 0 auto;         /* kila button ibaki size yake */
-    text-align: center;
-    padding: 10px;
-    font-size: 14px;
-  }
-
-  .logout-btn {
-    flex: 0 0 auto;         /* logout ibaki size yake */
-    margin-left: auto;
-    margin-top: 0;
-    padding: 10px;
-    font-size: 14px;
-  }
-
-  main {
-    padding: 20px;
-  }
-}
-
-/* ===== Dark Mode ===== */
+/* DARK MODE */
 @media (prefers-color-scheme: dark) {
-  .admin-panel-container {
-    background: #121212;
-    color: #f1f1f1;
-  }
-
-  nav {
-    background: #1e1e1e;
-    box-shadow: 2px 0 8px rgba(255,255,255,0.1);
-  }
-
-  nav h2 {
-    color: #25D366;
-  }
-
-  nav p {
-    color: #aaa;
+  .admin-panel-container nav,
+  .admin-panel-container main {
+    background: rgba(0,0,0,0.85);
+    color: #eee;
   }
 
   .tab-buttons button {
-    color: #ddd;
-  }
-
-  .tab-buttons button[aria-current="page"] {
-    background: #25D366;
-    color: #000;
-  }
-
-  .logout-btn {
-    background: #d32f2f;
+    background: linear-gradient(90deg, #1E3A8A, #FF7F32);
     color: #fff;
   }
 
-  main {
-    background: #202020;
-  }
-
-  .default-message {
-    color: #ccc;
-  }
-
-  .admin-loading {
-    color: #25D366;
+  .logout-btn {
+    background: linear-gradient(90deg, #FF7F32, #0284C7);
   }
 }
 
-/* ===== Scroll Hint for Mobile ===== */
-.tab-buttons::-webkit-scrollbar {
-  height: 6px;
-}
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .admin-panel-container {
+    flex-direction: column;
+    align-items: center;
+  }
 
-.tab-buttons::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.3);
-  border-radius: 4px;
-}
+  .admin-panel-container nav {
+    width: 90%;
+  }
 
-.tab-buttons::-webkit-scrollbar-track {
-  background: transparent;
+  .admin-panel-container main {
+    width: 90%;
+    min-height: 400px;
+  }
 }
