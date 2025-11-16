@@ -1,7 +1,7 @@
 /* 🌈 MAIN WRAPPER WITH ANIMATED GRADIENT */
 .login-wrapper {
   min-height: 100vh;
-  background: linear-gradient(-45deg, #25D366, #34b7f1, #128c7e, #ece5dd);
+  background: linear-gradient(-45deg, #FF7F32, #1E3A8A, #0284C7, #F4F4F4); /* Orange, Dark Blue, Blue, Light Grey */
   background-size: 400% 400%;
   animation: gradientBG 12s ease infinite;
   display: flex;
@@ -10,6 +10,7 @@
   padding: 20px;
   position: relative;
   overflow: hidden;
+  transition: background-color 0.5s ease;
 }
 
 /* Floating decorative circles */
@@ -20,7 +21,7 @@
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   animation: float 8s ease-in-out infinite;
 }
 
@@ -39,12 +40,13 @@
 .login-box {
   width: 100%;
   max-width: 380px;
-  background: rgba(255,255,255,0.95);
+  background: rgba(255, 255, 255, 0.95);
   padding: 25px;
   border-radius: 14px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
   animation: fadeInUp 0.8s ease;
   backdrop-filter: blur(8px);
+  transition: background 0.5s ease, color 0.5s ease;
 }
 
 /* TITLES */
@@ -52,15 +54,9 @@
   text-align: center;
   font-size: 26px;
   margin-bottom: 5px;
-  color: #075e54;
+  color: #1E3A8A; /* Dark Blue */
   font-weight: 700;
   animation: pulseText 3s infinite;
-}
-
-.login-box p {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
 }
 
 /* WELCOME MESSAGE */
@@ -72,7 +68,7 @@
 
 .welcome-message h1 {
   font-size: 22px;
-  color: #128c7e;
+  color: #0284C7; /* Blue */
   animation: pulseText 4s infinite;
 }
 
@@ -86,7 +82,7 @@
 /* LABELS */
 label {
   font-weight: 600;
-  color: #075e54;
+  color: #1E3A8A;
   margin-top: 12px;
   display: block;
 }
@@ -110,10 +106,10 @@ input::placeholder {
 }
 
 input:focus {
-  border: 1px solid #25D366;
+  border: 1px solid #FF7F32; /* Orange */
   background: #fff;
   transform: scale(1.02);
-  box-shadow: 0 0 8px rgba(37, 211, 102, 0.4);
+  box-shadow: 0 0 8px rgba(255, 127, 50, 0.4); /* Orange glow */
 }
 
 /* PASSWORD + PIN ICON WRAPPER */
@@ -133,7 +129,7 @@ input:focus {
   cursor: pointer;
   font-size: 18px;
   user-select: none;
-  color: #075e54;
+  color: #1E3A8A;
   transition: transform 0.3s ease;
 }
 
@@ -146,7 +142,7 @@ button {
   width: 100%;
   padding: 12px;
   margin-top: 16px;
-  background: linear-gradient(90deg, #128c7e, #25D366);
+  background: linear-gradient(90deg, #0284C7, #FF7F32); /* Blue to Orange gradient */
   color: white;
   border: none;
   border-radius: 8px;
@@ -157,40 +153,19 @@ button {
 }
 
 button:hover {
-  background: linear-gradient(90deg, #0f7a6e, #1ebe5b);
+  background: linear-gradient(90deg, #1E3A8A, #FF7F32);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-/* SIGNUP BUTTON */
-button[type="button"] {
-  background: linear-gradient(90deg, #34b7f1, #239bd1);
-  color: #fff;
-}
-
-button[type="button"]:hover {
-  background: linear-gradient(90deg, #239bd1, #128c7e);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* CHATBOT BUTTON */
 .help-btn {
-  background: linear-gradient(90deg, #25D366, #128c7e);
+  background: linear-gradient(90deg, #FF7F32, #0284C7);
   color: #fff;
 }
 
 .help-btn:hover {
-  background: linear-gradient(90deg, #1ebe5b, #0f7a6e);
-}
-
-/* LOGIN STATUS */
-.status {
-  margin-top: 15px;
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: bold;
-  text-align: center;
-  font-size: 15px;
-  animation: fadeIn 0.6s ease;
+  background: linear-gradient(90deg, #1E3A8A, #FF7F32);
 }
 
 /* FOOTER */
@@ -205,7 +180,7 @@ button[type="button"]:hover {
 }
 
 .system-footer strong {
-  color: #003366;
+  color: #1E3A8A;
 }
 
 /* Animations */
@@ -226,8 +201,8 @@ button[type="button"]:hover {
 }
 
 @keyframes pulseText {
-  0%, 100% { color: #075e54; }
-  50% { color: #25D366; }
+  0%, 100% { color: #1E3A8A; }
+  50% { color: #FF7F32; }
 }
 
 @keyframes float {
@@ -236,16 +211,101 @@ button[type="button"]:hover {
 }
 
 @keyframes glowText {
-  0%, 100% { color: #444; text-shadow: 0 0 5px #25D366; }
-  50% { color: #25D366; text-shadow: 0 0 15px #34b7f1; }
+  0%, 100% { color: #444; text-shadow: 0 0 5px #FF7F32; }
+  50% { color: #FF7F32; text-shadow: 0 0 15px #0284C7; }
 }
 
-/* Responsive */
+/* Dark Mode Styles (auto-detected by user preference) */
+@media (prefers-color-scheme: dark) {
+  .login-wrapper {
+    background: linear-gradient(-45deg, #1E3A8A, #0284C7, #FF7F32, #111); /* Dark Blue, Blue, Orange, Dark Grey */
+  }
+
+  .login-box {
+    background: rgba(0, 0, 0, 0.85);
+    color: #f4f4f4;
+  }
+
+  .login-box h2 {
+    color: #FF7F32; /* Orange */
+  }
+
+  input {
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+  }
+
+  input:focus {
+    border: 1px solid #FF7F32;
+    background: #444;
+    box-shadow: 0 0 8px rgba(255, 127, 50, 0.6); /* Orange glow */
+  }
+
+  button {
+    background: linear-gradient(90deg, #0284C7, #FF7F32); /* Blue to Orange */
+    color: white;
+  }
+
+  .system-footer {
+    color: #bbb;
+    animation: glowText 3s infinite;
+  }
+}
+
+/* Light Mode Styles (auto-detected by user preference) */
+@media (prefers-color-scheme: light) {
+  .login-wrapper {
+    background: linear-gradient(-45deg, #FF7F32, #1E3A8A, #0284C7, #F4F4F4); /* Light and bright colors */
+  }
+
+  .login-box {
+    background: rgba(255, 255, 255, 0.95);
+    color: #222;
+  }
+
+  .login-box h2 {
+    color: #1E3A8A;
+  }
+
+  input {
+    background: #f7f7f7;
+    color: #222;
+    border: 1px solid #bbb;
+  }
+
+  input:focus {
+    border: 1px solid #FF7F32;
+    background: #fff;
+    box-shadow: 0 0 8px rgba(255, 127, 50, 0.4); /* Orange glow */
+  }
+
+  button {
+    background: linear-gradient(90deg, #0284C7, #FF7F32); /* Blue to Orange */
+    color: white;
+  }
+
+  .system-footer {
+    color: #444;
+  }
+}
+
+/* Responsive Design for Smaller Screens */
 @media (max-width: 480px) {
   .login-box {
     padding: 20px;
   }
+
   .login-box h2 {
     font-size: 22px;
   }
-                              }
+
+  .login-wrapper {
+    padding: 10px;
+  }
+
+  input, button {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
