@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RCEMS",
+  title: "Lumina",
   description: "Abel Memorial Programmers",
 };
 
