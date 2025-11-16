@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import "./login.css";
+
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -103,7 +104,17 @@ export default function LoginPage() {
         </button>
 
         {loginMessage && <div className="status">{loginMessage}</div>}
+
+        {/* 🙌 Spiritual Footer */}
+        <footer className="system-footer">
+          <p>
+            🙌 Mfumo huu umetengenezwa na <br />
+            <strong>Abel Memorial Programmers</strong> <br />
+            kwa ushirikiano na <br />
+            <strong>Kitengo cha Usimamizi wa Rasilimali na Utawala – Tanga Quarters</strong>
+          </p>
+        </footer>
       </form>
     </div>
   );
-            }
+}
