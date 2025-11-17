@@ -1,4 +1,5 @@
 {
+  "id": "lumina.outreach.system",
   "name": "Lumina Outreach System",
   "short_name": "Lumina",
   "description": "Mfumo wa mwanga na uratibu — umetengenezwa na Abel Memorial Programmers",
@@ -34,6 +35,18 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    },
+    {
+      "src": "/screenshots/login.png",
+      "sizes": "1080x1920",
+      "type": "image/png"
     }
   ],
   "lang": "sw",
