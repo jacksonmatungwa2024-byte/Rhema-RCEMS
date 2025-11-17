@@ -5,6 +5,9 @@ import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 
+// 🟡 PWA Register Component
+import PWARegister from "./components/PWARegister";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -28,11 +31,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        
         {children}
 
+        {/* 🔥 Registers Service Worker for PWA */}
+        <PWARegister />
+
+        {/* Vercel Tools */}
         <SpeedInsights />
         <Analytics />
       </body>
     </html>
   );
+}
+);
 }
