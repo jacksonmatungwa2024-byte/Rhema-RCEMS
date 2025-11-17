@@ -10,6 +10,7 @@ export default function WelcomePage() {
   const [showOptions, setShowOptions] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [installVisible, setInstallVisible] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -46,6 +47,7 @@ export default function WelcomePage() {
     const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
+      setInstallVisible(true);
     };
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
@@ -80,6 +82,7 @@ export default function WelcomePage() {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then(() => setDeferredPrompt(null));
+      setInstallVisible(false);
     }
   };
 
@@ -126,7 +129,7 @@ export default function WelcomePage() {
           <button className={styles.glowButton} onClick={handleTheme}>
             🔊 Sikiliza audio kwenda login
           </button>
-          {deferredPrompt && (
+          {installVisible && (
             <button className={styles.glowButton} onClick={handleInstall}>
               📲 Install App
             </button>
@@ -149,4 +152,4 @@ export default function WelcomePage() {
       </footer>
     </div>
   );
-}
+  }
