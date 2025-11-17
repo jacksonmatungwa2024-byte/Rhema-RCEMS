@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./welcome.module.css";
@@ -8,6 +9,8 @@ export default function WelcomePage() {
   const [loading, setLoading] = useState(true);
   const [showOptions, setShowOptions] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const introRef = useRef<HTMLAudioElement>(null);
@@ -18,8 +21,7 @@ export default function WelcomePage() {
       introRef.current.volume = 0.8;
       introRef.current.play().catch(() => {});
     }
-
-    const loadTimer = setTimeout(() => setLoading(false), 3000); // loader 3s
+    const loadTimer = setTimeout(() => setLoading(false), 3000);
     return () => clearTimeout(loadTimer);
   }, []);
 
@@ -31,6 +33,24 @@ export default function WelcomePage() {
     }
   }, [loading]);
 
+  // 🔌 Register Service Worker (PWA)
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then(() => console.log("Service Worker Registered"))
+        .catch((err) => console.log("SW registration failed:", err));
+    }
+
+    // beforeinstallprompt for Chrome install popup
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
   // ▶️ Play video with sound
   const handleVideo = () => {
     if (videoRef.current) {
@@ -41,7 +61,7 @@ export default function WelcomePage() {
     }
   };
 
-  // 🎶 Play Lumina theme
+  // 🎶 Play Lumina theme audio
   const handleTheme = () => {
     if (videoRef.current) {
       videoRef.current.pause();
@@ -55,19 +75,21 @@ export default function WelcomePage() {
     }
   };
 
-  // 🔄 Loader Phase (Light Rays + Glowing Cross)
+  // 📲 Handle App Install
+  const handleInstall = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => setDeferredPrompt(null));
+    }
+  };
+
+  // 🔄 Loader Phase
   if (loading) {
     return (
       <div className={styles.loaderContainer}>
-        {/* Radiant Light Rays */}
         <div className={styles.lightRays}></div>
-
-        {/* Glowing Cross */}
         <div className={styles.glowCross}></div>
-
         <p className={styles.loaderText}>Lumina Church Management System</p>
-
-        {/* Intro Tone */}
         <audio ref={introRef}>
           <source src="/intro-tone.mp3" type="audio/mp3" />
         </audio>
@@ -104,6 +126,11 @@ export default function WelcomePage() {
           <button className={styles.glowButton} onClick={handleTheme}>
             🔊 Sikiliza audio kwenda login
           </button>
+          {deferredPrompt && (
+            <button className={styles.glowButton} onClick={handleInstall}>
+              📲 Install App
+            </button>
+          )}
         </div>
       )}
 
@@ -112,13 +139,13 @@ export default function WelcomePage() {
       </audio>
 
       <footer className={`${styles.footer} ${styles.fadeInDelay5}`}>
-        🙌 Mfumo huu umetengenezwa na <b>Abel Memorial Programmers</b>  
+        🙌 Mfumo huu umetengenezwa na <b>Abel Memorial Programmers</b>
         <br />
-        kwa ushirikiano na  
+        kwa ushirikiano na
         <br />
         <b>Kitengo cha Usimamizi wa Rasilimali na Utawala – Tanga Quarters</b>
         <br />
-        <span className={styles.legacy}>© Lumina  Legacy</span>
+        <span className={styles.legacy}>© Lumina Legacy</span>
       </footer>
     </div>
   );
