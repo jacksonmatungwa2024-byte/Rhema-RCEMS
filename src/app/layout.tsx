@@ -30,8 +30,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* 🔗 Manifest for PWA */}
+        <link rel="manifest" href="/manifest.json" />
+
+        {/* 🎨 Theme colors */}
+        <meta name="theme-color" content="#FFD700" />
+        <meta name="background-color" content="#000000" />
+
+        {/* 🍎 iOS support */}
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        
         {children}
 
         {/* 🔥 Registers Service Worker for PWA */}
