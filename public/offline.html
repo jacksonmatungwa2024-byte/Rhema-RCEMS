@@ -2,14 +2,53 @@
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
-  <title>Offline</title>
+  <title>Lumina Outreach System - Offline</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 50px; }
-    h1 { color: #FFD700; }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      text-align: center;
+      padding: 50px;
+      background: linear-gradient(180deg, #000000, #1a1a1a);
+      color: #fff;
+    }
+    h1 {
+      color: #FFD700;
+      font-size: 2.2em;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 1.2em;
+      margin-bottom: 30px;
+    }
+    .logo {
+      width: 120px;
+      margin: 20px auto;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+    .retry-btn {
+      background-color: #FFD700;
+      color: #000;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+  <img src="/icons/icon-192.png" alt="Lumina Logo" class="logo" />
   <h1>🚫 Huna mtandao</h1>
+  <p>“Nuru yako itangaze gizani.” — Isaya 60:1</p>
   <p>Tafadhali jaribu tena ukiwa na internet.</p>
+  <button class="retry-btn" onclick="location.reload()">🔄 Jaribu Tena</button>
+  
+  <div class="footer">
+    © Lumina Legacy — Mfumo umetengenezwa na Abel Memorial Programmers
+  </div>
 </body>
 </html>
