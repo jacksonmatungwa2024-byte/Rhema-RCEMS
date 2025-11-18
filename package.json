@@ -1,5 +1,5 @@
 {
-  "name": "rhema-attendance",
+  "name": "Lumina app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -29,7 +29,9 @@
     "xlsx": "^0.18.5",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "speakeasy": "^2.0.0",        // ✅ added
+    "qrcode": "^1.5.4"            // ✅ added
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
