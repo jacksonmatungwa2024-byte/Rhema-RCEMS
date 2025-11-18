@@ -133,55 +133,55 @@ const SignupPage: React.FC = () => {
 
       {!qrCode ? (
         <form onSubmit={handleSignup}>
-        <label>👤 Jina Kamili:</label>
-        <input type="text" id="full_name" name="full_name" required />
+          <label>👤 Jina Kamili:</label>
+          <input type="text" id="full_name" name="full_name" required />
 
-        <label>🆔 Jina la Mtumiaji:</label>
-        <input type="text" id="username" name="username" required />
+          <label>🆔 Jina la Mtumiaji:</label>
+          <input type="text" id="username" name="username" required />
 
-        <label>📧 Barua Pepe:</label>
-        <input type="email" id="email" name="email" required />
+          <label>📧 Barua Pepe:</label>
+          <input type="email" id="email" name="email" required />
 
-        <label>🔑 Nenosiri:</label>
-        <div className="password-field">
-          <input
-            type={showPassword ? "text" : "password"}
-            id="password"
-            name="password"
-            required
-          />
-          <button
-            type="button"
-            className="toggle-btn"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? "🙈" : "👁️"}
+          <label>🔑 Nenosiri:</label>
+          <div className="password-field">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              required
+            />
+            <button
+              type="button"
+              className="toggle-btn"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
+
+          <label>📞 Simu:</label>
+          <input type="text" id="phone" name="phone" />
+
+          <label>🖼️ Picha ya Profile:</label>
+          <input type="file" id="profile_file" name="profile_file" accept="image/*" required />
+
+          <label>🎯 Nafasi:</label>
+          <select id="role" name="role" required>
+            <option value="">-- Chagua Nafasi --</option>
+            <option value="usher">Mhudumu</option>
+            <option value="pastor">Mchungaji</option>
+            <option value="media">Media</option>
+            <option value="finance">Fedha</option>
+            <option value="admin">Admin</option>
+          </select>
+
+          <label>📍 Tawi:</label>
+          <input type="text" id="branch" name="branch" />
+
+          <button type="submit" disabled={loading}>
+            {loading ? "⌛ Inasajili..." : "📝 Sajili"}
           </button>
-        </div>
-
-        <label>📞 Simu:</label>
-        <input type="text" id="phone" name="phone" />
-
-        <label>🖼️ Picha ya Profile:</label>
-        <input type="file" id="profile_file" name="profile_file" accept="image/*" required />
-
-        <label>🎯 Nafasi:</label>
-        <select id="role" name="role" required>
-          <option value="">-- Chagua Nafasi --</option>
-          <option value="usher">Mhudumu</option>
-          <option value="pastor">Mchungaji</option>
-          <option value="media">Media</option>
-          <option value="finance">Fedha</option>
-          <option value="admin">Admin</option>
-        </select>
-
-        <label>📍 Tawi:</label>
-        <input type="text" id="branch" name="branch" />
-
-        <button type="submit" disabled={loading}>
-          {loading ? "⌛ Inasajili..." : "📝 Sajili"}
-        </button>
-      </form>
+        </form>
       ) : (
         <div className="verify-2fa">
           <h3>🔐 Thibitisha 2FA</h3>
@@ -189,12 +189,14 @@ const SignupPage: React.FC = () => {
           <form onSubmit={handleVerify2FA}>
             <label>Ingiza Code:</label>
             <input
-              type="text"
+              type="number"          // ✅ sasa ni namba pekee
+              inputMode="numeric"    // ✅ keypad ya namba kwenye simu
+              pattern="\d{6}"        // ✅ optional: hakikisha ni tarakimu 6
               value={token}
               onChange={(e) => setToken(e.target.value)}
               required
             />
-            <button type="submit" disabled={loading}>
+            <button type="submit" disabled={loading || token.length !== 6}>
               {loading ? "⌛ Inathibitisha..." : "✅ Thibitisha"}
             </button>
           </form>
