@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import jwt from "jsonwebtoken";
 import speakeasy from "speakeasy";
-import qrcode from "qrcode";
+import QRCode from "qrcode"; // ✅ import sahihi
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,6 +15,17 @@ export async function POST(req: Request) {
 
     if (!email || !full_name || !role) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    // 🔍 Check if email already exists
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (existingUser) {
+      return NextResponse.json({ error: "Email tayari imesajiliwa" }, { status: 400 });
     }
 
     // ⏳ Set active_until based on role
@@ -37,7 +48,7 @@ export async function POST(req: Request) {
       totpSecret = secret.base32;
 
       // Generate QR code image (Data URL)
-      qrCodeDataUrl = await qrcode.toDataURL(secret.otpauth_url);
+      qrCodeDataUrl = await QRCode.toDataURL(secret.otpauth_url);
     }
 
     // ✅ Insert user
@@ -65,7 +76,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    // Ikiwa sio admin → JWT token moja kwa moja
+    // 🎯 Ikiwa sio admin → JWT token moja kwa moja
     if (role !== "admin") {
       const token = jwt.sign(
         { email: data.email, role: data.role },
@@ -75,12 +86,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ token, role: data.role });
     }
 
-    // Ikiwa admin → rudisha QR code kwa frontend
+    // 🎯 Ikiwa admin → rudisha QR code kwa frontend
     return NextResponse.json({
       qrCode: qrCodeDataUrl,
-      message: "Scan QR code kwa Google Authenticator",
+      message: "📲 Scan QR code kwa Google Authenticator na weka code ya tarakimu 6",
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
-}
+  }
