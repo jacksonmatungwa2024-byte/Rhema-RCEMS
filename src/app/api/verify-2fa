@@ -23,6 +23,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    if (!data.totp_secret) {
+      return NextResponse.json({ error: "No 2FA secret set for this user" }, { status: 400 });
+    }
+
     const verified = speakeasy.totp.verify({
       secret: data.totp_secret,
       encoding: "base32",
@@ -35,8 +39,10 @@ export async function POST(req: Request) {
     }
 
     // ✅ Generate JWT baada ya verification
+    const allowedTabs = data.metadata?.allowed_tabs || [];
+
     const sessionToken = jwt.sign(
-      { email, role: data.role },
+      { email, role: data.role, allowedTabs },
       process.env.JWT_SECRET!,
       { expiresIn: "1h" }
     );
@@ -44,7 +50,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       token: sessionToken,
       role: data.role,
-      allowedTabs: data.metadata.allowed_tabs,
+      allowedTabs,
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
