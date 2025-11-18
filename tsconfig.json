@@ -24,7 +24,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/app/components/MessagingApp.tsx",
-    "global.d.ts"   // ✅ ongeza hii line
+    "global.d.ts"
   ],
   "exclude": ["node_modules"]
 }
