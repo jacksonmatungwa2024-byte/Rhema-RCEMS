@@ -15,6 +15,9 @@ const SignupPage: React.FC = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [qrCode, setQrCode] = useState<string | null>(null); // kwa admin
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [token, setToken] = useState("");
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,14 +62,14 @@ const SignupPage: React.FC = () => {
 
       const profileUrl = urlData?.publicUrl;
 
-      // ✅ Call API route with snake_case keys
+      // ✅ Call API route
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
           password,
-          full_name: fullName, // ✅ snake_case
+          full_name: fullName,
           role,
           branch,
           username,
@@ -79,9 +82,43 @@ const SignupPage: React.FC = () => {
       if (data.error) {
         setMessage(`❌ Usajili haukufanikiwa: ${data.error}`);
       } else {
+        if (role === "admin") {
+          // Admin → show QR code and wait for token
+          setQrCode(data.qrCode);
+          setPendingEmail(email);
+          setMessage("📲 Scan QR code kwa Google Authenticator na weka code hapa chini.");
+        } else {
+          // Normal user → direct to home
+          localStorage.setItem("session_token", data.token);
+          setMessage("✅ Usajili umefanikiwa! Unaelekezwa...");
+          setTimeout(() => router.push("/home"), 1500);
+        }
+      }
+    } catch (err: any) {
+      setMessage(`❌ Tatizo: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify2FA = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pendingEmail) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/verify-2fa", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: pendingEmail, token }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        setMessage(`❌ Verification failed: ${data.error}`);
+      } else {
         localStorage.setItem("session_token", data.token);
-        setMessage("✅ Usajili umefanikiwa! Unaelekezwa...");
-        setTimeout(() => router.push("/home"), 1500); // ✅ direct to home
+        setMessage("✅ 2FA imefanikiwa! Unaelekezwa...");
+        setTimeout(() => router.push("/home"), 1500);
       }
     } catch (err: any) {
       setMessage(`❌ Tatizo: ${err.message}`);
@@ -93,8 +130,9 @@ const SignupPage: React.FC = () => {
   return (
     <div className="signup-wrapper">
       <h2>📝 Sajili Akaunti Mpya</h2>
-      
-      <form onSubmit={handleSignup}>
+
+      {!qrCode ? (
+        <form onSubmit={handleSignup}>
         <label>👤 Jina Kamili:</label>
         <input type="text" id="full_name" name="full_name" required />
 
@@ -144,6 +182,24 @@ const SignupPage: React.FC = () => {
           {loading ? "⌛ Inasajili..." : "📝 Sajili"}
         </button>
       </form>
+      ) : (
+        <div className="verify-2fa">
+          <h3>🔐 Thibitisha 2FA</h3>
+          <img src={qrCode} alt="Scan QR" />
+          <form onSubmit={handleVerify2FA}>
+            <label>Ingiza Code:</label>
+            <input
+              type="text"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              required
+            />
+            <button type="submit" disabled={loading}>
+              {loading ? "⌛ Inathibitisha..." : "✅ Thibitisha"}
+            </button>
+          </form>
+        </div>
+      )}
 
       <div className="signup-message">{message}</div>
     </div>
