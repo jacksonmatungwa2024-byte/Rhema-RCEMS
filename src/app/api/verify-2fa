@@ -27,15 +27,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No 2FA secret set for this user" }, { status: 400 });
     }
 
+    // 🔐 Verify token kwa step ya dakika 5
     const verified = speakeasy.totp.verify({
       secret: data.totp_secret,
       encoding: "base32",
       token,
-      window: 1,
+      step: 300,   // code hubadilika kila dakika 5
+      window: 1,   // ruhusu drift kidogo (dirisha moja nyuma/mbeleni)
     });
 
     if (!verified) {
-      return NextResponse.json({ error: "Invalid 2FA code" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid or expired 2FA code" }, { status: 400 });
     }
 
     // ✅ Generate JWT baada ya verification
