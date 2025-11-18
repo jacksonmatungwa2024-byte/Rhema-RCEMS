@@ -15,7 +15,6 @@ const SignupPage: React.FC = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [qrCode, setQrCode] = useState<string | null>(null); // kwa admin
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [token, setToken] = useState("");
 
@@ -83,10 +82,9 @@ const SignupPage: React.FC = () => {
         setMessage(`❌ Usajili haukufanikiwa: ${data.error}`);
       } else {
         if (role === "admin") {
-          // Admin → show QR code and wait for token
-          setQrCode(data.qrCode);
+          // Admin → show 2FA form (no QR code)
           setPendingEmail(email);
-          setMessage("📲 Scan QR code kwa Google Authenticator na weka code hapa chini.");
+          setMessage("📲 Ili kupata code tafuta +255626280692 kwa WhatsApp na weka code hapa chini.");
         } else {
           // Normal user → direct to home
           localStorage.setItem("session_token", data.token);
@@ -131,8 +129,9 @@ const SignupPage: React.FC = () => {
     <div className="signup-wrapper">
       <h2>📝 Sajili Akaunti Mpya</h2>
 
-      {!qrCode ? (
+      {!pendingEmail ? (
         <form onSubmit={handleSignup}>
+          {/* signup fields */}
           <label>👤 Jina Kamili:</label>
           <input type="text" id="full_name" name="full_name" required />
 
@@ -185,13 +184,13 @@ const SignupPage: React.FC = () => {
       ) : (
         <div className="verify-2fa">
           <h3>🔐 Thibitisha 2FA</h3>
-          <img src={qrCode} alt="Scan QR" />
+          <p>📲 Ili kupata code tafuta <strong>+255626280692</strong> kwa WhatsApp.</p>
           <form onSubmit={handleVerify2FA}>
             <label>Ingiza Code:</label>
             <input
-              type="number"          // ✅ sasa ni namba pekee
-              inputMode="numeric"    // ✅ keypad ya namba kwenye simu
-              pattern="\d{6}"        // ✅ optional: hakikisha ni tarakimu 6
+              type="number"
+              inputMode="numeric"
+              pattern="\d{6}"
               value={token}
               onChange={(e) => setToken(e.target.value)}
               required
