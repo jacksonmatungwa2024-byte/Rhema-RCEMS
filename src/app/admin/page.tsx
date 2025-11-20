@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -34,6 +35,8 @@ export default function AdminPanel() {
   const [allowedTabs, setAllowedTabs] = useState<typeof allTabs>([]);
 
   useEffect(() => {
+    let timeout: NodeJS.Timeout;
+
     const loadSession = async () => {
       const token = localStorage.getItem("session_token");
       if (!token) {
@@ -41,38 +44,48 @@ export default function AdminPanel() {
         return;
       }
 
-      const res = await fetch("/api/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
+      try {
+        const res = await fetch("/api/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
 
-      if (data.error) {
+        if (data.error) {
+          localStorage.removeItem("session_token");
+          router.push("/login");
+          return;
+        }
+
+        setUser(data);
+
+        if (data.role === "admin") {
+          setAllowedTabs(allTabs); // admin anaona zote
+          setActiveTab(allTabs[0].id); // default tab
+        } else {
+          const userTabs = data.allowedTabs || [];
+          const filtered = allTabs.filter((tab) => userTabs.includes(tab.id));
+          setAllowedTabs(filtered);
+          if (filtered.length > 0) setActiveTab(filtered[0].id);
+        }
+
+        // Auto logout after 30 mins inactivity
+        timeout = setTimeout(() => {
+          alert("⏳ Umeachwa bila shughuli. Tafadhali ingia tena.");
+          localStorage.removeItem("session_token");
+          router.push("/login");
+        }, 30 * 60 * 1000);
+      } catch (err) {
+        console.error("Session load failed:", err);
         localStorage.removeItem("session_token");
         router.push("/login");
-        return;
       }
-
-      setUser(data);
-
-      if (data.role === "admin") {
-        setAllowedTabs(allTabs); // admin anaona zote
-      } else {
-        const userTabs = data.allowedTabs || [];
-        const filtered = allTabs.filter(tab => userTabs.includes(tab.id));
-        setAllowedTabs(filtered);
-      }
-
-      // Auto logout after 30 mins inactivity
-      const timeout = setTimeout(() => {
-        alert("Umeachwa bila shughuli. Tafadhali ingia tena.");
-        localStorage.removeItem("session_token");
-        router.push("/login");
-      }, 30 * 60 * 1000);
-
-      return () => clearTimeout(timeout);
     };
 
     loadSession();
+
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
   }, [router]);
 
   const handleLogout = () => {
@@ -85,12 +98,13 @@ export default function AdminPanel() {
     if (link) router.push(link);
   };
 
-  if (!user)
+  if (!user) {
     return (
       <div className="admin-loading">
         <p>⏳ Inapakia dashibodi ya admin...</p>
       </div>
     );
+  }
 
   const currentTab = allowedTabs.find((tab) => tab.id === activeTab);
 
@@ -107,6 +121,7 @@ export default function AdminPanel() {
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id, tab.link)}
                 aria-current={activeTab === tab.id ? "page" : undefined}
+                className={activeTab === tab.id ? "active" : ""}
               >
                 {tab.label}
               </button>
@@ -130,4 +145,4 @@ export default function AdminPanel() {
       </div>
     </BucketProvider>
   );
-      }
+}
