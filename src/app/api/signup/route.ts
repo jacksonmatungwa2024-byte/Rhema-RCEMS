@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
     if (role === "admin") {
       const secret = speakeasy.generateSecret({
-        name: `Lumina App (${email})`, // jina litaonekana kwenye Google Authenticator
+        name: `Lumina App (Kanisa) (${email})`, // jina litaonekana kwenye Google Authenticator
       });
       totpSecret = secret.base32;
 
