@@ -1,4 +1,4 @@
-const CACHE_NAME = "lumina-cache-v1";
+const CACHE_NAME = "lumina-cache-v2";
 const OFFLINE_URL = "/offline.html";
 
 self.addEventListener("install", (event) => {
@@ -41,30 +41,57 @@ self.addEventListener("activate", (event) => {
   self.clients.claim(); // take control of all pages
 });
 
+// Track online/offline state
+let wasOnline = true;
+
+function broadcastStatus(message) {
+  self.clients.matchAll().then((clients) => {
+    clients.forEach((client) => {
+      client.postMessage({ type: "NETWORK_STATUS", message });
+    });
+  });
+}
+
 self.addEventListener("fetch", (event) => {
   if (event.request.mode === "navigate") {
-    // HTML pages → network first, fallback offline
     event.respondWith(
-      fetch(event.request).catch(() => {
-        console.warn("⚠️ [Lumina SW] Offline, serving fallback page.");
-        return caches.match(OFFLINE_URL);
-      })
+      fetch(event.request)
+        .then((response) => {
+          if (!wasOnline) {
+            wasOnline = true;
+            broadcastStatus("🤗 Umerudi online!");
+          }
+          return response;
+        })
+        .catch(() => {
+          if (wasOnline) {
+            wasOnline = false;
+            broadcastStatus("😞 Umepoteza internet, uko offline.");
+          }
+          console.warn("⚠️ [Lumina SW] Offline, serving fallback page.");
+          return caches.match(OFFLINE_URL);
+        })
     );
   } else {
-    // Assets → cache first
     event.respondWith(
       caches.match(event.request).then((res) => {
         if (res) {
-          console.log("📦 [Lumina SW] Serving from cache:", event.request.url);
           return res;
         }
-        return fetch(event.request).then((response) => {
-          // Optionally cache new assets
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, response.clone());
-            return response;
+        return fetch(event.request)
+          .then((response) => {
+            return caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, response.clone());
+              return response;
+            });
+          })
+          .catch(() => {
+            if (wasOnline) {
+              wasOnline = false;
+              broadcastStatus("😞 Umepoteza internet, uko offline.");
+            }
+            return caches.match(OFFLINE_URL);
           });
-        });
       })
     );
   }
