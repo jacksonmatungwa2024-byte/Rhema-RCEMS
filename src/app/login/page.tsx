@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { initNetworkStatus } from "../utils/networkStatus"; // 👈 import API
 import "./login.css";
 
 export default function LoginPage() {
@@ -10,6 +11,15 @@ export default function LoginPage() {
   const [loginMessage, setLoginMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showPin, setShowPin] = useState(false);
+  const [toast, setToast] = useState("");
+
+  // 👇 Network status listener
+  useEffect(() => {
+    initNetworkStatus((status) => {
+      setToast(status);
+      setTimeout(() => setToast(""), 4000); // auto-hide after 4s
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +64,9 @@ export default function LoginPage() {
 
   return (
     <div className="login-wrapper">
+      {/* Toast popup */}
+      {toast && <div className="toast">{toast}</div>}
+
       <form className="login-box" onSubmit={handleSubmit}>
         <h2>Karibu 👋</h2>
         <p>Ingia kwenye akaunti yako</p>
@@ -94,7 +107,6 @@ export default function LoginPage() {
           📝 Jisajili
         </button>
 
-        {/* 🔥 NEW — Chatbot Help Button */}
         <button
           type="button"
           className="help-btn"
@@ -105,7 +117,6 @@ export default function LoginPage() {
 
         {loginMessage && <div className="status">{loginMessage}</div>}
 
-        {/* 🙌 Spiritual Footer */}
         <footer className="system-footer">
           <p>
             🙌 Mfumo huu umetengenezwa na <br />
@@ -117,4 +128,4 @@ export default function LoginPage() {
       </form>
     </div>
   );
-}
+        }
