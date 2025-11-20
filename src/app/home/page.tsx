@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import "./Dashboard.css";
-
+import { initNetworkStatus } from "../../utils/networkStatus";
 const roleLabels: Record<string, string> = {
   admin: "Admin",
   usher: "Mhudumu",
