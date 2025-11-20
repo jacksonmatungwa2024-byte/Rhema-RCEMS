@@ -7,6 +7,7 @@ import { generateOtp } from "./actions/generateOtp";
 import { approveOtp } from "./actions/approveOtp";
 import UserList from "./UserList";
 import "./UserManagement.css";
+
 export default function UserManagement() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,9 +22,9 @@ export default function UserManagement() {
     load();
   }, []);
 
-  const handleDelete = async (userId: number, email: string) => {
+  const handleDelete = async (userId: number) => {
     setSaving(true);
-    await deleteUser(userId, email);
+    await deleteUser(userId); // ✅ only one argument
     setUsers((prev) => prev.filter((u) => u.id !== userId));
     setSaving(false);
   };
