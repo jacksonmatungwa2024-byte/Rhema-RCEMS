@@ -27,7 +27,7 @@ export default function FinancePage() {
   const handleLogout = () => {
     localStorage.removeItem("session_token");
     localStorage.removeItem("finance_active_tab");
-    window.location.href = "/login";
+    window.location.href = "/log";
   };
 
   // 🔒 Check login session via JWT
@@ -35,7 +35,7 @@ export default function FinancePage() {
     const checkSession = async () => {
       const token = localStorage.getItem("session_token");
       if (!token) {
-        window.location.href = "/login";
+        window.location.href = "/logout";
         return;
       }
 
