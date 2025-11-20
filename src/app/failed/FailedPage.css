@@ -1,0 +1,24 @@
+.failed-page {
+  text-align: center;
+  padding: 2rem;
+}
+
+.failed-page h1 {
+  color: #d32f2f; /* red tone for error */
+  margin-bottom: 1rem;
+}
+
+.failed-page p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.back-link {
+  text-decoration: none;
+  color: #1976d2; /* blue tone for link */
+  font-weight: bold;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
