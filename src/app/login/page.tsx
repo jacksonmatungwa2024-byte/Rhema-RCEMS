@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { initNetworkStatus } from "../utils/networkStatus"; // 👈 import API
+import { initNetworkStatus } from "../../utils/networkStatus";
 import "./login.css";
 
 export default function LoginPage() {
