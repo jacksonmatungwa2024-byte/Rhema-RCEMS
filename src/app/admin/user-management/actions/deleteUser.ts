@@ -1,23 +1,34 @@
-import { createClient } from "@supabase/supabase-js";
+// deleteUser.ts
+// Hakuna Supabase client hapa kwa sababu tunaita API route yetu ya backend
+// ambayo tayari inatumia SERVICE_ROLE_KEY na bypasses RLS
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-export async function deleteUser(userId: number, email: string) {
+export async function deleteUser(userId: number): Promise<void> {
   try {
-    // Delete user from Supabase Auth
-    const { data: authData } = await supabase.auth.admin.listUsers();
-    const authUser = authData?.users?.find(u => u.email === email);
-    if (authUser) await supabase.auth.admin.deleteUser(authUser.id);
+    const token = localStorage.getItem("session_token");
+    if (!token) {
+      alert("❌ Huna session token, tafadhali login tena.");
+      return;
+    }
 
-    // Delete from users table
-    await supabase.from("users").delete().eq("id", userId);
+    const res = await fetch("/api/admin/delete-user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id: userId }),
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      alert(`❌ ${data.error}`);
+      return;
+    }
 
     alert("✅ Mtumiaji amefutwa kikamilifu.");
   } catch (err) {
-    console.error(err);
+    console.error("Delete exception:", err);
     alert("❌ Tatizo kufuta mtumiaji.");
   }
 }
