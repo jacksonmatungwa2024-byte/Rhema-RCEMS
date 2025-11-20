@@ -58,6 +58,11 @@ export default function WelcomePage() {
     }
   };
 
+  // 🍪 Set cookie visitedHome (expiry 30 min)
+  useEffect(() => {
+    document.cookie = `visitedHome=true; max-age=${60 * 30}; path=/; secure; samesite=strict`;
+  }, []);
+
   // 🔄 Loader Phase
   if (loading) {
     return (
@@ -86,7 +91,10 @@ export default function WelcomePage() {
 
       {showOptions && (
         <div className={styles.buttonGroup}>
-          <button className={styles.glowButton} onClick={() => router.push("/login")}>
+          <button
+            className={styles.glowButton}
+            onClick={() => router.push("/login")}
+          >
             🔑 Nenda Login
           </button>
           {installVisible && (
