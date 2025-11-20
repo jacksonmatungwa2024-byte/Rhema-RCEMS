@@ -22,6 +22,7 @@ export default function Dashboard() {
   const [statusText, setStatusText] = useState("⏳ Tafadhali chagua paneli.");
   const [audioPlaying, setAudioPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [toast, setToast] = useState("");
 
   // 🔒 Session check using JWT
   useEffect(() => {
@@ -63,6 +64,26 @@ export default function Dashboard() {
     checkSession();
   }, []);
 
+  // 🌐 Network status listener
+  useEffect(() => {
+    const handleOnline = () => {
+      setToast("🤗 Umerudi online!");
+      setTimeout(() => setToast(""), 4000);
+    };
+    const handleOffline = () => {
+      setToast("😞 Umepoteza internet, uko offline.");
+      setTimeout(() => setToast(""), 4000);
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
   const handleClick = (tabId: string, page: string) => {
     if (!allowedTabs.includes(tabId)) {
       setStatusLight("red");
@@ -74,10 +95,15 @@ export default function Dashboard() {
     window.location.href = page;
   };
 
-  const handleAudioPlay = () => {
+  const handleAudioToggle = () => {
     if (audioRef.current) {
-      audioRef.current.play();
-      setAudioPlaying(true);
+      if (audioPlaying) {
+        audioRef.current.pause();
+        setAudioPlaying(false);
+      } else {
+        audioRef.current.play();
+        setAudioPlaying(true);
+      }
     }
   };
 
@@ -88,6 +114,9 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-container">
+      {/* Toast popup */}
+      {toast && <div className="toast">{toast}</div>}
+
       <div className="theme-verse">“Nuru yako itangaze gizani.” — Isaya 60:1</div>
       <h2>Karibu {roleLabels[role] || ""} {fullName}</h2>
       {branch && <div className="info-block">📍 Tawi: {branch}</div>}
@@ -95,8 +124,8 @@ export default function Dashboard() {
       {profileUrl && <img src={profileUrl} alt="Profile" className="profile-img" />}
 
       {/* 🔊 Audio Theme */}
-      <button onClick={handleAudioPlay}>
-        🔊 {audioPlaying ? "Inapigwa..." : "Play Theme"}
+      <button onClick={handleAudioToggle}>
+        🔊 {audioPlaying ? "Pause Theme" : "Play Theme"}
       </button>
       <audio ref={audioRef} loop>
         <source src="/ana.mp3" type="audio/mp3" />
@@ -132,4 +161,4 @@ export default function Dashboard() {
       </button>
     </div>
   );
-        }
+}
