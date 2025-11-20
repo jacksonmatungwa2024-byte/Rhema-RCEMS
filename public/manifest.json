@@ -2,13 +2,17 @@
   "id": "lumina.outreach.system",
   "name": "Lumina Outreach System",
   "short_name": "Lumina",
-  "description": "Mfumo wa mwanga na uratibu — umetengenezwa na Abel Memorial Programmers",
+  "description": "Mfumo wa mwanga na uratibu — umetengenezwa na Abel Memorial Programmers. Church outreach app with spiritual branding and golden glow.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#0A0A0A",
   "theme_color": "#FFD700",
+  "lang": "sw",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities", "religion", "education", "community", "spirituality"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -35,20 +39,39 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512-monochrome.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "monochrome"
     }
   ],
   "screenshots": [
     {
       "src": "/screenshots/home.png",
       "sizes": "1080x1920",
-      "type": "image/png"
+      "type": "image/png",
+      "label": "Homepage with golden glow"
     },
     {
       "src": "/screenshots/login.png",
       "sizes": "1080x1920",
-      "type": "image/png"
+      "type": "image/png",
+      "label": "Login screen with church branding"
+    },
+    {
+      "src": "/screenshots/dashboard.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "label": "Admin dashboard with spiritual overlay"
+    },
+    {
+      "src": "/screenshots/worship.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "label": "Worship and announcements section"
     }
   ],
-  "lang": "sw",
-  "categories": ["productivity", "utilities", "religion", "education"]
+  "prefer_related_applications": false
 }
