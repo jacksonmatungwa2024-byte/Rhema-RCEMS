@@ -9,32 +9,32 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const { email, new_password } = await req.json();
+    const { username, new_password } = await req.json();
 
-    if (!email || !new_password) {
-      return NextResponse.json({ error: "Missing email or password" }, { status: 400 });
+    if (!username || !new_password) {
+      return NextResponse.json({ error: "Missing username or password" }, { status: 400 });
     }
 
-    // Fetch user
+    // 🔍 Fetch user by username
     const { data: user, error: fetchError } = await supabase
       .from("users")
       .select("id, otp_verified, metadata")
-      .eq("email", email)
+      .eq("username", username)
       .single();
 
     if (fetchError || !user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Check OTP verified
+    // 🔐 Check OTP verified
     if (!user.otp_verified) {
       return NextResponse.json({ error: "OTP haijathibitishwa." }, { status: 403 });
     }
 
-    // Hash new password
+    // 🔒 Hash new password
     const passwordHash = await bcrypt.hash(new_password, 10);
 
-    // Update password and clear OTP metadata
+    // ✅ Update password and clear OTP metadata
     const { error: updateError } = await supabase
       .from("users")
       .update({
