@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import { usePermissions } from "../utils/usePermissions";
+import { usePermissions } from "../../utils/usePermissions";
 import "./signup.css";
 
 const supabase = createClient(
