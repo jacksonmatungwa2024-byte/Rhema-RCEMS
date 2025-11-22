@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       activeUntilDate = fallback.toISOString();
     }
 
-    // 🔐 Ikiwa admin → tengeneza secret na QR code
+    // 🔐 Ikiwa admin → tengeneza secret na QR code (step 30s standard)
     let totpSecret: string | null = null;
     let qrCodeDataUrl: string | null = null;
 
@@ -88,7 +88,7 @@ export async function POST(req: Request) {
     // 🎯 Ikiwa admin → rudisha QR code kwa frontend
     return NextResponse.json({
       qrCode: qrCodeDataUrl,
-      message: "📲 Scan QR code kwa Google Authenticator na weka code ya tarakimu 6",
+      message: "📲 Scan QR code kwa Google Authenticator (step 30s) na weka code ya tarakimu 6",
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
