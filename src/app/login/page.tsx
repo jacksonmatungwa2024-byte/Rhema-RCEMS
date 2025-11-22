@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { initNetworkStatus } from "../../utils/networkStatus";
-import { usePermissions } from "@/utils/usePermissions";
 import "./login.css";
 
 export default function LoginPage() {
@@ -28,7 +27,7 @@ export default function LoginPage() {
     setLoginMessage("");
 
     const form = e.target as HTMLFormElement;
-    const email = form.email.value.trim().toLowerCase();
+    const username = form.username.value.trim();
     const password = form.password.value.trim();
     const pin = form.pin.value.trim();
 
@@ -36,7 +35,7 @@ export default function LoginPage() {
       const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, pin }),
+        body: JSON.stringify({ username, password, pin }),
       });
 
       const data = await res.json();
@@ -72,8 +71,8 @@ export default function LoginPage() {
         <h2>Karibu 👋</h2>
         <p>Ingia kwenye akaunti yako</p>
 
-        <label>Email</label>
-        <input type="email" name="email" placeholder="Weka email" required />
+        <label>Jina la Mtumiaji</label>
+        <input type="text" name="username" placeholder="Weka username" required />
 
         <label>Nenosiri</label>
         <div className="password-wrapper">
@@ -129,4 +128,4 @@ export default function LoginPage() {
       </form>
     </div>
   );
-        }
+      }
