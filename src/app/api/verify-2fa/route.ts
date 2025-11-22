@@ -10,13 +10,17 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const { email, token } = await req.json();
+    const { username, token } = await req.json();
 
-    // Pata secret kutoka DB
+    if (!username || !token) {
+      return NextResponse.json({ error: "Missing username or token" }, { status: 400 });
+    }
+
+    // 🔍 Pata secret kutoka DB kwa kutumia username
     const { data, error } = await supabase
       .from("users")
       .select("totp_secret, role, metadata")
-      .eq("email", email)
+      .eq("username", username)
       .single();
 
     if (error || !data) {
@@ -44,7 +48,7 @@ export async function POST(req: Request) {
     const allowedTabs = data.metadata?.allowed_tabs || [];
 
     const sessionToken = jwt.sign(
-      { email, role: data.role, allowedTabs },
+      { username, role: data.role, allowedTabs },
       process.env.JWT_SECRET!,
       { expiresIn: "1h" }
     );
