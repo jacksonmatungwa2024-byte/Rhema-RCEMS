@@ -31,13 +31,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No 2FA secret set for this user" }, { status: 400 });
     }
 
-    // 🔐 Verify token kwa step ya dakika 5
+    // 🔐 Verify token kwa step ya sekunde 30 (standard TOTP)
     const verified = speakeasy.totp.verify({
       secret: data.totp_secret,
       encoding: "base32",
       token,
-      step: 300,   // code hubadilika kila dakika 5
-      window: 1,   // ruhusu drift kidogo (dirisha moja nyuma/mbeleni)
+      step: 30,   // code hubadilika kila sekunde 30
+      window: 1,  // ruhusu drift kidogo (dirisha moja nyuma/mbeleni)
     });
 
     if (!verified) {
@@ -61,4 +61,4 @@ export async function POST(req: Request) {
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
-}
+      }
