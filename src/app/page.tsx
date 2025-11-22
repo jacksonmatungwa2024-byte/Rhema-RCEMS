@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { usePermissions } from "@/utils/usePermissions";  
+import { useChromeCheck } from "@/utils/useChromeCheck"; // 🔒 Hybrid Chrome-only check
 import styles from "./welcome.module.css";
 
 export default function WelcomePage() {
@@ -14,11 +14,16 @@ export default function WelcomePage() {
 
   const introRef = useRef<HTMLAudioElement>(null);
 
+  // 🔒 Client-side Chrome check
+  useChromeCheck();
+
   // 🎵 Preloader sound + timer
   useEffect(() => {
     if (introRef.current) {
-      introRef.current.volume = 0.7; // adjust volume
-      introRef.current.play().catch(() => {});
+      introRef.current.volume = 0.7;
+      introRef.current.play().catch((err) =>
+        console.warn("Audio autoplay blocked:", err)
+      );
     }
     const loadTimer = setTimeout(() => setLoading(false), 3000);
     return () => clearTimeout(loadTimer);
@@ -34,7 +39,7 @@ export default function WelcomePage() {
 
   // 🔌 Register Service Worker (PWA)
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
+    if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("/sw.js")
         .then(() => console.log("Service Worker Registered"))
@@ -71,7 +76,6 @@ export default function WelcomePage() {
         <div className={styles.lightRays}></div>
         <div className={styles.glowCross}></div>
         <p className={styles.loaderText}>Lumina Church Management System</p>
-        {/* 🔊 Intro looping sound */}
         <audio ref={introRef} loop autoPlay>
           <source src="/intro-tone.mp3" type="audio/mp3" />
         </audio>
