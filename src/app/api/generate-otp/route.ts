@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generateOtp } from "@/src/lib/otp";
+import { generateOtp } from "@/lib/otp";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
