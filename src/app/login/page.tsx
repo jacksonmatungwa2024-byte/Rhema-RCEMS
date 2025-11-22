@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { initNetworkStatus } from "../../utils/networkStatus";
-import { usePermissions } from "../../utils/usePermissions";
+import { usePermissions } from "@/utils/usePermissions";
 import "./login.css";
 
 export default function LoginPage() {
