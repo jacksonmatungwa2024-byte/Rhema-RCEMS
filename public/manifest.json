@@ -73,5 +73,12 @@
       "label": "Worship and announcements section"
     }
   ],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+
+  "permissions": {
+    "notifications": true,
+    "geolocation": true,
+    "camera": true,
+    "microphone": true
+  }
 }
