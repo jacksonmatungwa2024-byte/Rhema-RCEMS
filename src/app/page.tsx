@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation
+import { useRouter } from "next/navigation;
 import { usePermissions } from "@/utils/usePermissions";  
 import styles from "./welcome.module.css";
 
