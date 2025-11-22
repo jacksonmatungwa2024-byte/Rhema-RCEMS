@@ -3,20 +3,21 @@
     "target": "ES2020",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
+    "skipLibCheck": true,          
+    "strict": true,                
+    "noEmit": true,                
+    "esModuleInterop": true,       
     "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
+    "moduleResolution": "bundler", // recommended kwa Next.js 15 na Turbopack
+    "resolveJsonModule": true,     // huruhusu import JSON files
+    "isolatedModules": true,       // kila file lazima liwe module
+    "jsx": "preserve",             // Next.js hubadilisha JSX
+    "incremental": true,           // huongeza speed ya build
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"]           // alias kwa imports safi
+    },
+    "types": ["./global.d.ts"]     // 🔑 inahakikisha global.d.ts inajulikana
   },
   "include": [
     "next-env.d.ts",
