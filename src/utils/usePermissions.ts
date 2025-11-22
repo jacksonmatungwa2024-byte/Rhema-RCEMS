@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export type PermissionStatus = "granted" | "denied" | "prompt" | "unsupported";
 
 export function usePermissions() {
   const [notificationStatus, setNotificationStatus] = useState<PermissionStatus>("prompt");
   const [locationStatus, setLocationStatus] = useState<PermissionStatus>("prompt");
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [cameraStatus, setCameraStatus] = useState<PermissionStatus>("prompt");
+  const [micStatus, setMicStatus] = useState<PermissionStatus>("prompt");
 
-  // 🔔 Ask for Notifications
+  // 🔔 Notifications
   const requestNotifications = async () => {
     if (!("Notification" in window)) {
       setNotificationStatus("unsupported");
@@ -22,36 +23,46 @@ export function usePermissions() {
     }
   };
 
-  // 📍 Ask for Geolocation
+  // 📍 Geolocation
   const requestLocation = () => {
     if (!("geolocation" in navigator)) {
       setLocationStatus("unsupported");
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocationStatus("granted");
-        setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-      },
-      (err) => {
-        setLocationStatus("denied");
-        console.error("⚠️ Location error:", err.message);
-      }
+      () => setLocationStatus("granted"),
+      () => setLocationStatus("denied")
     );
   };
 
-  // 🔎 Initial check
-  useEffect(() => {
-    if ("Notification" in window) {
-      setNotificationStatus(Notification.permission as PermissionStatus);
+  // 🎥 Camera
+  const requestCamera = async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ video: true });
+      setCameraStatus("granted");
+    } catch {
+      setCameraStatus("denied");
     }
-  }, []);
+  };
+
+  // 🎙 Microphone
+  const requestMicrophone = async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      setMicStatus("granted");
+    } catch {
+      setMicStatus("denied");
+    }
+  };
 
   return {
     notificationStatus,
     locationStatus,
-    coords,
+    cameraStatus,
+    micStatus,
     requestNotifications,
     requestLocation,
+    requestCamera,
+    requestMicrophone,
   };
 }
