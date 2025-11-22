@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./Dashboard.css";
 import { initNetworkStatus } from "../../utils/networkStatus";
+import { usePermissions } from "@/utils/usePermissions";
 const roleLabels: Record<string, string> = {
   admin: "Admin",
   usher: "Mhudumu",
