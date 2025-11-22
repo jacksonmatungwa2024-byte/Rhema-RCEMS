@@ -6,6 +6,11 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   const visitedHome = req.cookies.get('visitedHome')
 
+  // ⚠️ Skip checks for special routes ili kuepuka loop
+  if (pathname.startsWith('/failed') || pathname.startsWith('/blocked')) {
+    return NextResponse.next()
+  }
+
   // Ruhusu Chrome pekee
   if (!ua.includes('Chrome')) {
     const url = req.nextUrl.clone()
@@ -50,5 +55,7 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico).*)'
+  ],
 }
