@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { verifyOtp } from "@/src/lib/otp";
+import { verifyOtp } from "@/lib/otp";
 
 export async function POST(req: Request) {
   const { token } = await req.json();
