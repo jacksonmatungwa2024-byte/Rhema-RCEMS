@@ -3,22 +3,25 @@ import { useEffect } from "react";
 
 export function useChromeCheck() {
   useEffect(() => {
-    // Chrome mpya inatoa userAgentData
-    const brands = navigator.userAgentData?.brands || [];
-    const isChrome = brands.some(b => b.brand === "Google Chrome");
+    // ✅ Chrome mpya inatoa userAgentData (brand detection)
+    const brands = (navigator as any).userAgentData?.brands || [];
+    const isChromeBrand = brands.some((b: any) => b.brand === "Google Chrome");
 
-    // Fallback kwa browsers ambazo hazina userAgentData
+    // ✅ Fallback kwa browsers zisizo na userAgentData
     const ua = navigator.userAgent || "";
     const strictChrome =
       /\bChrome\/\d+/.test(ua) &&
-      !ua.includes("Edg") &&
-      !ua.includes("OPR") &&
-      !ua.includes("Brave") &&
-      !ua.includes("SamsungBrowser") &&
-      !ua.includes("Phoenix") &&
-      !ua.includes("CriOS");
+      ua.includes("Safari/537.36") && // Chrome halisi hujumuisha hii
+      !ua.includes("Edg") &&          // sio Edge
+      !ua.includes("OPR") &&          // sio Opera
+      !ua.includes("Brave") &&        // sio Brave
+      !ua.includes("Vivaldi") &&      // sio Vivaldi
+      !ua.includes("SamsungBrowser") && // sio Samsung browser
+      !ua.includes("Phoenix") &&      // sio Phoenix
+      !ua.includes("CriOS");          // sio Chrome on iOS (Safari engine)
 
-    if (!isChrome && !strictChrome) {
+    // 🚫 Redirect kama sio Chrome halisi
+    if (!isChromeBrand && !strictChrome) {
       window.location.href = "/blocked";
     }
   }, []);
