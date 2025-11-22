@@ -1,0 +1,15 @@
+import { NextResponse } from "next/server";
+import { verifyOtp } from "@/src/lib/otp";
+
+export async function POST(req: Request) {
+  const { token } = await req.json();
+  const secret = process.env.OTP_SECRET!;
+
+  const verified = verifyOtp(secret, token);
+
+  if (!verified) {
+    return NextResponse.json({ error: "Invalid or expired OTP" }, { status: 400 });
+  }
+
+  return NextResponse.json({ message: "OTP verified successfully" });
+}
