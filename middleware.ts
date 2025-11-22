@@ -13,13 +13,15 @@ export function middleware(req: NextRequest) {
 
   // ✅ Ruhusu Google Chrome pekee (strict check)
   const isChrome =
-    /\bChrome\/\d+/.test(ua) && // lazima iwe na Chrome version
-    !ua.includes('Edg') &&      // sio Edge
-    !ua.includes('OPR') &&      // sio Opera
-    !ua.includes('Brave') &&    // sio Brave
-    !ua.includes('SamsungBrowser') && // sio Samsung browser
-    !ua.includes('Phoenix') &&  // sio Phoenix
-    !ua.includes('CriOS')       // sio Chrome on iOS (Safari engine)
+    /\bChrome\/\d+/.test(ua) &&          // lazima iwe na Chrome version
+    ua.includes('Safari/537.36') &&      // Chrome halisi hujumuisha Safari/537.36
+    !ua.includes('Edg') &&               // sio Edge
+    !ua.includes('OPR') &&               // sio Opera
+    !ua.includes('Brave') &&             // sio Brave
+    !ua.includes('Vivaldi') &&           // sio Vivaldi
+    !ua.includes('SamsungBrowser') &&    // sio Samsung browser
+    !ua.includes('Phoenix') &&           // sio Phoenix
+    !ua.includes('CriOS')                // sio Chrome on iOS (Safari engine)
 
   if (!isChrome) {
     const url = req.nextUrl.clone()
@@ -67,4 +69,4 @@ export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico).*)'
   ],
-      }
+}
