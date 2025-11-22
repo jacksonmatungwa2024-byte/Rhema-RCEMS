@@ -11,8 +11,15 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // Ruhusu Chrome pekee
-  if (!ua.includes('Chrome')) {
+  // Ruhusu Google Chrome pekee (strict check)
+  const isChrome =
+    /\bChrome\/\d+/.test(ua) && // lazima iwe na Chrome version
+    !ua.includes('Edg') &&      // sio Edge
+    !ua.includes('OPR') &&      // sio Opera
+    !ua.includes('Brave') &&    // sio Brave
+    !ua.includes('SamsungBrowser') // sio Samsung browser
+
+  if (!isChrome) {
     const url = req.nextUrl.clone()
     url.pathname = '/blocked'
     return NextResponse.redirect(url)
