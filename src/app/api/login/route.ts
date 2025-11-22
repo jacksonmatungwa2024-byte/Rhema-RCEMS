@@ -10,12 +10,17 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const { email, password, pin } = await req.json();
+    const { username, password, pin } = await req.json();
 
+    if (!username || !password) {
+      return NextResponse.json({ error: "Missing username or password" }, { status: 400 });
+    }
+
+    // 🔍 Fetch user by username
     const { data: user, error } = await supabase
       .from("users")
       .select("*")
-      .eq("email", email)
+      .eq("username", username)
       .single();
 
     if (error || !user) {
@@ -26,11 +31,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Akaunti imefungwa." }, { status: 403 });
     }
 
+    // 🔐 Verify password
     const validPassword = await bcrypt.compare(password, user.password_hash);
     if (!validPassword) {
       return NextResponse.json({ error: "Nenosiri si sahihi." }, { status: 401 });
     }
 
+    // 🔑 Admin PIN check (optional)
     if (user.role === "admin" && pin) {
       const validPin = await bcrypt.compare(pin, user.admin_pin_hash);
       if (!validPin) {
@@ -38,15 +45,23 @@ export async function POST(req: Request) {
       }
     }
 
+    // 🎯 Generate JWT with username + role
     const token = jwt.sign(
-      { email: user.email, role: user.role },
+      { username: user.username, role: user.role },
       process.env.JWT_SECRET!,
       { expiresIn: "6h" }
     );
 
-    await supabase.from("users").update({ last_login: new Date().toISOString() }).eq("id", user.id);
+    // 🕒 Update last login
+    await supabase
+      .from("users")
+      .update({ last_login: new Date().toISOString() })
+      .eq("id", user.id);
 
-    return NextResponse.json({ token, role: user.role, loginMode: pin ? "pin" : "normal" }, { status: 200 });
+    return NextResponse.json(
+      { token, role: user.role, loginMode: pin ? "pin" : "normal" },
+      { status: 200 }
+    );
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
