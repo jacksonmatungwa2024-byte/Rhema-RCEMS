@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import { usePermissions } from "@/utils/usePermissions";
 import "./signup.css";
 
 const supabase = createClient(
@@ -16,7 +15,7 @@ const SignupPage: React.FC = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [pendingUser, setPendingUser] = useState<string | null>(null);
   const [token, setToken] = useState("");
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -25,7 +24,6 @@ const SignupPage: React.FC = () => {
     setMessage("");
 
     const form = e.currentTarget;
-    const email = (form.elements.namedItem("email") as HTMLInputElement)?.value.trim().toLowerCase();
     const password = (form.elements.namedItem("password") as HTMLInputElement)?.value.trim();
     const fullName = (form.elements.namedItem("full_name") as HTMLInputElement)?.value.trim();
     const role = (form.elements.namedItem("role") as HTMLSelectElement)?.value.trim();
@@ -34,16 +32,16 @@ const SignupPage: React.FC = () => {
     const phone = (form.elements.namedItem("phone") as HTMLInputElement)?.value.trim();
     const profileFile = (form.elements.namedItem("profile_file") as HTMLInputElement)?.files?.[0];
 
-    if (!email || !password || !fullName || !role || !profileFile) {
+    if (!password || !fullName || !role || !username || !profileFile) {
       setMessage("⚠️ Tafadhali jaza taarifa zote muhimu na weka picha ya profile.");
       setLoading(false);
       return;
     }
 
     try {
-      // Upload profile picture
+      // Upload profile picture (use username instead of email)
       const fileExt = profileFile.name.split(".").pop();
-      const fileName = `${Date.now()}-${email}.${fileExt}`;
+      const fileName = `${Date.now()}-${username}.${fileExt}`;
       const filePath = `profile-pictures/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -62,12 +60,11 @@ const SignupPage: React.FC = () => {
 
       const profileUrl = urlData?.publicUrl;
 
-      // ✅ Call API route
+      // ✅ Call API route (no email, use username + full_name)
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email,
           password,
           full_name: fullName,
           role,
@@ -83,8 +80,8 @@ const SignupPage: React.FC = () => {
         setMessage(`❌ Usajili haukufanikiwa: ${data.error}`);
       } else {
         if (role === "admin") {
-          // Admin → show 2FA form (no QR code)
-          setPendingEmail(email);
+          // Admin → show 2FA form
+          setPendingUser(username);
           setMessage("📲 Ili kupata code tafuta +255626280692 kwa WhatsApp na weka code hapa chini.");
         } else {
           // Normal user → direct to home
@@ -102,14 +99,14 @@ const SignupPage: React.FC = () => {
 
   const handleVerify2FA = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pendingEmail) return;
+    if (!pendingUser) return;
 
     setLoading(true);
     try {
       const res = await fetch("/api/verify-2fa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: pendingEmail, token }),
+        body: JSON.stringify({ username: pendingUser, token }),
       });
       const data = await res.json();
       if (data.error) {
@@ -130,17 +127,13 @@ const SignupPage: React.FC = () => {
     <div className="signup-wrapper">
       <h2>📝 Sajili Akaunti Mpya</h2>
 
-      {!pendingEmail ? (
+      {!pendingUser ? (
         <form onSubmit={handleSignup}>
-          {/* signup fields */}
           <label>👤 Jina Kamili:</label>
           <input type="text" id="full_name" name="full_name" required />
 
           <label>🆔 Jina la Mtumiaji:</label>
           <input type="text" id="username" name="username" required />
-
-          <label>📧 Barua Pepe:</label>
-          <input type="email" id="email" name="email" required />
 
           <label>🔑 Nenosiri:</label>
           <div className="password-field">
