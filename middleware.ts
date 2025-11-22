@@ -11,13 +11,15 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // Ruhusu Google Chrome pekee (strict check)
+  // ✅ Ruhusu Google Chrome pekee (strict check)
   const isChrome =
     /\bChrome\/\d+/.test(ua) && // lazima iwe na Chrome version
     !ua.includes('Edg') &&      // sio Edge
     !ua.includes('OPR') &&      // sio Opera
     !ua.includes('Brave') &&    // sio Brave
-    !ua.includes('SamsungBrowser') // sio Samsung browser
+    !ua.includes('SamsungBrowser') && // sio Samsung browser
+    !ua.includes('Phoenix') &&  // sio Phoenix
+    !ua.includes('CriOS')       // sio Chrome on iOS (Safari engine)
 
   if (!isChrome) {
     const url = req.nextUrl.clone()
@@ -25,21 +27,21 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Ikiwa sio homepage na cookie haipo → redirect Failed
+  // 🔒 Ikiwa sio homepage na cookie haipo → redirect Failed
   if (pathname !== '/' && !visitedHome) {
     const url = req.nextUrl.clone()
     url.pathname = '/failed'
     return NextResponse.redirect(url)
   }
 
-  // Zuia kufungua /login moja kwa moja bila cookie
+  // 🔒 Zuia kufungua /login moja kwa moja bila cookie
   if (pathname === '/login' && !visitedHome) {
     const url = req.nextUrl.clone()
     url.pathname = '/failed'
     return NextResponse.redirect(url)
   }
 
-  // Ikiwa ni homepage, weka cookie visitedHome yenye expiry ya dakika 30
+  // 🏠 Ikiwa ni homepage, weka cookie visitedHome yenye expiry ya dakika 30
   if (pathname === '/') {
     const res = NextResponse.next()
     res.cookies.set('visitedHome', 'true', {
@@ -51,7 +53,7 @@ export function middleware(req: NextRequest) {
     return res
   }
 
-  // Ikiwa ni logout, futa cookie visitedHome
+  // 🚪 Ikiwa ni logout, futa cookie visitedHome
   if (pathname === '/logout') {
     const res = NextResponse.redirect(new URL('/', req.url))
     res.cookies.delete('visitedHome')
@@ -65,4 +67,4 @@ export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico).*)'
   ],
-}
+      }
